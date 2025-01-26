@@ -1,0 +1,425 @@
+<script setup lang="ts" name="Home">
+import liff from "@line/liff";
+import qs from "qs";
+import userAvatar from "@/assets/user-avatar.svg";
+import iconLanguage from "@/assets/icon-language.svg";
+import iconInfo from "@/assets/icon-info.svg";
+import ustd from "@/assets/icon-ustd.svg";
+import kaia2 from "@/assets/icon-kaia.svg";
+import iconGift from "@/assets/icon-gift.svg";
+import imgBadges from "@/assets/img-badges.svg";
+import imgPoints from "@/assets/img-points.svg";
+
+const userInfo = reactive({
+  avatar: userAvatar,
+  nickName: "Arthorn"
+});
+const time = ref(13600 * 1000);
+const formatTime = value => {
+  return value < 10 ? `0${value}` : value;
+};
+const lineLogin = () => {
+  console.log("click");
+  const line_auth = "https://access.line.me/oauth2/v2.1/authorize";
+  const auth_params = {
+    response_type: "code",
+    client_id: "2006818858",
+    redirect_uri: window.location.href, // 在LINE Developers Console上注册的回调 URL 的 URL 编码字符串。您可以添加任何查询参数。
+    state: "STATE", // 用于防止跨站点请求伪造的唯一字母数字字符串. 您的网络应用应为每个登录会话生成一个随机值。这不能是 URL 编码的字符串。
+    scope: "profile openid email" // 向用户请求的权限,查询范围可以看官网(https://developers.line.biz/en/docs/line-login/integrate-line-login/#scopes)
+  };
+  // 这里使用了第三方库qs来处理参数
+  const paramsString = qs.stringify(auth_params);
+  console.log(line_auth, paramsString);
+  window.location.href = `${line_auth}?${paramsString}`;
+};
+const lineLoginLiff = async () => {
+  await liff.init({ liffId: "2006818858-1a2PrWjY" });
+  if (!liff.isLoggedIn()) {
+    liff.login();
+  } else {
+    const DecodedToken = await liff.getDecodedIDToken();
+    const profile = await liff.getProfile();
+    console.log(DecodedToken, profile);
+  }
+};
+</script>
+
+<template>
+  <div class="page-wrap">
+    <div class="header">
+      <div class="header-left">
+        <van-image
+          width="36"
+          height="36"
+          fit="cover"
+          :src="userInfo.avatar"
+          round
+          class="product-img"
+        />
+        <div class="text-content">
+          {{ userInfo.nickName }}
+        </div>
+      </div>
+      <div class="header-right">
+        <van-icon :name="iconLanguage" size="16" />
+        <span class="current-language">EN</span>
+      </div>
+    </div>
+    <div class="content">
+      <div class="balance-wrap">
+        <div class="inner-color">
+          <div class="balance-title">Wallet Balance</div>
+          <div class="balance-content">
+            <div class="balance-item">
+              <van-image
+                width="24"
+                height="24"
+                fit="cover"
+                :src="ustd"
+                round
+                class="van-img"
+              />
+              <span class="balance-item-txt">11.12K</span>
+              <van-icon :name="iconInfo" color="#A1A1AA" size="16px" />
+            </div>
+            <div class="balance-item">
+              <van-image
+                width="24"
+                height="24"
+                fit="cover"
+                :src="kaia2"
+                round
+                class="van-img"
+              />
+              <span class="balance-item-txt">1.20K</span>
+              <van-icon :name="iconInfo" color="#A1A1AA" size="16px" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="space-h-16">
+        <div class="text-title">Prize pool</div>
+        <div class="content-box">
+          <div class="box-top">
+            <div class="box-title">Total prize pool</div>
+            <div class="box-num">$123,876,323</div>
+          </div>
+
+          <div class="box-center">
+            <div class="center-label">Next draw open in</div>
+            <div class="center-time">
+              <van-count-down :time="time" format="HH:mm:ss">
+                <template #default="timeData">
+                  <div class="time-inner">
+                    <span class="block">{{ formatTime(timeData.hours) }}</span>
+                    <span class="colon">:</span>
+                    <span class="block">{{
+                      formatTime(timeData.minutes)
+                    }}</span>
+                    <span class="colon">:</span>
+                    <span class="block">{{
+                      formatTime(timeData.seconds)
+                    }}</span>
+                  </div>
+                </template>
+              </van-count-down>
+            </div>
+          </div>
+
+          <div class="box-progress">
+            <div class="progress-inner">
+              <div class="percentage" />
+              <van-icon
+                class="pivot"
+                :name="iconGift"
+                color="#FF4E7A "
+                size="26px"
+              />
+            </div>
+          </div>
+          <button class="btn-main" @click="lineLogin">Join Now</button>
+        </div>
+      </div>
+
+      <div class="space-h-16">
+        <div class="text-title">Available rewards</div>
+        <div class="content-box">
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="box-top">
+              <div class="img-num-wrap">
+                <van-image
+                  width="36"
+                  height="36"
+                  fit="cover"
+                  :src="imgPoints"
+                  round
+                  class="product-img"
+                />
+                <span class="img-num">x13</span>
+              </div>
+              <div class="main-text">Points</div>
+            </div>
+            <div class="box-top">
+              <div class="img-num-wrap">
+                <van-image
+                  width="36"
+                  height="36"
+                  fit="cover"
+                  :src="imgBadges"
+                  round
+                  class="product-img"
+                />
+                <span class="img-num color-blue-01">x13</span>
+              </div>
+              <div class="main-text">Badges</div>
+            </div>
+          </div>
+
+          <button class="btn-main" @click="lineLoginLiff">Claim Now</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-add">
+      <van-icon name="plus" size="24" color="#fff" />
+    </button>
+  </div>
+</template>
+
+<style scoped lang="less">
+.page-wrap {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fff9e1 0%, #fff 100%);
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+  color: #18181b;
+  font-weight: 500;
+  font-size: 14px;
+}
+.btn-add {
+  position: fixed;
+  right: 20px;
+  bottom: 70px;
+  width: 48px;
+  height: 48px;
+  background: var(--LS-Gray-07, #18181b);
+  border-radius: 50%;
+  z-index: 999;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0;
+  height: 36px;
+  line-height: 36px;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    .text-content {
+      margin-left: 16px;
+      font-size: 18px;
+      color: #18181b;
+    }
+  }
+
+  .header-right {
+    width: 39px;
+    box-sizing: content-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 2px solid var(--ls-line-12, rgba(24, 24, 27, 0.12));
+
+    .current-language {
+      margin-left: 4px;
+      line-height: 20px; /* 142.857% */
+    }
+  }
+}
+
+.space-h-16 {
+  margin: 32px 0;
+}
+.text-title {
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px; /* 122.222% */
+  color: #18181b;
+}
+.balance-wrap {
+  box-sizing: content-box;
+  padding: 16px;
+  border-radius: 24px;
+  border: 3px solid var(--LS-Primary-02, #ddb305);
+  background: var(--LS-Primary-01, #fee719);
+  box-shadow: 0px 6px 0px 0px #ddb305;
+  .inner-color {
+    padding: 12px 16px;
+    height: 84px;
+    border-radius: 16px;
+    background-color: #fff;
+
+    .balance-title {
+      font-size: 14px;
+      line-height: 20px; /* 142.857% */
+      color: var(--LS-Gray-05, #83838f);
+      margin-bottom: 12px;
+    }
+    .balance-content {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+
+      .balance-item {
+        width: 150px;
+        display: flex;
+        align-items: center;
+
+        .van-img {
+          width: 24px;
+          height: 24px;
+          border-radius: 100%;
+        }
+        .balance-item-txt {
+          margin: 0 6px;
+          font-size: 20px;
+          font-weight: 700;
+          color: #3f3f46;
+        }
+      }
+    }
+  }
+}
+
+.content-box {
+  padding: 16px;
+  margin-top: 12px;
+  border-radius: 24px;
+  border: 3px solid var(--LS-Gray-07, #18181b);
+  background: var(--LS-Gray-01, #fff);
+  box-shadow: 0px 6px 0px 0px #18181b;
+
+  .box-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 12px;
+    border: 2px solid var(--LS-Gray-02, #f4f4f5);
+    padding: 12px 8px 10px 8px;
+
+    .box-title {
+      line-height: 20px;
+      color: var(--LS-Gray-05, #83838f);
+      margin-bottom: 6px;
+    }
+    .box-num {
+      color: var(--LS-Secondary-Green-02, #00ba4d);
+      font-family: "GenSenRounded2 TW";
+      font-size: 32px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 38px; /* 118.75% */
+    }
+  }
+  .box-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0 10px 0;
+    height: 30px;
+    line-height: 30px;
+    font-size: 16px;
+
+    .center-label {
+      color: var(--LS-Gray-05, #83838f);
+    }
+
+    .time-inner {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      text-align: center;
+
+      .block {
+        padding: 6px;
+        width: 30px;
+        border-radius: 8px;
+        background: var(--ls-line-8, rgba(24, 24, 27, 0.08));
+      }
+      .colon {
+        width: 16px;
+        color: var(--LS-Gray-05, #83838f);
+        font-family: Nunito;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .box-progress {
+    width: 100%;
+    height: 28px;
+    padding: 5px 0px;
+    margin: 10px 0 12px 0;
+
+    .progress-inner {
+      position: relative;
+      height: 20px;
+
+      border-radius: 24px;
+      background: var(--ls-line-4, rgba(24, 24, 27, 0.04));
+
+      .percentage {
+        border-radius: 24px;
+        background: linear-gradient(90deg, #10d260 0%, #65e01c 100%);
+        height: 100%;
+        width: 50%;
+      }
+      .pivot {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+
+        transform: translate(-50%, -50%);
+        font-size: 18px;
+        padding: 2px;
+        box-sizing: content-box;
+        background: linear-gradient(180deg, #ff4e7a 0%, #ff3039 100%);
+        border-radius: 8px;
+        /* 阴影/01 */
+        box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.12);
+      }
+    }
+  }
+
+  .img-num-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+    .img-num {
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 700;
+      color: var(--LS-Primary-02, #ddb305);
+      margin-left: 8px;
+
+      &.color-blue-01 {
+        color: var(--LS-Primary-01, #2d87fa);
+      }
+    }
+  }
+  .main-text {
+    color: var(--LS-Gray-05, #83838f);
+  }
+}
+</style>
