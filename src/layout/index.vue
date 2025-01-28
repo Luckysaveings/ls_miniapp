@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import tabbar from "@/components/tabbar/index.vue";
-import NavBar from "@/components/nav-bar/index.vue";
-import { useCachedViewStoreHook } from "@/store/modules/cached-view";
 import { computed } from "vue";
+import { useRoute } from 'vue-router';
 
+import tabbar from "@/components/tabbar/index.vue";
+import { useCachedViewStoreHook } from "@/store/modules/cached-view";
+
+const route = useRoute();
+// 根据路由 meta 字段判断是否显示 Tabbar
+const showTabbar = computed(() => {
+  return route.meta.showTabbar ?? true; // 默认显示 Tabbar
+});
 const cachedViews = computed(() => {
   return useCachedViewStoreHook().cachedViewList;
 });
@@ -17,7 +23,7 @@ const cachedViews = computed(() => {
           <component :is="Component" />
         </keep-alive>
       </router-view>
-      <tabbar />
+      <tabbar v-if="showTabbar" />
     </van-config-provider>
   </div>
 </template>

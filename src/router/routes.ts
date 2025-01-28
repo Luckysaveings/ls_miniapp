@@ -1,5 +1,5 @@
-import Layout from "@/layout/index.vue";
 import type { RouteRecordRaw } from "vue-router";
+import Layout from "@/layout/index.vue";
 import Home from "@/views/home/index.vue";
 
 const routes: Array<RouteRecordRaw> = [
@@ -32,6 +32,34 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: "关于",
           noCache: true
+        }
+      },
+
+      {
+        path: "settings",
+        name: "Settings",
+        component: () => import("@/views/settings/index.vue"),
+        meta: {
+          title: "个人主页",
+          showTabbar: false
+        }
+      },
+      {
+        path: "deposit",
+        name: "Deposit",
+        component: () => import("@/views/deposit/index.vue"),
+        meta: {
+          title: "Deposit",
+          showTabbar: false
+        }
+      },
+      {
+        path: "deposit-history",
+        name: "DepositHistory",
+        component: () => import("@/views/deposit-history/index.vue"),
+        meta: {
+          title: "Deposit History",
+          showTabbar: false
         }
       }
     ]

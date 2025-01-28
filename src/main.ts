@@ -6,6 +6,8 @@ import "normalize.css/normalize.css";
 import "./styles/index.less";
 // tailwindcss
 import "./styles/tailwind.css";
+// vant
+import "vant/lib/index.css";
 // svg icon
 import "virtual:svg-icons-register";
 import App from "./App.vue";

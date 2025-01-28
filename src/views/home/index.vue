@@ -1,6 +1,7 @@
 <script setup lang="ts" name="Home">
 import liff from "@line/liff";
 import qs from "qs";
+import { useRouter } from "vue-router";
 import userAvatar from "@/assets/user-avatar.svg";
 import iconLanguage from "@/assets/icon-language.svg";
 import iconInfo from "@/assets/icon-info.svg";
@@ -9,6 +10,32 @@ import kaia2 from "@/assets/icon-kaia.svg";
 import iconGift from "@/assets/icon-gift.svg";
 import imgBadges from "@/assets/img-badges.svg";
 import imgPoints from "@/assets/img-points.svg";
+
+const router = useRouter();
+const showInfo = ref(false);
+const infoType = ref("");
+const infoIcon = ref("");
+const showBalanceInfo = (type: string) => {
+  showInfo.value = true;
+  infoType.value = type;
+  infoIcon.value = type === "USDT" ? ustd : kaia2;
+};
+const hiddenInfo = () => {
+  showInfo.value = false;
+};
+
+const balanceInfo = reactive({
+  USDT: {
+    balance: 1000,
+    savings: 10000,
+    drawRewards: 10
+  },
+  KAIA: {
+    balance: 1000,
+    savings: 10000,
+    drawRewards: 10
+  }
+});
 
 const userInfo = reactive({
   avatar: userAvatar,
@@ -56,6 +83,7 @@ const lineLoginLiff = async () => {
           :src="userInfo.avatar"
           round
           class="product-img"
+          @click="router.push('/settings')"
         />
         <div class="text-content">
           {{ userInfo.nickName }}
@@ -81,7 +109,12 @@ const lineLoginLiff = async () => {
                 class="van-img"
               />
               <span class="balance-item-txt">11.12K</span>
-              <van-icon :name="iconInfo" color="#A1A1AA" size="16px" />
+              <van-icon
+                :name="iconInfo"
+                color="#A1A1AA"
+                size="16px"
+                @click="showBalanceInfo('USDT')"
+              />
             </div>
             <div class="balance-item">
               <van-image
@@ -93,7 +126,12 @@ const lineLoginLiff = async () => {
                 class="van-img"
               />
               <span class="balance-item-txt">1.20K</span>
-              <van-icon :name="iconInfo" color="#A1A1AA" size="16px" />
+              <van-icon
+                :name="iconInfo"
+                color="#A1A1AA"
+                size="16px"
+                @click="showBalanceInfo('KAIA')"
+              />
             </div>
           </div>
         </div>
@@ -184,10 +222,103 @@ const lineLoginLiff = async () => {
     <button class="btn-add">
       <van-icon name="plus" size="24" color="#fff" />
     </button>
+
+    <van-overlay :show="showInfo" class-name="balance-dialog">
+      <div class="content-box">
+        <div class="balance-title">
+          <span>{{ infoType }} Balance</span>
+          <van-icon
+            name="close"
+            size="20"
+            color="#A1A1AA"
+            @click="hiddenInfo"
+          />
+        </div>
+
+        <div class="balance-content">
+          <div class="balance-row">
+            <span class="label">Balance</span>
+            <span class="value">
+              <van-image fit="cover" :src="infoIcon" round class="van-img" />
+              {{ balanceInfo[infoType].balance }}</span
+            >
+          </div>
+          <div class="balance-row">
+            <span class="label">Savings</span>
+            <span class="value">
+              <van-image fit="cover" :src="infoIcon" round class="van-img" />
+              {{ balanceInfo[infoType].savings }}</span
+            >
+          </div>
+          <div class="balance-row">
+            <span class="label">Draw Rewards</span>
+            <span class="value">
+              <van-image fit="cover" :src="infoIcon" round class="van-img" />
+              {{ balanceInfo[infoType].drawRewards }}</span
+            >
+          </div>
+        </div>
+        <div class="balance-footer">
+          <button class="btn-main" @click="hiddenInfo">Close</button>
+        </div>
+      </div>
+    </van-overlay>
   </div>
 </template>
 
 <style scoped lang="less">
+.balance-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .content-box {
+    box-sizing: content-box;
+    width: 314px;
+    height: 204px;
+    padding: 20px;
+    border-radius: 24px;
+    border: 3px solid var(--LS-Gray-07, #18181b);
+    background: #fff;
+    box-shadow: 0px 6px 0px 0px #18181b;
+
+    .balance-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 22px;
+      color: #18181b;
+      margin-bottom: 16px;
+    }
+    .balance-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-radius: 12px;
+      background: #f4f4f5;
+      padding: 12px;
+      margin: 16px auto;
+
+      .balance-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        line-height: 20px;
+        .value {
+          display: flex;
+          align-items: center;
+          .van-img {
+            width: 18px;
+            height: 18px;
+            border-radius: 100%;
+            margin-right: 6px;
+          }
+        }
+      }
+    }
+  }
+}
 .page-wrap {
   min-height: 100vh;
   background: linear-gradient(180deg, #fff9e1 0%, #fff 100%);
@@ -304,7 +435,7 @@ const lineLoginLiff = async () => {
   margin-top: 12px;
   border-radius: 24px;
   border: 3px solid var(--LS-Gray-07, #18181b);
-  background: var(--LS-Gray-01, #fff);
+  background: #fff;
   box-shadow: 0px 6px 0px 0px #18181b;
 
   .box-top {
@@ -312,16 +443,16 @@ const lineLoginLiff = async () => {
     flex-direction: column;
     align-items: center;
     border-radius: 12px;
-    border: 2px solid var(--LS-Gray-02, #f4f4f5);
+    border: 2px solid rgba(24, 24, 27, 0.04);
     padding: 12px 8px 10px 8px;
 
     .box-title {
       line-height: 20px;
-      color: var(--LS-Gray-05, #83838f);
+      color: #83838f;
       margin-bottom: 6px;
     }
     .box-num {
-      color: var(--LS-Secondary-Green-02, #00ba4d);
+      color: #00ba4d;
       font-family: "GenSenRounded2 TW";
       font-size: 32px;
       font-style: normal;
@@ -339,7 +470,7 @@ const lineLoginLiff = async () => {
     font-size: 16px;
 
     .center-label {
-      color: var(--LS-Gray-05, #83838f);
+      color: #83838f;
     }
 
     .time-inner {
@@ -354,11 +485,11 @@ const lineLoginLiff = async () => {
         padding: 6px;
         width: 30px;
         border-radius: 8px;
-        background: var(--ls-line-8, rgba(24, 24, 27, 0.08));
+        background: rgba(24, 24, 27, 0.08);
       }
       .colon {
         width: 16px;
-        color: var(--LS-Gray-05, #83838f);
+        color: #83838f;
         font-family: Nunito;
         font-weight: 700;
       }
@@ -376,7 +507,7 @@ const lineLoginLiff = async () => {
       height: 20px;
 
       border-radius: 24px;
-      background: var(--ls-line-4, rgba(24, 24, 27, 0.04));
+      background: rgba(24, 24, 27, 0.04);
 
       .percentage {
         border-radius: 24px;
