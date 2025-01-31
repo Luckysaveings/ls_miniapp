@@ -1,24 +1,24 @@
 <script setup lang="ts" name="Home">
-import liff from "@line/liff";
-import qs from "qs";
-import { useRouter } from "vue-router";
-import userAvatar from "@/assets/user-avatar.svg";
-import iconLanguage from "@/assets/icon-language.svg";
-import iconInfo from "@/assets/icon-info.svg";
-import ustd from "@/assets/icon-ustd.svg";
-import kaia2 from "@/assets/icon-kaia.svg";
-import iconGift from "@/assets/icon-gift.svg";
-import imgBadges from "@/assets/img-badges.svg";
-import imgPoints from "@/assets/img-points.svg";
+import liff from '@line/liff';
+import qs from 'qs';
+import { useRouter } from 'vue-router';
+import userAvatar from '@/assets/user-avatar.svg';
+import iconLanguage from '@/assets/icon-language.svg';
+import iconInfo from '@/assets/icon-info.svg';
+import ustd from '@/assets/icon-ustd.svg';
+import kaia2 from '@/assets/icon-kaia.svg';
+import iconGift from '@/assets/icon-gift.svg';
+import imgBadges from '@/assets/img-badges.svg';
+import imgPoints from '@/assets/img-points.svg';
 
 const router = useRouter();
 const showInfo = ref(false);
-const infoType = ref("");
-const infoIcon = ref("");
+const infoType = ref('');
+const infoIcon = ref('');
 const showBalanceInfo = (type: string) => {
   showInfo.value = true;
   infoType.value = type;
-  infoIcon.value = type === "USDT" ? ustd : kaia2;
+  infoIcon.value = type === 'USDT' ? ustd : kaia2;
 };
 const hiddenInfo = () => {
   showInfo.value = false;
@@ -28,32 +28,32 @@ const balanceInfo = reactive({
   USDT: {
     balance: 1000,
     savings: 10000,
-    drawRewards: 10
+    drawRewards: 10,
   },
   KAIA: {
     balance: 1000,
     savings: 10000,
-    drawRewards: 10
-  }
+    drawRewards: 10,
+  },
 });
 
 const userInfo = reactive({
   avatar: userAvatar,
-  nickName: "Arthorn"
+  nickName: 'Arthorn',
 });
 const time = ref(13600 * 1000);
-const formatTime = value => {
+const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
 };
 const lineLogin = () => {
-  console.log("click");
-  const line_auth = "https://access.line.me/oauth2/v2.1/authorize";
+  console.log('click');
+  const line_auth = 'https://access.line.me/oauth2/v2.1/authorize';
   const auth_params = {
-    response_type: "code",
-    client_id: "2006818858",
+    response_type: 'code',
+    client_id: '2006818858',
     redirect_uri: window.location.href, // 在LINE Developers Console上注册的回调 URL 的 URL 编码字符串。您可以添加任何查询参数。
-    state: "STATE", // 用于防止跨站点请求伪造的唯一字母数字字符串. 您的网络应用应为每个登录会话生成一个随机值。这不能是 URL 编码的字符串。
-    scope: "profile openid email" // 向用户请求的权限,查询范围可以看官网(https://developers.line.biz/en/docs/line-login/integrate-line-login/#scopes)
+    state: 'STATE', // 用于防止跨站点请求伪造的唯一字母数字字符串. 您的网络应用应为每个登录会话生成一个随机值。这不能是 URL 编码的字符串。
+    scope: 'profile openid email', // 向用户请求的权限,查询范围可以看官网(https://developers.line.biz/en/docs/line-login/integrate-line-login/#scopes)
   };
   // 这里使用了第三方库qs来处理参数
   const paramsString = qs.stringify(auth_params);
@@ -61,7 +61,7 @@ const lineLogin = () => {
   window.location.href = `${line_auth}?${paramsString}`;
 };
 const lineLoginLiff = async () => {
-  await liff.init({ liffId: "2006818858-1a2PrWjY" });
+  await liff.init({ liffId: '2006818858-1a2PrWjY' });
   if (!liff.isLoggedIn()) {
     liff.login();
   } else {
@@ -90,7 +90,10 @@ const lineLoginLiff = async () => {
         </div>
       </div>
       <div class="header-right">
-        <van-icon :name="iconLanguage" size="16" />
+        <van-icon
+          :name="iconLanguage"
+          size="16"
+        />
         <span class="current-language">EN</span>
       </div>
     </div>
@@ -147,18 +150,17 @@ const lineLoginLiff = async () => {
           <div class="box-center">
             <div class="center-label">Next draw open in</div>
             <div class="center-time">
-              <van-count-down :time="time" format="HH:mm:ss">
+              <van-count-down
+                :time="time"
+                format="HH:mm:ss"
+              >
                 <template #default="timeData">
                   <div class="time-inner">
                     <span class="block">{{ formatTime(timeData.hours) }}</span>
                     <span class="colon">:</span>
-                    <span class="block">{{
-                      formatTime(timeData.minutes)
-                    }}</span>
+                    <span class="block">{{ formatTime(timeData.minutes) }}</span>
                     <span class="colon">:</span>
-                    <span class="block">{{
-                      formatTime(timeData.seconds)
-                    }}</span>
+                    <span class="block">{{ formatTime(timeData.seconds) }}</span>
                   </div>
                 </template>
               </van-count-down>
@@ -176,7 +178,12 @@ const lineLoginLiff = async () => {
               />
             </div>
           </div>
-          <button class="btn-main" @click="lineLogin">Join Now</button>
+          <button
+            class="btn-main"
+            @click="lineLogin"
+          >
+            Join Now
+          </button>
         </div>
       </div>
 
@@ -214,16 +221,28 @@ const lineLoginLiff = async () => {
             </div>
           </div>
 
-          <button class="btn-main" @click="lineLoginLiff">Claim Now</button>
+          <button
+            class="btn-main"
+            @click="lineLoginLiff"
+          >
+            Claim Now
+          </button>
         </div>
       </div>
     </div>
 
     <button class="btn-add">
-      <van-icon name="plus" size="24" color="#fff" />
+      <van-icon
+        name="plus"
+        size="24"
+        color="#fff"
+      />
     </button>
 
-    <van-overlay :show="showInfo" class-name="balance-dialog">
+    <van-overlay
+      :show="showInfo"
+      class-name="balance-dialog"
+    >
       <div class="content-box">
         <div class="balance-title">
           <span>{{ infoType }} Balance</span>
@@ -239,27 +258,47 @@ const lineLoginLiff = async () => {
           <div class="balance-row">
             <span class="label">Balance</span>
             <span class="value">
-              <van-image fit="cover" :src="infoIcon" round class="van-img" />
+              <van-image
+                fit="cover"
+                :src="infoIcon"
+                round
+                class="van-img"
+              />
               {{ balanceInfo[infoType].balance }}</span
             >
           </div>
           <div class="balance-row">
             <span class="label">Savings</span>
             <span class="value">
-              <van-image fit="cover" :src="infoIcon" round class="van-img" />
+              <van-image
+                fit="cover"
+                :src="infoIcon"
+                round
+                class="van-img"
+              />
               {{ balanceInfo[infoType].savings }}</span
             >
           </div>
           <div class="balance-row">
             <span class="label">Draw Rewards</span>
             <span class="value">
-              <van-image fit="cover" :src="infoIcon" round class="van-img" />
+              <van-image
+                fit="cover"
+                :src="infoIcon"
+                round
+                class="van-img"
+              />
               {{ balanceInfo[infoType].drawRewards }}</span
             >
           </div>
         </div>
         <div class="balance-footer">
-          <button class="btn-main" @click="hiddenInfo">Close</button>
+          <button
+            class="btn-main"
+            @click="hiddenInfo"
+          >
+            Close
+          </button>
         </div>
       </div>
     </van-overlay>
@@ -453,7 +492,7 @@ const lineLoginLiff = async () => {
     }
     .box-num {
       color: #00ba4d;
-      font-family: "GenSenRounded2 TW";
+      font-family: 'GenSenRounded2 TW';
       font-size: 32px;
       font-style: normal;
       font-weight: 700;

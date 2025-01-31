@@ -1,87 +1,75 @@
 <template>
   <div class="page-wrap">
-    <!-- Avatar and Name Section -->
-    <div class="avatar-section">
-      <van-image round width="100" height="100" :src="userAvatar" />
-      <h2 class="username">Arthorn</h2>
-    </div>
+    <van-nav-bar
+      title="Deposit History"
+      left-arrow
+      @click-left="onClickLeft"
+      class="nav-bar-wrap"
+      :border="false"
+    >
+    </van-nav-bar>
 
-    <!-- Profile Information List -->
-    <van-cell-group class="info-group">
+    <van-cell-group :border="false">
       <van-cell
         :border="false"
-        title-class="title-class"
-        value-class="value-class"
-        title="Account Level"
-        value="Lv.0"
+        title="Deposit Address"
+        :value="depositAddress"
       />
       <van-cell
         :border="false"
-        title-class="title-class"
-        value-class="value-class"
-        title="Nickname"
-        value="Arthorn"
-        is-link
+        title="TXID"
+        :value="txid"
       />
       <van-cell
         :border="false"
-        title-class="title-class"
-        value-class="value-class"
-        title="User ID"
-        value="88888888"
-        @click="copyUserId"
+        title="Amount"
+        :value="amount"
+      />
+      <van-cell
+        :border="false"
+        title="Time"
+        :value="time"
+      />
+      <van-cell
+        title="State"
+        :border="false"
       >
-        <template #right-icon>
-          <van-icon name="aim" class="copy-icon" />
+        <template #value>
+          <span class="state-transferred">Transferred</span>
         </template>
       </van-cell>
-      <van-cell
-        :border="false"
-        title-class="title-class"
-        value-class="value-class"
-        title="Email"
-        value="arthorn@gmail.com"
-        is-link
-      />
     </van-cell-group>
 
-    <van-cell-group class="settings-group">
-      <van-cell :border="false" title="Terms of Use" is-link />
+    <van-cell-group class="mt-4">
       <van-cell
         :border="false"
-        title-class="title-class"
-        value-class="value-class"
-        title="Privacy Policy"
-        is-link
+        title="Deposit Address"
+        :value="depositAddress"
       />
-    </van-cell-group>
-
-    <van-cell-group>
       <van-cell
         :border="false"
-        title-class="title-class"
-        value-class="value-class"
-        title="Support"
-        value="care@luckysavings.io"
-        @click="copyEmail"
+        title="TXID"
+        :value="txid"
+      />
+      <van-cell
+        :border="false"
+        title="Amount"
+        :value="amount"
+      />
+      <van-cell
+        :border="false"
+        title="Time"
+        :value="time"
+      />
+      <van-cell
+        title="State"
+        :border="false"
       >
-        <template #right-icon>
-          <van-icon name="copy" class="copy-icon" />
+        <template #value>
+          <span class="state-waiting">Waiting</span>
         </template>
       </van-cell>
-      <van-cell
-        :border="false"
-        title-class="title-class"
-        value-class="value-class"
-        title="Version"
-        value="1.0.0"
-        is-link
-      />
     </van-cell-group>
-    <!-- Logout Button -->
-    <div class="logout-wrapper">
-      <div class="logout-button" @click="handleLogout">Log Out</div>
-    </div>
   </div>
 
   <van-toast
@@ -91,7 +79,11 @@
   >
     <template #message>
       <div class="toast-message">
-        <van-icon :name="checkCircle" size="24" color="red" />
+        <van-icon
+          :name="checkCircle"
+          size="24"
+          color="red"
+        />
         <span class="toast-text">{{ toastText }}</span>
       </div>
     </template>
@@ -99,26 +91,35 @@
 </template>
 
 <script setup>
-import { showToast } from "vant";
-import userAvatar from "@/assets/user-avatar.svg";
-import checkCircle from "@/assets/check-circle.svg";
+import { showToast } from 'vant';
+import userAvatar from '@/assets/user-avatar.svg';
+import checkCircle from '@/assets/check-circle.svg';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+const onClickLeft = () => {
+  router.back();
+};
+const depositAddress = '0xb5a8116592b4b4630b93d61ace006482b76d1e28';
+const txid = '0xb5a8116592b4b4630b93d61ace006482b76d1e28';
+const time = '2025/01/10 02:00:50';
+const amount = '+1000 KAIA';
 const show = ref(false);
-const toastText = ref("Copy Success");
+const toastText = ref('Copy Success');
 const copyEmail = () => {
-  navigator.clipboard.writeText("care@luckysavings.io");
-  toastText.value = "Email copied to clipboard";
+  navigator.clipboard.writeText('care@luckysavings.io');
+  toastText.value = 'Email copied to clipboard';
   show.value = true;
 };
 
 const copyUserId = () => {
-  navigator.clipboard.writeText("88888888");
-  toastText.value = "Copy Success";
+  navigator.clipboard.writeText('88888888');
+  toastText.value = 'Copy Success';
   show.value = true;
 };
 
 const handleLogout = () => {
-  toastText.value = "Logging out...";
+  toastText.value = 'Logging out...';
   show.value = true;
   // Add your logout logic here
 };
@@ -133,9 +134,23 @@ const handleLogout = () => {
 
 <style scoped lang="scss">
 .page-wrap {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #fff9e1 0%, #fff 100%);
-  padding: 32px 24px;
+  padding: 0px;
+  background: #fff !important;
+}
+.transaction-details {
+  padding: 16px;
+}
+
+.state-transferred {
+  color: #00b578;
+}
+
+.state-waiting {
+  color: #f5a623;
+}
+
+.mt-4 {
+  margin-top: 16px;
 }
 .title-class {
   font-size: 16px;

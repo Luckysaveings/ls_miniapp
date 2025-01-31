@@ -109,14 +109,7 @@ const handleLogout = () => {
 
 <style scoped lang="scss">
 .page-wrap {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #fff9e1 0%, #fff 100%);
-  // padding: 32px 24px;
-  color: #18181b;
-}
-.nav-bar-wrap {
-  background-color: transparent;
-  padding: 12px 16px;
+  padding: 0;
 }
 .deposit-content {
   display: flex;
