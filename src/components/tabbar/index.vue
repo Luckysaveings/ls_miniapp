@@ -1,5 +1,10 @@
 <template>
-  <van-tabbar v-model="active" :placeholder="true" :route="true" fixed>
+  <van-tabbar
+    v-model="active"
+    :placeholder="true"
+    :route="true"
+    fixed
+  >
     <van-tabbar-item
       v-for="(item, index) in tabbarData"
       :key="index"
@@ -12,30 +17,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive } from 'vue';
 
 const active = ref(0);
 const tabbarData = reactive([
   {
-    icon: "wap-home-o",
-    title: "Home",
+    icon: 'wap-home-o',
+    title: 'Home',
     to: {
-      name: "Home"
-    }
+      name: 'Home',
+    },
   },
   {
-    icon: "gem-o",
-    title: "工具",
+    icon: 'gem-o',
+    title: 'Pool',
     to: {
-      name: "Tools"
-    }
+      name: 'Pool',
+    },
   },
   {
-    icon: "user-o",
-    title: "关于",
+    icon: 'user-o',
+    title: '关于',
     to: {
-      name: "About"
-    }
-  }
+      name: 'About',
+    },
+  },
 ]);
 </script>

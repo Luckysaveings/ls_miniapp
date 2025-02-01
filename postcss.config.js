@@ -3,7 +3,6 @@ export default {
     tailwindcss: {},
     // 使用 cnjm-postcss-px-to-viewport 规避 postcss.plugin was deprecated 警告
     "cnjm-postcss-px-to-viewport": {
-      
       viewportWidth: 402, // 根据设计稿设定
       unitPrecision: 4, // 转化精度，转换后保留位数
       viewportUnit: "vmin", // 转换后的单位

@@ -54,6 +54,16 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: 'pool',
+        name: 'Pool',
+        component: () => import('@/views/pool/index.vue'),
+        meta: {
+          title: 'Pool',
+          showTabbar: true,
+          noCache: true,
+        },
+      },
+      {
         path: 'about',
         name: 'About',
         component: () => import('@/views/about/index.vue'),
