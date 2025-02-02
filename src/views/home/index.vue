@@ -7,7 +7,6 @@ import iconLanguage from '@/assets/icon-language.svg';
 import iconInfo from '@/assets/icon-info.svg';
 import ustd from '@/assets/icon-ustd.svg';
 import kaia2 from '@/assets/icon-kaia.svg';
-import iconGift from '@/assets/icon-gift.svg';
 import imgBadges from '@/assets/img-badges.svg';
 import imgPoints from '@/assets/img-points.svg';
 
@@ -166,18 +165,10 @@ const lineLoginLiff = async () => {
               </van-count-down>
             </div>
           </div>
-
-          <div class="box-progress">
-            <div class="progress-inner">
-              <div class="percentage" />
-              <van-icon
-                class="pivot"
-                :name="iconGift"
-                color="#FF4E7A "
-                size="26px"
-              />
-            </div>
-          </div>
+          <Progress
+            :percentage="55"
+            bg-color="#FF4E7A"
+          />
           <button
             class="btn-main"
             @click="lineLogin"
@@ -531,42 +522,6 @@ const lineLoginLiff = async () => {
         color: #83838f;
         font-family: Nunito;
         font-weight: 700;
-      }
-    }
-  }
-
-  .box-progress {
-    width: 100%;
-    height: 28px;
-    padding: 5px 0px;
-    margin: 10px 0 12px 0;
-
-    .progress-inner {
-      position: relative;
-      height: 20px;
-
-      border-radius: 24px;
-      background: rgba(24, 24, 27, 0.04);
-
-      .percentage {
-        border-radius: 24px;
-        background: linear-gradient(90deg, #10d260 0%, #65e01c 100%);
-        height: 100%;
-        width: 50%;
-      }
-      .pivot {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-
-        transform: translate(-50%, -50%);
-        font-size: 18px;
-        padding: 2px;
-        box-sizing: content-box;
-        background: linear-gradient(180deg, #ff4e7a 0%, #ff3039 100%);
-        border-radius: 8px;
-        /* 阴影/01 */
-        box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.12);
       }
     }
   }

@@ -1,9 +1,11 @@
 <script setup lang="ts" name="Pool">
-import iconGift from '@/assets/icon-gift.svg';
 import iconUsdt from '@/assets/icon-ustd.svg';
 import iconKaia from '@/assets/icon-kaia.svg';
 import userAvatar from '@/assets/user-avatar.svg';
 import GameplayDialog from './components/GameplayDialog.vue';
+import PreviousDialog from './components/PreviousWinners.vue';
+import Progress from '@/components/Progress.vue';
+
 const userInfo = reactive({
   avatar: userAvatar,
   nickName: 'Arthorn',
@@ -17,6 +19,14 @@ const showGameplay = () => {
     gameplayDialogRef.value.showGameplayContent(type);
   });
 };
+const previousDialogRef = ref(null);
+const showPreviousWinner = () => {
+  const type = selectedPool.value;
+  nextTick(() => {
+    previousDialogRef.value.showDialog(type);
+  });
+};
+
 const time = ref(13600 * 1000);
 const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
@@ -53,6 +63,12 @@ const withdrawInfo = ref({
   gasFee: 1.2,
   desc: `You can check all returns later in the wallet balance under the Home tab.`,
 });
+const showWithdrawDialog = () => {
+  showWithdraw.value = true;
+};
+const showDepositDialog = () => {
+  showDeposit.value = true;
+};
 const confirmWithdraw = () => {
   showWithdraw.value = false;
 };
@@ -85,6 +101,7 @@ const showReminderMsg = ref(false);
           class="img-header-right"
           src="@/assets/icon-msg-tip.svg"
           alt="msg-tip"
+          @click="showReminderMsg = true"
         />
         <img
           class="img-header-right"
@@ -134,19 +151,15 @@ const showReminderMsg = ref(false);
             </template>
           </van-count-down>
         </div>
-        <div class="box-progress">
-          <div class="progress-inner">
-            <div class="percentage" />
-            <van-icon
-              class="pivot"
-              :name="iconGift"
-              color="#FF4E7A "
-              size="26px"
-            />
-          </div>
-        </div>
+        <Progress
+          :percentage="75"
+          bg-color="#06C756"
+        />
         <van-divider class="divider" />
-        <div class="previous-winners">
+        <div
+          class="previous-winners"
+          @click="showPreviousWinner"
+        >
           <div class="previous-winners-left">
             <img
               class="img-jiangbei"
@@ -197,6 +210,16 @@ const showReminderMsg = ref(false);
         class="content-box bg-green jackpot-content"
         v-show="selectedPool === '2'"
       >
+        <img
+          class="module-inner-bg left-bg"
+          src="@/assets/icon-dollar-y.svg"
+          alt="dollar"
+        />
+        <img
+          class="module-inner-bg right-bg"
+          src="@/assets/icon-gift-r.svg"
+          alt="gift"
+        />
         <div class="content-item-title-wrap">
           <div class="text-grey content-item-title">
             <img
@@ -211,21 +234,10 @@ const showReminderMsg = ref(false);
           <span>$123,876</span>
           <span class="text-num-sub">/ $10,000</span>
         </div>
-
-        <div class="box-progress">
-          <div class="progress-inner">
-            <div
-              class="percentage"
-              style="background: #06c756"
-            />
-            <van-icon
-              class="pivot"
-              :name="iconGift"
-              size="26px"
-            />
-          </div>
-        </div>
-
+        <Progress
+          :percentage="65"
+          bg-color="#06c756"
+        />
         <div class="text-grey">Your tickets</div>
         <div class="ticket-box">
           <img
@@ -236,7 +248,10 @@ const showReminderMsg = ref(false);
           <div class="ticket-num">x100</div>
         </div>
         <van-divider class="divider" />
-        <div class="previous-winners">
+        <div
+          class="previous-winners"
+          @click="showPreviousWinner"
+        >
           <div class="previous-winners-left">
             <img
               class="img-jiangbei"
@@ -264,6 +279,7 @@ const showReminderMsg = ref(false);
           class="img-icon"
           src="@/assets/icon-info.svg"
           alt="info"
+          @click="showGameplay"
         />
       </div>
       <div
@@ -289,8 +305,18 @@ const showReminderMsg = ref(false);
           <div class="ticket-num">x100</div>
         </div>
         <div class="btn-wrap">
-          <button class="btn-main btn-withdraw">Withdraw</button>
-          <button class="btn-main">Deposit</button>
+          <button
+            class="btn-main btn-withdraw"
+            @click="showWithdrawDialog"
+          >
+            Withdraw
+          </button>
+          <button
+            class="btn-main"
+            @click="showDepositDialog"
+          >
+            Deposit
+          </button>
         </div>
       </div>
 
@@ -298,6 +324,16 @@ const showReminderMsg = ref(false);
         class="content-box bg-2 jackpot-content"
         v-show="selectedPool === '2'"
       >
+        <img
+          class="module-inner-bg left-bg"
+          src="@/assets/icon-dollar-y.svg"
+          alt="dollar"
+        />
+        <img
+          class="module-inner-bg right-bg"
+          src="@/assets/icon-gift-r.svg"
+          alt="gift"
+        />
         <div class="content-item-title-wrap">
           <div class="text-grey content-item-title">
             <img
@@ -308,30 +344,19 @@ const showReminderMsg = ref(false);
             Current prize pool
           </div>
         </div>
-        <div class="text-num">
+        <div class="text-num text-num-yellow">
           <img
             class="icon-kaia"
             src="@/assets/icon-kaia.svg"
             alt="kaia"
           />
-          <span> $123,876</span>
-          <span class="text-num-sub">/ $10,000</span>
+          <span>3,876</span>
+          <span class="text-num-sub">/ 10,000</span>
         </div>
-
-        <div class="box-progress">
-          <div class="progress-inner">
-            <div
-              class="percentage"
-              style="background: #fee719"
-            />
-            <van-icon
-              class="pivot"
-              :name="iconGift"
-              size="26px"
-            />
-          </div>
-        </div>
-
+        <Progress
+          :percentage="55"
+          bg-color="#fee719"
+        />
         <div class="text-grey">Your tickets</div>
         <div class="ticket-box">
           <img
@@ -342,7 +367,10 @@ const showReminderMsg = ref(false);
           <div class="ticket-num">x100</div>
         </div>
         <van-divider class="divider" />
-        <div class="previous-winners">
+        <div
+          class="previous-winners"
+          @click="showPreviousWinner"
+        >
           <div class="previous-winners-left">
             <img
               class="img-jiangbei"
@@ -353,15 +381,27 @@ const showReminderMsg = ref(false);
           </div>
           <van-icon name="arrow" />
         </div>
+
         <div class="btn-wrap margin-top-16">
-          <button class="btn-main btn-withdraw">Withdraw</button>
-          <button class="btn-main">Deposit</button>
+          <button
+            class="btn-main btn-withdraw"
+            @click="showWithdrawDialog"
+          >
+            Withdraw
+          </button>
+          <button
+            class="btn-main"
+            @click="showDepositDialog"
+          >
+            Deposit
+          </button>
         </div>
       </div>
     </div>
   </div>
   <!-- 弹窗 Daily Pool和10K Jackpot Gameplay -->
   <GameplayDialog ref="gameplayDialogRef" />
+  <PreviousDialog ref="previousDialogRef" />
   <!-- 弹窗 USD Deposit -->
   <van-overlay
     :show="showDeposit"
@@ -604,8 +644,9 @@ const showReminderMsg = ref(false);
   }
   .countdown-box {
     width: 100%;
-    border-radius: 14px;
     padding: 16px;
+    border-radius: 14px;
+    border: 1px solid var(--ls-line-4, rgba(24, 24, 27, 0.04));
     background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.9) 100%);
 
     :deep(.time-display) {
@@ -616,41 +657,6 @@ const showReminderMsg = ref(false);
         display: inline-block;
         width: 26px;
         opacity: 0.5;
-      }
-    }
-  }
-  .box-progress {
-    width: 100%;
-    height: 28px;
-    padding: 5px 0px;
-    margin: 10px 0 12px 0;
-
-    .progress-inner {
-      position: relative;
-      height: 20px;
-
-      border-radius: 24px;
-      background: rgba(24, 24, 27, 0.04);
-
-      .percentage {
-        border-radius: 24px;
-        background: #18181b;
-        height: 100%;
-        width: 50%;
-      }
-      .pivot {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-
-        transform: translate(-50%, -50%);
-        font-size: 18px;
-        padding: 2px;
-        box-sizing: content-box;
-        background: linear-gradient(180deg, #ff4e7a 0%, #ff3039 100%);
-        border-radius: 8px;
-        /* 阴影/01 */
-        box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.12);
       }
     }
   }
@@ -683,7 +689,20 @@ const showReminderMsg = ref(false);
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
 
+    .module-inner-bg {
+      position: absolute;
+      top: 10px;
+      width: 48px;
+      height: 48px;
+    }
+    .left-bg {
+      left: 20px;
+    }
+    .right-bg {
+      right: 20px;
+    }
     &.bg-green {
       background: linear-gradient(180deg, #e7fff1 0%, #fff 100%);
     }
@@ -692,6 +711,12 @@ const showReminderMsg = ref(false);
     }
     &.jackpot-content {
       padding-top: 0px;
+
+      .text-num {
+        &.text-num-yellow {
+          color: var(--LS-Primary-02, #ddb305);
+        }
+      }
     }
     .text-grey {
       color: #83838f;
