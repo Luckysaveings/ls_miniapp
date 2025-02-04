@@ -37,9 +37,10 @@
         @click="copyUserId"
       >
         <template #right-icon>
-          <van-icon
-            name="aim"
-            class="copy-icon"
+          <img
+            class="img-icon icon-copy"
+            src="@/assets/icon-copy.svg"
+            alt="copy"
           />
         </template>
       </van-cell>
@@ -50,6 +51,7 @@
         title="Email"
         value="arthorn@gmail.com"
         is-link
+        @click="router.push('/email')"
       />
     </van-cell-group>
 
@@ -78,9 +80,10 @@
         @click="copyEmail"
       >
         <template #right-icon>
-          <van-icon
-            name="copy"
-            class="copy-icon"
+          <img
+            class="img-icon icon-copy"
+            src="@/assets/icon-copy.svg"
+            alt="copy"
           />
         </template>
       </van-cell>
@@ -159,7 +162,8 @@
 import { showToast } from 'vant';
 import userAvatar from '@/assets/user-avatar.svg';
 import checkCircle from '@/assets/check-circle.svg';
-
+import { useRouter } from 'vue-router';
+const router = useRouter();
 const showVersion = ref(false);
 const version = ref('1.0.12');
 const hiddenVersion = () => {
@@ -228,7 +232,12 @@ const handleLogout = () => {
     font-weight: 500;
   }
 }
-
+.icon-copy {
+  width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  margin-top: 3px;
+}
 .info-group {
   margin-bottom: 12px;
 }

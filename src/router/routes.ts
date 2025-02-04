@@ -14,15 +14,7 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Home',
         component: Home,
         meta: {
-          title: '主页',
-        },
-      },
-      {
-        path: 'tools',
-        name: 'Tools',
-        component: () => import('@/views/tools/index.vue'),
-        meta: {
-          title: '工具',
+          title: 'Home',
         },
       },
       {
@@ -64,19 +56,29 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: 'about',
-        name: 'About',
-        component: () => import('@/views/about/index.vue'),
+        path: 'rewards',
+        name: 'Rewards',
+        component: () => import('@/views/rewards/index.vue'),
         meta: {
-          title: '关于',
+          title: 'Rewards',
+          showTabbar: true,
           noCache: true,
         },
       },
-
       {
-        path: 'settings',
-        name: 'Settings',
-        component: () => import('@/views/settings/index.vue'),
+        path: 'ranking',
+        name: 'Ranking',
+        component: () => import('@/views/ranking/index.vue'),
+        meta: {
+          title: 'Ranking',
+          showTabbar: false,
+          noCache: true,
+        },
+      },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/profile/index.vue'),
         meta: {
           title: '个人主页',
           showTabbar: false,

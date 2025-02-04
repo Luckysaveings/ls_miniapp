@@ -4,6 +4,7 @@
     :placeholder="true"
     :route="true"
     fixed
+    active-color="#E8C411"
   >
     <van-tabbar-item
       v-for="(item, index) in tabbarData"
@@ -29,17 +30,18 @@ const tabbarData = reactive([
     },
   },
   {
-    icon: 'gem-o',
+    icon: 'coupon',
     title: 'Pool',
+    badge: 5,
     to: {
       name: 'Pool',
     },
   },
   {
-    icon: 'user-o',
-    title: '关于',
+    icon: 'point-gift',
+    title: 'Rewards',
     to: {
-      name: 'About',
+      name: 'Rewards',
     },
   },
 ]);

@@ -1,4 +1,5 @@
 <script setup lang="ts" name="Pool">
+import { useRouter } from 'vue-router';
 import iconUsdt from '@/assets/icon-ustd.svg';
 import iconKaia from '@/assets/icon-kaia.svg';
 import userAvatar from '@/assets/user-avatar.svg';
@@ -6,6 +7,7 @@ import GameplayDialog from './components/GameplayDialog.vue';
 import PreviousDialog from './components/PreviousWinners.vue';
 import Progress from '@/components/Progress.vue';
 
+const router = useRouter();
 const userInfo = reactive({
   avatar: userAvatar,
   nickName: 'Arthorn',
@@ -32,21 +34,7 @@ const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
 };
 
-const lineLogin = () => {
-  console.log('click-pool');
-  const line_auth = 'https://access.line.me/oauth2/v2.1/authorize';
-  const auth_params = {
-    response_type: 'code',
-    client_id: '2006818858',
-    redirect_uri: window.location.href, // 在LINE Developers Console上注册的回调 URL 的 URL 编码字符串。您可以添加任何查询参数。
-    state: 'STATE', // 用于防止跨站点请求伪造的唯一字母数字字符串. 您的网络应用应为每个登录会话生成一个随机值。这不能是 URL 编码的字符串。
-    scope: 'profile openid email', // 向用户请求的权限,查询范围可以看官网(https://developers.line.biz/en/docs/line-login/integrate-line-login/#scopes)
-  };
-  // 这里使用了第三方库qs来处理参数
-  const paramsString = qs.stringify(auth_params);
-  console.log(line_auth, paramsString);
-  window.location.href = `${line_auth}?${paramsString}`;
-};
+const lineLogin = () => {};
 
 const showDeposit = ref(false);
 
@@ -90,7 +78,7 @@ const showReminderMsg = ref(false);
           :src="userInfo.avatar"
           round
           class="product-img"
-          @click="router.push('/settings')"
+          @click="router.push('/profile')"
         />
         <div class="text-content">
           {{ userInfo.nickName }}
@@ -566,48 +554,14 @@ const showReminderMsg = ref(false);
 
 <style scoped lang="scss">
 .page-wrap {
-  padding: 12px 16px;
+  padding: 0 16px 12px 16px;
 }
 
-// 头部样式
-.header {
-  display: flex;
-  justify-content: space-between;
-  margin: 12px 0;
-  height: 36px;
-  line-height: 36px;
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    margin-top: 16px;
-    margin-bottom: 16px;
-    .text-content {
-      margin-left: 16px;
-      font-size: 18px;
-      color: #18181b;
-    }
-  }
-
-  .header-right {
-    width: 39px;
-    box-sizing: content-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-
-    .img-header-right {
-      margin-right: 16px;
-      width: 24px;
-      height: 24px;
-    }
-  }
-}
 .content-box.token-select {
   display: flex;
   justify-content: space-between;
   margin-bottom: 16px;
+  margin-top: 0;
   padding: 8px;
 
   .token-btn {
@@ -628,20 +582,6 @@ const showReminderMsg = ref(false);
 }
 
 .module-item {
-  margin-bottom: 32px;
-
-  .module-title {
-    display: flex;
-    align-items: center;
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 22px;
-    margin-bottom: 12px;
-
-    .img-icon {
-      margin-left: 6px;
-    }
-  }
   .countdown-box {
     width: 100%;
     padding: 16px;
@@ -772,6 +712,9 @@ const showReminderMsg = ref(false);
         width: calc(50% - 6px);
 
         &.btn-withdraw {
+          box-sizing: content-box;
+          height: 40px;
+          line-height: 40px;
           color: #18181b;
           background: #fff;
           border: 2px solid var(--ls-line-12, rgba(24, 24, 27, 0.12));

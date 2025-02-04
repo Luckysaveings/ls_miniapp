@@ -1,16 +1,12 @@
-import {
-  createRouter,
-  createWebHashHistory,
-  type RouteLocationNormalized
-} from "vue-router";
-import routes from "./routes";
-import { useCachedViewStoreHook } from "@/store/modules/cached-view";
-import NProgress from "@/utils/progress";
-import setPageTitle from "@/utils/set-page-title";
+import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router';
+import routes from './routes';
+import { useCachedViewStoreHook } from '@/store/modules/cached-view';
+import NProgress from '@/utils/progress';
+import setPageTitle from '@/utils/set-page-title';
 
 const router = createRouter({
-  history: createWebHashHistory(),
-  routes
+  history: createWebHistory(),
+  routes,
 });
 
 export interface toRouteType extends RouteLocationNormalized {
@@ -31,6 +27,7 @@ router.beforeEach((to: toRouteType, from, next) => {
 
 router.afterEach(() => {
   NProgress.done();
+  window.scrollTo(0, 0);
 });
 
 export default router;

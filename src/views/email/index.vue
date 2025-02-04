@@ -37,6 +37,7 @@ const router = useRouter();
 const onClickRight = () => {
   // 保存邮箱后返回
   console.log('保存邮箱后返回');
+  router.back();
 };
 const onClickLeft = () => {
   router.back();

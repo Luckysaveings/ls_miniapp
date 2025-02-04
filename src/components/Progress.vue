@@ -5,7 +5,7 @@
         class="percentage"
         :style="{
           width: `${percentage}%`,
-          backgroundColor: bgColor,
+          background: bgColor,
         }"
       />
       <van-icon

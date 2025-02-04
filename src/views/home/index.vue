@@ -2,6 +2,7 @@
 import liff from '@line/liff';
 import qs from 'qs';
 import { useRouter } from 'vue-router';
+import { useClickAway } from '@vant/use';
 import userAvatar from '@/assets/user-avatar.svg';
 import iconLanguage from '@/assets/icon-language.svg';
 import iconInfo from '@/assets/icon-info.svg';
@@ -45,29 +46,45 @@ const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
 };
 const lineLogin = () => {
-  console.log('click');
-  const line_auth = 'https://access.line.me/oauth2/v2.1/authorize';
-  const auth_params = {
-    response_type: 'code',
-    client_id: '2006818858',
-    redirect_uri: window.location.href, // 在LINE Developers Console上注册的回调 URL 的 URL 编码字符串。您可以添加任何查询参数。
-    state: 'STATE', // 用于防止跨站点请求伪造的唯一字母数字字符串. 您的网络应用应为每个登录会话生成一个随机值。这不能是 URL 编码的字符串。
-    scope: 'profile openid email', // 向用户请求的权限,查询范围可以看官网(https://developers.line.biz/en/docs/line-login/integrate-line-login/#scopes)
-  };
-  // 这里使用了第三方库qs来处理参数
-  const paramsString = qs.stringify(auth_params);
-  console.log(line_auth, paramsString);
-  window.location.href = `${line_auth}?${paramsString}`;
+  // console.log('click');
+  // const line_auth = 'https://access.line.me/oauth2/v2.1/authorize';
+  // const auth_params = {
+  //   response_type: 'code',
+  //   client_id: '2006818858',
+  //   redirect_uri: window.location.href, // 在LINE Developers Console上注册的回调 URL 的 URL 编码字符串。您可以添加任何查询参数。
+  //   state: 'STATE', // 用于防止跨站点请求伪造的唯一字母数字字符串. 您的网络应用应为每个登录会话生成一个随机值。这不能是 URL 编码的字符串。
+  //   scope: 'profile openid email', // 向用户请求的权限,查询范围可以看官网(https://developers.line.biz/en/docs/line-login/integrate-line-login/#scopes)
+  // };
+  // // 这里使用了第三方库qs来处理参数
+  // const paramsString = qs.stringify(auth_params);
+  // console.log(line_auth, paramsString);
+  // window.location.href = `${line_auth}?${paramsString}`;
 };
 const lineLoginLiff = async () => {
-  await liff.init({ liffId: '2006818858-1a2PrWjY' });
-  if (!liff.isLoggedIn()) {
-    liff.login();
-  } else {
-    const DecodedToken = await liff.getDecodedIDToken();
-    const profile = await liff.getProfile();
-    console.log(DecodedToken, profile);
+  // await liff.init({ liffId: '2006818858-1a2PrWjY' });
+  // if (!liff.isLoggedIn()) {
+  //   liff.login();
+  // } else {
+  //   const DecodedToken = await liff.getDecodedIDToken();
+  //   const profile = await liff.getProfile();
+  //   console.log(DecodedToken, profile);
+  // }
+};
+const popoverShow = ref(false);
+const popoverRef = ref();
+const popoverBtnRef = ref();
+const handlePopover = () => {
+  popoverShow.value = !popoverShow.value;
+};
+useClickAway([popoverRef, popoverBtnRef], () => {
+  if (popoverShow.value === true) {
+    popoverShow.value = false;
   }
+});
+const handlePopoverItem = (type: string) => {
+  console.log('handlePopoverItem', type);
+  // popoverShow.value = false;
+  router.push(`/${type}`);
 };
 </script>
 
@@ -82,7 +99,7 @@ const lineLoginLiff = async () => {
           :src="userInfo.avatar"
           round
           class="product-img"
-          @click="router.push('/settings')"
+          @click="router.push('/profile')"
         />
         <div class="text-content">
           {{ userInfo.nickName }}
@@ -97,7 +114,7 @@ const lineLoginLiff = async () => {
       </div>
     </div>
     <div class="content">
-      <div class="balance-wrap">
+      <div class="content-box-yellow">
         <div class="inner-color">
           <div class="balance-title">Wallet Balance</div>
           <div class="balance-content">
@@ -167,11 +184,11 @@ const lineLoginLiff = async () => {
           </div>
           <Progress
             :percentage="55"
-            bg-color="#FF4E7A"
+            bg-color="linear-gradient(90deg, #10D260 0%, #65E01C 100%)"
           />
           <button
             class="btn-main"
-            @click="lineLogin"
+            @click="router.push('/pool')"
           >
             Join Now
           </button>
@@ -214,22 +231,65 @@ const lineLoginLiff = async () => {
 
           <button
             class="btn-main"
-            @click="lineLoginLiff"
+            @click="router.push('/rewards')"
           >
             Claim Now
           </button>
         </div>
       </div>
     </div>
-
-    <button class="btn-add">
+    <div
+      ref="popoverRef"
+      class="popover-wrap"
+      v-show="popoverShow"
+    >
+      <div class="popover-content">
+        <div
+          class="popover-item"
+          @click="handlePopoverItem('deposit')"
+        >
+          <img
+            class="popover-img"
+            src="@/assets/img-deposit.svg"
+            alt="deposit"
+          />
+          <span class="popover-text">Deposit</span>
+        </div>
+        <div
+          class="popover-item"
+          @click="handlePopoverItem('withdraw')"
+        >
+          <img
+            class="popover-img"
+            src="@/assets/img-withdraw.svg"
+            alt="withdraw"
+          />
+          <span class="popover-text">Withdraw</span>
+        </div>
+        <div
+          class="popover-item"
+          @click="handlePopoverItem('swap')"
+        >
+          <img
+            class="popover-img"
+            src="@/assets/img-swap.svg"
+            alt="swap"
+          />
+          <span class="popover-text">Swap</span>
+        </div>
+      </div>
+    </div>
+    <button
+      ref="popoverBtnRef"
+      class="btn-add"
+      @click="handlePopover"
+    >
       <van-icon
         name="plus"
         size="24"
         color="#fff"
       />
     </button>
-
     <van-overlay
       :show="showInfo"
       class-name="balance-dialog"
@@ -358,6 +418,59 @@ const lineLoginLiff = async () => {
   color: #18181b;
   font-weight: 500;
   font-size: 14px;
+
+  .header {
+    .header-right {
+      padding: 0px 12px;
+      border-radius: 10px;
+      border: 2px solid var(--ls-line-12, rgba(24, 24, 27, 0.12));
+    }
+  }
+}
+.popover-wrap {
+  position: fixed;
+  right: 20px;
+  bottom: 120px;
+  width: 160px;
+  padding: 6px;
+  border-radius: 20px;
+  background: var(--LS-Gray-07, #18181b);
+
+  /* 阴影/01 */
+  box-shadow: 0px 3px 9px 0px rgba(0, 0, 0, 0.12);
+
+  .popover-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    height: 32px;
+    box-sizing: content-box;
+    line-height: 32px;
+    font-size: 14px;
+    color: #fff;
+    background: #212124;
+    margin-bottom: 4px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .popover-img {
+      width: 32px;
+      height: 32px;
+      margin-right: 10px;
+      border-radius: 10px;
+    }
+    .popover-text {
+      flex: 1;
+      color: var(--LS-Gray-01, #fff);
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 22px;
+      text-align: left;
+    }
+  }
 }
 .btn-add {
   position: fixed;
@@ -368,41 +481,6 @@ const lineLoginLiff = async () => {
   background: var(--LS-Gray-07, #18181b);
   border-radius: 50%;
   z-index: 999;
-}
-.header {
-  display: flex;
-  justify-content: space-between;
-  margin: 12px 0;
-  height: 36px;
-  line-height: 36px;
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    margin-top: 16px;
-    margin-bottom: 16px;
-    .text-content {
-      margin-left: 16px;
-      font-size: 18px;
-      color: #18181b;
-    }
-  }
-
-  .header-right {
-    width: 39px;
-    box-sizing: content-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-radius: 10px;
-    border: 2px solid var(--ls-line-12, rgba(24, 24, 27, 0.12));
-
-    .current-language {
-      margin-left: 4px;
-      line-height: 20px; /* 142.857% */
-    }
-  }
 }
 
 .space-h-16 {
@@ -415,7 +493,10 @@ const lineLoginLiff = async () => {
   line-height: 22px; /* 122.222% */
   color: #18181b;
 }
-.balance-wrap {
+.content {
+  margin-top: 8px;
+}
+.content-box-yellow {
   box-sizing: content-box;
   padding: 16px;
   border-radius: 24px;
@@ -423,8 +504,7 @@ const lineLoginLiff = async () => {
   background: var(--LS-Primary-01, #fee719);
   box-shadow: 0px 6px 0px 0px #ddb305;
   .inner-color {
-    padding: 12px 16px;
-    height: 84px;
+    padding: 12px 16px 16px 16px;
     border-radius: 16px;
     background-color: #fff;
 
@@ -452,6 +532,7 @@ const lineLoginLiff = async () => {
         .balance-item-txt {
           margin: 0 6px;
           font-size: 20px;
+          line-height: 24px;
           font-weight: 700;
           color: #3f3f46;
         }
