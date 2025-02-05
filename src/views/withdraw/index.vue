@@ -9,10 +9,7 @@
       :border="false"
     >
       <template #right>
-        <van-icon
-          :name="iconScan"
-          size="24"
-        />
+        <van-icon :name="iconScan" size="24" />
       </template>
     </van-nav-bar>
 
@@ -26,10 +23,7 @@
             :class="{ active: selectedToken === 'USDT' }"
             @click="selectedToken = 'USDT'"
           >
-            <img
-              src="@/assets/icon-ustd.svg"
-              alt="USDT"
-            />
+            <img src="@/assets/icon-ustd.svg" alt="USDT" />
             USDT
           </div>
           <div
@@ -37,10 +31,7 @@
             :class="{ active: selectedToken === 'KAIA' }"
             @click="selectedToken = 'KAIA'"
           >
-            <img
-              src="@/assets/icon-kaia.svg"
-              alt="KAIA"
-            />
+            <img src="@/assets/icon-kaia.svg" alt="KAIA" />
             KAIA
           </div>
         </div>
@@ -66,17 +57,9 @@
             <span class="item-value">{{ available }} USDT</span>
           </div>
         </div>
-        <van-field
-          v-model="amount"
-          placeholder="0.00"
-          class="custom-field"
-        >
+        <van-field v-model="amount" placeholder="0.00" class="custom-field">
           <template #right-icon>
-            <span
-              class="max-btn"
-              @click="setMaxAmount"
-              >Max</span
-            >
+            <span class="max-btn" @click="setMaxAmount">Max</span>
           </template>
         </van-field>
       </div>
@@ -91,22 +74,12 @@
       <!-- 提现地址历史 -->
       <div class="history-section">
         <div class="history-title">
-          <van-icon
-            name="clock-o"
-            size="24px"
-          />
+          <van-icon name="clock-o" size="24px" />
           Withdraw Address
         </div>
         <div class="no-history">
-          <div
-            class="list-wrap"
-            v-if="withdrawList.length > 0"
-          >
-            <div
-              class="list-item"
-              v-for="item in withdrawList"
-              :key="item.id"
-            >
+          <div class="list-wrap" v-if="withdrawList.length > 0">
+            <div class="list-item" v-for="item in withdrawList" :key="item.id">
               <div class="list-item-label">
                 <img
                   src="@/assets/icon-wallet.svg"
@@ -141,19 +114,11 @@
     </div>
   </div>
 
-  <van-overlay
-    :show="showInfo"
-    class-name="custom-dialog"
-  >
+  <van-overlay :show="showInfo" class-name="custom-dialog">
     <div class="content-box">
       <div class="dialog-title">
         <span>Withdraw</span>
-        <van-icon
-          name="close"
-          size="20"
-          color="#A1A1AA"
-          @click="hiddenInfo"
-        />
+        <van-icon name="cross" size="20" color="#A1A1AA" @click="hiddenInfo" />
       </div>
 
       <div class="dialog-content">
@@ -171,32 +136,21 @@
         </div>
       </div>
       <div class="dialog-footer">
-        <button
-          class="btn-main"
-          @click="confirmWithdraw"
-        >
-          Confirm
-        </button>
+        <button class="btn-main" @click="confirmWithdraw">Confirm</button>
         <div class="warning-text">
-          <img
-            src="@/assets/icon-warning.svg"
-            alt="warning"
-          />
+          <img src="@/assets/icon-warning.svg" alt="warning" />
           <span> Once confirmed,there is no retracting </span>
         </div>
       </div>
     </div>
   </van-overlay>
 
-  <van-overlay
-    :show="showInfoStatus"
-    class-name="custom-dialog"
-  >
+  <van-overlay :show="showInfoStatus" class-name="custom-dialog">
     <div class="content-box">
       <div class="dialog-title">
         <span></span>
         <van-icon
-          name="close"
+          name="cross"
           size="20"
           color="#A1A1AA"
           @click="hiddenInfoStatus"
@@ -217,8 +171,14 @@
           class="img-status"
         />
         <div class="status-bottom">
-          <span class="item-status">{{ infoStatus === 'success' ? 'Withdraw Success' : 'Withdraw Failed' }}</span>
-          <span class="item-desc">{{ infoStatus === 'success' ? 'Withdrawal success please check your wallet.' : 'Please try again' }}</span>
+          <span class="item-status">{{
+            infoStatus === "success" ? "Withdraw Success" : "Withdraw Failed"
+          }}</span>
+          <span class="item-desc">{{
+            infoStatus === "success"
+              ? "Withdrawal success please check your wallet."
+              : "Please try again"
+          }}</span>
         </div>
       </div>
       <div class="dialog-footer">
@@ -241,11 +201,7 @@
   >
     <template #message>
       <div class="toast-message">
-        <van-icon
-          :name="checkCircle"
-          size="24"
-          color="red"
-        />
+        <van-icon :name="checkCircle" size="24" color="red" />
         <span class="toast-text">{{ toastText }}</span>
       </div>
     </template>
@@ -253,19 +209,19 @@
 </template>
 
 <script setup name="Withdraw">
-import { computed } from 'vue';
-import { showToast } from 'vant';
-import iconHistory from '@/assets/icon-history.svg';
-import iconScan from '@/assets/icon-scan.svg';
-import iconEmpty from '@/assets/icon-empty.svg';
-import checkCircle from '@/assets/check-circle.svg';
-import { useRouter } from 'vue-router';
+import { computed } from "vue";
+import { showToast } from "vant";
+import iconHistory from "@/assets/icon-history.svg";
+import iconScan from "@/assets/icon-scan.svg";
+import iconEmpty from "@/assets/icon-empty.svg";
+import checkCircle from "@/assets/check-circle.svg";
+import { useRouter } from "vue-router";
 const router = useRouter();
 const showInfo = ref(false);
 const showInfoStatus = ref(false);
-const infoStatus = ref('');
+const infoStatus = ref("");
 const onClickRight = () => {
-  router.push('/page-history');
+  router.push("/page-history");
 };
 const onClickLeft = () => {
   router.back();
@@ -273,10 +229,10 @@ const onClickLeft = () => {
 const isValidNext = computed(() => {
   return address.value && amount.value;
 });
-const selectedToken = ref('USDT');
-const address = ref('');
-const amount = ref('');
-const available = ref('1,120');
+const selectedToken = ref("USDT");
+const address = ref("");
+const amount = ref("");
+const available = ref("1,120");
 
 const setMaxAmount = () => {
   amount.value = available.value;
@@ -287,12 +243,12 @@ const isValid = computed(() => {
 });
 
 const show = ref(false);
-const toastText = ref('Copy Success');
+const toastText = ref("Copy Success");
 
 const withdrawList = ref([
-  { address: '6xvni1...dyEfW7', time: 'Used 1 days ago ', id: 1 },
-  { address: '6xvni1...dyEfW7', time: 'Used 1 days ago ', id: 2 },
-  { address: '6xvni1...dyEfW7', time: 'Used 1 days ago ', id: 3 },
+  { address: "6xvni1...dyEfW7", time: "Used 1 days ago ", id: 1 },
+  { address: "6xvni1...dyEfW7", time: "Used 1 days ago ", id: 2 },
+  { address: "6xvni1...dyEfW7", time: "Used 1 days ago ", id: 3 }
 ]);
 
 const handleNext = () => {
@@ -310,10 +266,10 @@ const hiddenInfoStatus = () => {
 };
 const confirmStatus = () => {
   showInfoStatus.value = false;
-  if (infoStatus.value === 'success') {
-    console.log('success');
+  if (infoStatus.value === "success") {
+    console.log("success");
   } else {
-    console.log('error');
+    console.log("error");
   }
 };
 </script>

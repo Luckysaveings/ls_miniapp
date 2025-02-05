@@ -1,15 +1,8 @@
 {
-  "name": "vue3-h5-template",
-  "homepage": "https://yulimchen.github.io/vue3-h5-template/",
-  "version": "0.7.0",
+  "name": "LuckySavings",
+  "homepage": "https://gitee.com/mxrc/luckysaving",
+  "version": "1.0.0",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yulimchen/vue3-h5-template.git"
-  },
-  "bugs": {
-    "url": "https://github.com/yulimchen/vue3-h5-template/issues"
-  },
   "engines": {
     "node": ">= 18",
     "pnpm": ">= 9"

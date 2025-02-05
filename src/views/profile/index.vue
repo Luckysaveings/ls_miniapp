@@ -2,12 +2,7 @@
   <div class="page-wrap">
     <!-- Avatar and Name Section -->
     <div class="avatar-section">
-      <van-image
-        round
-        width="100"
-        height="100"
-        :src="userAvatar"
-      />
+      <van-image round width="100" height="100" :src="userAvatar" />
       <h2 class="username">Arthorn</h2>
     </div>
 
@@ -56,11 +51,7 @@
     </van-cell-group>
 
     <van-cell-group class="settings-group">
-      <van-cell
-        :border="false"
-        title="Terms of Use"
-        is-link
-      />
+      <van-cell :border="false" title="Terms of Use" is-link />
       <van-cell
         :border="false"
         title-class="title-class"
@@ -99,24 +90,16 @@
     </van-cell-group>
     <!-- Logout Button -->
     <div class="logout-wrapper">
-      <div
-        class="logout-button"
-        @click="handleLogout"
-      >
-        Log Out
-      </div>
+      <div class="logout-button" @click="handleLogout">Log Out</div>
     </div>
   </div>
 
-  <van-overlay
-    :show="showVersion"
-    class-name="custom-dialog"
-  >
+  <van-overlay :show="showVersion" class-name="custom-dialog">
     <div class="content-box">
       <div class="dialog-title">
         <span>Version</span>
         <van-icon
-          name="close"
+          name="cross"
           size="20"
           color="#A1A1AA"
           @click="hiddenVersion"
@@ -124,16 +107,8 @@
       </div>
 
       <div class="dialog-content">
-        <img
-          src="@/assets/img-icon.svg"
-          alt="version"
-          class="version-icon"
-        />
-        <img
-          src="@/assets/img-appname.svg"
-          alt="appname"
-          class="app-name"
-        />
+        <img src="@/assets/img-icon.svg" alt="version" class="version-icon" />
+        <img src="@/assets/img-appname.svg" alt="appname" class="app-name" />
         <div class="version-text">
           <span>Version: {{ version }}</span>
         </div>
@@ -147,11 +122,7 @@
   >
     <template #message>
       <div class="toast-message">
-        <van-icon
-          :name="checkCircle"
-          size="24"
-          color="red"
-        />
+        <van-icon :name="checkCircle" size="24" color="red" />
         <span class="toast-text">{{ toastText }}</span>
       </div>
     </template>
@@ -159,32 +130,32 @@
 </template>
 
 <script setup>
-import { showToast } from 'vant';
-import userAvatar from '@/assets/user-avatar.svg';
-import checkCircle from '@/assets/check-circle.svg';
-import { useRouter } from 'vue-router';
+import { showToast } from "vant";
+import userAvatar from "@/assets/user-avatar.svg";
+import checkCircle from "@/assets/check-circle.svg";
+import { useRouter } from "vue-router";
 const router = useRouter();
 const showVersion = ref(false);
-const version = ref('1.0.12');
+const version = ref("1.0.12");
 const hiddenVersion = () => {
   showVersion.value = false;
 };
 const show = ref(false);
-const toastText = ref('Copy Success');
+const toastText = ref("Copy Success");
 const copyEmail = () => {
-  navigator.clipboard.writeText('care@luckysavings.io');
-  toastText.value = 'Email copied to clipboard';
+  navigator.clipboard.writeText("care@luckysavings.io");
+  toastText.value = "Email copied to clipboard";
   show.value = true;
 };
 
 const copyUserId = () => {
-  navigator.clipboard.writeText('88888888');
-  toastText.value = 'Copy Success';
+  navigator.clipboard.writeText("88888888");
+  toastText.value = "Copy Success";
   show.value = true;
 };
 
 const handleLogout = () => {
-  toastText.value = 'Logging out...';
+  toastText.value = "Logging out...";
   show.value = true;
   // Add your logout logic here
 };

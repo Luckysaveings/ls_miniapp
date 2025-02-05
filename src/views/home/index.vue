@@ -1,24 +1,24 @@
 <script setup lang="ts" name="Home">
-import liff from '@line/liff';
-import qs from 'qs';
-import { useRouter } from 'vue-router';
-import { useClickAway } from '@vant/use';
-import userAvatar from '@/assets/user-avatar.svg';
-import iconLanguage from '@/assets/icon-language.svg';
-import iconInfo from '@/assets/icon-info.svg';
-import ustd from '@/assets/icon-ustd.svg';
-import kaia2 from '@/assets/icon-kaia.svg';
-import imgBadges from '@/assets/img-badges.svg';
-import imgPoints from '@/assets/img-points.svg';
+import liff from "@line/liff";
+import qs from "qs";
+import { useRouter } from "vue-router";
+import { useClickAway } from "@vant/use";
+import userAvatar from "@/assets/user-avatar.svg";
+import iconLanguage from "@/assets/icon-language.svg";
+import iconInfo from "@/assets/icon-info.svg";
+import ustd from "@/assets/icon-ustd.svg";
+import kaia2 from "@/assets/icon-kaia.svg";
+import imgBadges from "@/assets/img-badges.svg";
+import imgPoints from "@/assets/img-points.svg";
 
 const router = useRouter();
 const showInfo = ref(false);
-const infoType = ref('');
-const infoIcon = ref('');
+const infoType = ref("");
+const infoIcon = ref("");
 const showBalanceInfo = (type: string) => {
   showInfo.value = true;
   infoType.value = type;
-  infoIcon.value = type === 'USDT' ? ustd : kaia2;
+  infoIcon.value = type === "USDT" ? ustd : kaia2;
 };
 const hiddenInfo = () => {
   showInfo.value = false;
@@ -28,21 +28,21 @@ const balanceInfo = reactive({
   USDT: {
     balance: 1000,
     savings: 10000,
-    drawRewards: 10,
+    drawRewards: 10
   },
   KAIA: {
     balance: 1000,
     savings: 10000,
-    drawRewards: 10,
-  },
+    drawRewards: 10
+  }
 });
 
 const userInfo = reactive({
   avatar: userAvatar,
-  nickName: 'Arthorn',
+  nickName: "Arthorn"
 });
 const time = ref(13600 * 1000);
-const formatTime = (value) => {
+const formatTime = value => {
   return value < 10 ? `0${value}` : value;
 };
 const lineLogin = () => {
@@ -82,7 +82,7 @@ useClickAway([popoverRef, popoverBtnRef], () => {
   }
 });
 const handlePopoverItem = (type: string) => {
-  console.log('handlePopoverItem', type);
+  console.log("handlePopoverItem", type);
   // popoverShow.value = false;
   router.push(`/${type}`);
 };
@@ -106,10 +106,7 @@ const handlePopoverItem = (type: string) => {
         </div>
       </div>
       <div class="header-right">
-        <van-icon
-          :name="iconLanguage"
-          size="16"
-        />
+        <van-icon :name="iconLanguage" size="16" />
         <span class="current-language">EN</span>
       </div>
     </div>
@@ -166,17 +163,18 @@ const handlePopoverItem = (type: string) => {
           <div class="box-center">
             <div class="center-label">Next draw open in</div>
             <div class="center-time">
-              <van-count-down
-                :time="time"
-                format="HH:mm:ss"
-              >
+              <van-count-down :time="time" format="HH:mm:ss">
                 <template #default="timeData">
                   <div class="time-inner">
                     <span class="block">{{ formatTime(timeData.hours) }}</span>
                     <span class="colon">:</span>
-                    <span class="block">{{ formatTime(timeData.minutes) }}</span>
+                    <span class="block">{{
+                      formatTime(timeData.minutes)
+                    }}</span>
                     <span class="colon">:</span>
-                    <span class="block">{{ formatTime(timeData.seconds) }}</span>
+                    <span class="block">{{
+                      formatTime(timeData.seconds)
+                    }}</span>
                   </div>
                 </template>
               </van-count-down>
@@ -186,10 +184,7 @@ const handlePopoverItem = (type: string) => {
             :percentage="55"
             bg-color="linear-gradient(90deg, #10D260 0%, #65E01C 100%)"
           />
-          <button
-            class="btn-main"
-            @click="router.push('/pool')"
-          >
+          <button class="btn-main" @click="router.push('/pool')">
             Join Now
           </button>
         </div>
@@ -229,25 +224,15 @@ const handlePopoverItem = (type: string) => {
             </div>
           </div>
 
-          <button
-            class="btn-main"
-            @click="router.push('/rewards')"
-          >
+          <button class="btn-main" @click="router.push('/rewards')">
             Claim Now
           </button>
         </div>
       </div>
     </div>
-    <div
-      ref="popoverRef"
-      class="popover-wrap"
-      v-show="popoverShow"
-    >
+    <div ref="popoverRef" class="popover-wrap" v-show="popoverShow">
       <div class="popover-content">
-        <div
-          class="popover-item"
-          @click="handlePopoverItem('deposit')"
-        >
+        <div class="popover-item" @click="handlePopoverItem('deposit')">
           <img
             class="popover-img"
             src="@/assets/img-deposit.svg"
@@ -255,10 +240,7 @@ const handlePopoverItem = (type: string) => {
           />
           <span class="popover-text">Deposit</span>
         </div>
-        <div
-          class="popover-item"
-          @click="handlePopoverItem('withdraw')"
-        >
+        <div class="popover-item" @click="handlePopoverItem('withdraw')">
           <img
             class="popover-img"
             src="@/assets/img-withdraw.svg"
@@ -266,39 +248,21 @@ const handlePopoverItem = (type: string) => {
           />
           <span class="popover-text">Withdraw</span>
         </div>
-        <div
-          class="popover-item"
-          @click="handlePopoverItem('swap')"
-        >
-          <img
-            class="popover-img"
-            src="@/assets/img-swap.svg"
-            alt="swap"
-          />
+        <div class="popover-item" @click="handlePopoverItem('swap')">
+          <img class="popover-img" src="@/assets/img-swap.svg" alt="swap" />
           <span class="popover-text">Swap</span>
         </div>
       </div>
     </div>
-    <button
-      ref="popoverBtnRef"
-      class="btn-add"
-      @click="handlePopover"
-    >
-      <van-icon
-        name="plus"
-        size="24"
-        color="#fff"
-      />
+    <button ref="popoverBtnRef" class="btn-add" @click="handlePopover">
+      <van-icon name="plus" size="24" color="#fff" />
     </button>
-    <van-overlay
-      :show="showInfo"
-      class-name="balance-dialog"
-    >
+    <van-overlay :show="showInfo" class-name="balance-dialog">
       <div class="content-box">
         <div class="balance-title">
           <span>{{ infoType }} Balance</span>
           <van-icon
-            name="close"
+            name="cross"
             size="20"
             color="#A1A1AA"
             @click="hiddenInfo"
@@ -309,47 +273,27 @@ const handlePopoverItem = (type: string) => {
           <div class="balance-row">
             <span class="label">Balance</span>
             <span class="value">
-              <van-image
-                fit="cover"
-                :src="infoIcon"
-                round
-                class="van-img"
-              />
+              <van-image fit="cover" :src="infoIcon" round class="van-img" />
               {{ balanceInfo[infoType].balance }}</span
             >
           </div>
           <div class="balance-row">
             <span class="label">Savings</span>
             <span class="value">
-              <van-image
-                fit="cover"
-                :src="infoIcon"
-                round
-                class="van-img"
-              />
+              <van-image fit="cover" :src="infoIcon" round class="van-img" />
               {{ balanceInfo[infoType].savings }}</span
             >
           </div>
           <div class="balance-row">
             <span class="label">Draw Rewards</span>
             <span class="value">
-              <van-image
-                fit="cover"
-                :src="infoIcon"
-                round
-                class="van-img"
-              />
+              <van-image fit="cover" :src="infoIcon" round class="van-img" />
               {{ balanceInfo[infoType].drawRewards }}</span
             >
           </div>
         </div>
         <div class="balance-footer">
-          <button
-            class="btn-main"
-            @click="hiddenInfo"
-          >
-            Close
-          </button>
+          <button class="btn-main" @click="hiddenInfo">Close</button>
         </div>
       </div>
     </van-overlay>
@@ -564,7 +508,7 @@ const handlePopoverItem = (type: string) => {
     }
     .box-num {
       color: #00ba4d;
-      font-family: 'GenSenRounded2 TW';
+      font-family: "GenSenRounded2 TW";
       font-size: 32px;
       font-style: normal;
       font-weight: 700;

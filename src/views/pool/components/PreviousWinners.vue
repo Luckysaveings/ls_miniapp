@@ -1,23 +1,13 @@
 <template>
-  <van-overlay
-    :show="show"
-    class-name="custom-dialog"
-  >
-    <div
-      class="content-box"
-      :class="`type-${selectedType}`"
-    >
+  <van-overlay :show="show" class-name="custom-dialog">
+    <div class="content-box" :class="`type-${selectedType}`">
       <div class="dialog-title">
         <div class="dialog-title-left">
-          <img
-            class="img-icon"
-            src="@/assets/icon-jiangbei-2.svg"
-            alt="icon"
-          />
+          <img class="img-icon" src="@/assets/icon-jiangbei-2.svg" alt="icon" />
           <span>Previous winners</span>
         </div>
         <van-icon
-          name="close"
+          name="cross"
           size="20"
           color="#A1A1AA"
           @click="show = false"
@@ -47,22 +37,17 @@
           :key="tierNum"
         >
           <div class="content-item-title">
-            <img
-              class="img-icon"
-              :src="tierIcons[tierNum]"
-              alt="icon"
-            />
+            <img class="img-icon" :src="tierIcons[tierNum]" alt="icon" />
             <span>Tier {{ tierNum + 1 }} Rewards:</span>
           </div>
           <div class="list">
-            <div
-              class="list-item"
-              v-for="(item, index) in tier"
-              :key="index"
-            >
+            <div class="list-item" v-for="(item, index) in tier" :key="index">
               <span class="list-item-name">{{ item.name }}</span>
               <span class="list-item-value"
-                >{{ item.value }} <span class="list-item-unit"> {{ selectedType === 'usd' ? 'USD' : 'KAIA' }}</span>
+                >{{ item.value }}
+                <span class="list-item-unit">
+                  {{ selectedType === "usd" ? "USD" : "KAIA" }}</span
+                >
               </span>
             </div>
           </div>
@@ -76,59 +61,59 @@
   </van-overlay>
 </template>
 <script setup name="PreviousWinnersDialog">
-import winner1 from '@/assets/icon-winner-1.svg';
-import winner2 from '@/assets/icon-winner-2.svg';
-import winner3 from '@/assets/icon-winner-3.svg';
+import winner1 from "@/assets/icon-winner-1.svg";
+import winner2 from "@/assets/icon-winner-2.svg";
+import winner3 from "@/assets/icon-winner-3.svg";
 
 const show = ref(false);
 const tierIcons = [winner1, winner2, winner3];
 
-const selectedType = ref('usd');
+const selectedType = ref("usd");
 const data = ref({
   usd: [
     [
-      { name: 'nickname 1', value: 3249 },
-      { name: 'nickname 2', value: 2899 },
-      { name: 'nickname 3', value: 2599 },
+      { name: "nickname 1", value: 3249 },
+      { name: "nickname 2", value: 2899 },
+      { name: "nickname 3", value: 2599 }
     ],
     [
-      { name: 'nickname 4', value: 2299 },
-      { name: 'nickname 5', value: 2099 },
+      { name: "nickname 4", value: 2299 },
+      { name: "nickname 5", value: 2099 }
     ],
     [
-      { name: 'nickname 6', value: 1899 },
-      { name: 'nickname 7', value: 1699 },
-    ],
+      { name: "nickname 6", value: 1899 },
+      { name: "nickname 7", value: 1699 }
+    ]
   ],
   kaia: [
     [
-      { name: 'nickname 1', value: 3249 },
-      { name: 'nickname 2', value: 2899 },
-      { name: 'nickname 3', value: 2599 },
+      { name: "nickname 1", value: 3249 },
+      { name: "nickname 2", value: 2899 },
+      { name: "nickname 3", value: 2599 }
     ],
     [
-      { name: 'nickname 4', value: 2299 },
-      { name: 'nickname 5', value: 2099 },
+      { name: "nickname 4", value: 2299 },
+      { name: "nickname 5", value: 2099 }
     ],
     [
-      { name: 'nickname 6', value: 1899 },
-      { name: 'nickname 7', value: 1699 },
-    ],
-  ],
+      { name: "nickname 6", value: 1899 },
+      { name: "nickname 7", value: 1699 }
+    ]
+  ]
 });
 const currentData = ref(data.value[selectedType.value]);
 /*
  * 显示弹窗
  * @param {string} type - 选择池子 1: Daily Pool 2: $10K Jackpot
  */
-const showDialog = (type) => {
-  selectedType.value = type === '1' ? 'usd' : 'kaia';
+const showDialog = type => {
+  selectedType.value = type === "1" ? "usd" : "kaia";
   currentData.value = data.value[selectedType.value];
   nextTick(() => {
     show.value = true;
   });
 };
-const changeType = (type) => {
+const changeType = type => {
   selectedType.value = type;
   currentData.value = data.value[type];
 };
