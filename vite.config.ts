@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from "node:url";
+import fs from "fs";
 import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
@@ -71,6 +72,14 @@ export default defineConfig(({ mode }) => {
     server: {
       host: "0.0.0.0",
       allowedHosts: true,
+      https: {
+        key: fs.readFileSync(
+          path.resolve(__dirname, "./mock/ssl/localhost-key.pem")
+        ),
+        cert: fs.readFileSync(
+          path.resolve(__dirname, "./mock/ssl/localhost.pem")
+        )
+      },
       // 仅在 proxy 中配置的代理前缀， mock-dev-server 才会拦截并 mock
       // doc: https://github.com/pengzhanbo/vite-plugin-mock-dev-server
       proxy: {

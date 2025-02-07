@@ -206,6 +206,9 @@
       </div>
     </template>
   </van-toast>
+
+  <!-- 扫码功能 -->
+  <QRCodeScanner ref="qrRef" @success="handleQrRes" />
 </template>
 
 <script setup name="Withdraw">
@@ -216,12 +219,22 @@ import iconScan from "@/assets/icon-scan.svg";
 import iconEmpty from "@/assets/icon-empty.svg";
 import checkCircle from "@/assets/check-circle.svg";
 import { useRouter } from "vue-router";
+import QRCodeScanner from "@/components/QRCodeScanner/index.vue";
+
 const router = useRouter();
 const showInfo = ref(false);
 const showInfoStatus = ref(false);
 const infoStatus = ref("");
+
+const qrRef = ref(null);
+const handleQrRes = res => {
+  console.log("res", res);
+  showToast({ message: `Scan Success: ${res}` });
+  // qrRef.value.stopQrCode();
+};
 const onClickRight = () => {
-  router.push("/page-history");
+  qrRef.value.startScanner();
+  // router.push("/page-history");
 };
 const onClickLeft = () => {
   router.back();
@@ -285,10 +298,6 @@ const confirmStatus = () => {
 .page-wrap {
   padding: 0;
   color: #18181b;
-
-  .nav-bar-wrap {
-    padding: 0;
-  }
 }
 .page-content {
   padding: 12px 24px;
