@@ -18,30 +18,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive } from "vue";
 
 const active = ref(0);
 const tabbarData = reactive([
   {
-    icon: 'wap-home-o',
-    title: 'Home',
+    icon: "wap-home-o",
+    title: "Home",
     to: {
-      name: 'Home',
+      name: "Home",
     },
   },
   {
-    icon: 'coupon',
-    title: 'Pool',
+    icon: "coupon",
+    title: "Pool",
     badge: 5,
     to: {
-      name: 'Pool',
+      name: "Pool",
     },
   },
   {
-    icon: 'point-gift',
-    title: 'Rewards',
+    icon: "point-gift",
+    title: "Rewards",
     to: {
-      name: 'Rewards',
+      name: "Rewards",
     },
   },
 ]);

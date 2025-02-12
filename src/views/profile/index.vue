@@ -2,7 +2,12 @@
   <div class="page-wrap">
     <!-- Avatar and Name Section -->
     <div class="avatar-section">
-      <van-image round width="100" height="100" :src="userAvatar" />
+      <van-image
+        round
+        width="100"
+        height="100"
+        :src="userAvatar"
+      />
       <h2 class="username">Arthorn</h2>
     </div>
 
@@ -51,7 +56,11 @@
     </van-cell-group>
 
     <van-cell-group class="settings-group">
-      <van-cell :border="false" title="Terms of Use" is-link />
+      <van-cell
+        :border="false"
+        title="Terms of Use"
+        is-link
+      />
       <van-cell
         :border="false"
         title-class="title-class"
@@ -84,17 +93,25 @@
         value-class="value-class"
         title="Version"
         :value="version"
-        @click="showVersion = true"
         is-link
+        @click="showVersion = true"
       />
     </van-cell-group>
     <!-- Logout Button -->
     <div class="logout-wrapper">
-      <div class="logout-button" @click="handleLogout">Log Out</div>
+      <div
+        class="logout-button"
+        @click="handleLogout"
+      >
+        Log Out
+      </div>
     </div>
   </div>
 
-  <van-overlay :show="showVersion" class-name="custom-dialog">
+  <van-overlay
+    :show="showVersion"
+    class-name="custom-dialog"
+  >
     <div class="content-box">
       <div class="dialog-title">
         <span>Version</span>
@@ -107,8 +124,16 @@
       </div>
 
       <div class="dialog-content">
-        <img src="@/assets/img-icon.svg" alt="version" class="version-icon" />
-        <img src="@/assets/img-appname.svg" alt="appname" class="app-name" />
+        <img
+          src="@/assets/img-icon.svg"
+          alt="version"
+          class="version-icon"
+        />
+        <img
+          src="@/assets/img-appname.svg"
+          alt="appname"
+          class="app-name"
+        />
         <div class="version-text">
           <span>Version: {{ version }}</span>
         </div>
@@ -122,7 +147,11 @@
   >
     <template #message>
       <div class="toast-message">
-        <van-icon :name="checkCircle" size="24" color="red" />
+        <van-icon
+          :name="checkCircle"
+          size="24"
+          color="red"
+        />
         <span class="toast-text">{{ toastText }}</span>
       </div>
     </template>

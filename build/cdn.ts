@@ -5,7 +5,7 @@ export function enableCDN(isEnabled: string) {
   if (isEnabled === "true") {
     return cdn({
       resolve: unpkg(),
-      modules: ["vue", "vue-demi", "pinia", "axios", "vant", "vue-router"]
+      modules: ["vue", "vue-demi", "pinia", "axios", "vant", "vue-router"],
     });
   }
 }

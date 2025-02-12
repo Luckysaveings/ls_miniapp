@@ -7,7 +7,7 @@ export enum ContentTypeEnum {
   // form-data upload
   FORM_DATA = "multipart/form-data;charset=UTF-8",
   // json
-  JSON = "application/json;charset=UTF-8"
+  JSON = "application/json;charset=UTF-8",
 }
 
 /**
@@ -15,5 +15,5 @@ export enum ContentTypeEnum {
  */
 export enum ResultEnum {
   SUCCESS = 0,
-  ERROR = 1
+  ERROR = 1,
 }

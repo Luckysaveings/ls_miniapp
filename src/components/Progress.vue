@@ -22,7 +22,7 @@
 </template>
 
 <script setup name="Progress">
-import iconGift from '@/assets/icon-gift.svg';
+import iconGift from "@/assets/icon-gift.svg";
 defineProps({
   percentage: {
     type: Number,

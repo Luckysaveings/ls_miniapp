@@ -8,7 +8,7 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
   name: "",
-  className: ""
+  className: "",
 });
 
 const isExternalIcon = computed(() => isExternal(props.name));
@@ -24,7 +24,7 @@ const svgClass = computed(() => {
 const styleExternalIcon = computed(() => {
   return {
     mask: `url(${props.name}) no-repeat 50% 50%`,
-    "-webkit-mask": `url(${props.name}) no-repeat 50% 50%`
+    "-webkit-mask": `url(${props.name}) no-repeat 50% 50%`,
   };
 });
 </script>
@@ -36,7 +36,12 @@ const styleExternalIcon = computed(() => {
     class="svg-external-icon svg-icon"
     v-bind="$attrs"
   />
-  <svg v-else :class="svgClass" aria-hidden="true" v-bind="$attrs">
+  <svg
+    v-else
+    :class="svgClass"
+    aria-hidden="true"
+    v-bind="$attrs"
+  >
     <use :xlink:href="iconName" />
   </svg>
 </template>

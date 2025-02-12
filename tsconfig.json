@@ -30,6 +30,7 @@
       ]
     },
     "types": [
+      "./src/lang/vue-i18n.d.ts",
       "node",
       "vite/client"
     ]

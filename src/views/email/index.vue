@@ -1,19 +1,19 @@
 <template>
   <div class="page-wrap">
     <van-nav-bar
-      title="Email"
+      title="{{ $t('email.Email') }}"
       left-arrow
-      @click-left="onClickLeft"
-      @click-right="onClickRight"
       class="nav-bar-wrap"
       :border="false"
+      @click-left="onClickLeft"
+      @click-right="onClickRight"
     >
       <template #right>
         <span
           class="save-btn"
           :class="{ 'can-save': email.length > 0 }"
         >
-          Save
+          {{ $t("email.Save") }}
         </span>
       </template>
     </van-nav-bar>
@@ -22,7 +22,7 @@
       <van-field
         v-model="email"
         label="Email"
-        placeholder="Please enter e-mail address"
+        placeholder="{{ $t('email.PleaseEnterEmailAddress') }}"
         label-align="top"
         class="email-field"
       />
@@ -31,19 +31,19 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 const router = useRouter();
 
 const onClickRight = () => {
   // 保存邮箱后返回
-  console.log('保存邮箱后返回');
+  console.log("保存邮箱后返回");
   router.back();
 };
 const onClickLeft = () => {
   router.back();
 };
 
-const email = ref('');
+const email = ref("");
 </script>
 
 <style scoped lang="scss">

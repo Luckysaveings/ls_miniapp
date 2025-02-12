@@ -1,9 +1,4 @@
-import Axios, {
-  type AxiosInstance,
-  type AxiosError,
-  type AxiosResponse,
-  type AxiosRequestConfig
-} from "axios";
+import Axios, { type AxiosInstance, type AxiosError, type AxiosResponse, type AxiosRequestConfig } from "axios";
 import { ContentTypeEnum, ResultEnum } from "@/enums/request-enum";
 import NProgress from "../progress";
 import { showFailToast } from "vant";
@@ -12,11 +7,11 @@ import "vant/es/toast/style";
 // 默认 axios 实例请求配置
 const configDefault = {
   headers: {
-    "Content-Type": ContentTypeEnum.FORM_URLENCODED
+    "Content-Type": ContentTypeEnum.FORM_URLENCODED,
   },
   timeout: 0,
   baseURL: import.meta.env.VITE_BASE_API,
-  data: {}
+  data: {},
 };
 
 class Http {
@@ -28,7 +23,7 @@ class Http {
   // 请求拦截
   private httpInterceptorsRequest(): void {
     Http.axiosInstance.interceptors.request.use(
-      config => {
+      (config) => {
         NProgress.start();
         // 发送请求前，可在此携带 token
         // if (token) {
@@ -52,10 +47,7 @@ class Http {
         const { code, result } = response.data;
         // const { message } = response.data;
         // 判断请求是否成功
-        const isSuccess =
-          result &&
-          Reflect.has(response.data, "code") &&
-          code === ResultEnum.SUCCESS;
+        const isSuccess = result && Reflect.has(response.data, "code") && code === ResultEnum.SUCCESS;
         if (isSuccess) {
           return result;
         } else {
@@ -130,7 +122,7 @@ class Http {
         .then((response: any) => {
           resolve(response);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });

@@ -11,7 +11,7 @@ export default {
   // 在语句末尾是否需要分号
   semi: true,
   // 是否使用单引号
-  singleQuote: true,
+  // singleQuote: true,
   // 更改引用对象属性的时间 可选值"<as-needed|consistent|preserve>"
   quoteProps: 'as-needed',
   // 在JSX中使用单引号而不是双引号

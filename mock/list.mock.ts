@@ -11,11 +11,11 @@ export default defineMock([
       result: Mock.mock({
         "list|10": [
           {
-            "id|+1": 1
-          }
-        ]
-      })
-    }
+            "id|+1": 1,
+          },
+        ],
+      }),
+    },
   },
   {
     url: "/dev-api/list/error",
@@ -23,7 +23,7 @@ export default defineMock([
     body: {
       code: 1,
       message: "ERROR",
-      result: null
-    }
-  }
+      result: null,
+    },
+  },
 ]);

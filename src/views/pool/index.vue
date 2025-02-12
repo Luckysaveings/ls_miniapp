@@ -10,7 +10,7 @@ import Progress from "@/components/Progress.vue";
 const router = useRouter();
 const userInfo = reactive({
   avatar: userAvatar,
-  nickName: "Arthorn"
+  nickName: "Arthorn",
 });
 // 选择池子 1: Daily Pool 2: $10K Jackpot
 const selectedPool = ref("1");
@@ -30,7 +30,7 @@ const showPreviousWinner = () => {
 };
 
 const time = ref(13600 * 1000);
-const formatTime = value => {
+const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
 };
 
@@ -49,7 +49,7 @@ const withdrawInfo = ref({
   type: "USD",
   savings: 100,
   gasFee: 1.2,
-  desc: `You can check all returns later in the wallet balance under the Home tab.`
+  desc: `You can check all returns later in the wallet balance under the Home tab.`,
 });
 const showWithdrawDialog = () => {
   showWithdraw.value = true;
@@ -105,48 +105,69 @@ const showReminderMsg = ref(false);
         :class="{ daily: selectedPool === '1' }"
         @click="selectedPool = '1'"
       >
-        Daily Pool
+        {{ $t("pool.DailyPool") }}
       </div>
       <div
         class="token-btn"
         :class="{ jackpot: selectedPool === '2' }"
         @click="selectedPool = '2'"
       >
-        $10K Jackpot
+        {{ $t("pool.DollarTenKJackpot") }}
       </div>
     </div>
 
     <!-- 下次开奖时间模块 -->
-    <div class="module-item" v-show="selectedPool === '1'">
-      <div class="module-title">Next winner drawn</div>
+    <div
+      v-show="selectedPool === '1'"
+      class="module-item"
+    >
+      <div class="module-title">{{ $t("pool.NextWinnerDrawn") }}</div>
       <div class="module-content content-box bg-yellow">
         <div class="countdown-box">
-          <van-count-down :time="time" format="HH:mm:ss">
+          <img
+            class="img-countdown-box-bg left-bg"
+            src="@/assets/icon-clocker.svg"
+            alt="countdown-box-bg"
+            srcset=""
+          />
+          <img
+            class="img-countdown-box-bg right-bg"
+            src="@/assets/icon-gift-r.svg"
+            alt="countdown-box-bg"
+            srcset=""
+          />
+
+          <van-count-down
+            :time="time"
+            format="HH:mm:ss"
+          >
             <template #default="timeData">
               <div class="time-display">
                 <span class="time-block">{{ formatTime(timeData.hours) }}</span>
                 <span class="time-separator">:</span>
-                <span class="time-block">{{
-                  formatTime(timeData.minutes)
-                }}</span>
+                <span class="time-block">{{ formatTime(timeData.minutes) }}</span>
                 <span class="time-separator">:</span>
-                <span class="time-block">{{
-                  formatTime(timeData.seconds)
-                }}</span>
+                <span class="time-block">{{ formatTime(timeData.seconds) }}</span>
               </div>
             </template>
           </van-count-down>
         </div>
-        <Progress :percentage="75" bg-color="#06C756" />
+        <Progress
+          :percentage="75"
+          bg-color="#18181B"
+        />
         <van-divider class="divider" />
-        <div class="previous-winners" @click="showPreviousWinner">
+        <div
+          class="previous-winners"
+          @click="showPreviousWinner"
+        >
           <div class="previous-winners-left">
             <img
               class="img-jiangbei"
               src="@/assets/icon-jiangbei.svg"
               alt="jiangbei"
             />
-            <span>Previous winners</span>
+            <span>{{ $t("pool.PreviousWinners") }}</span>
           </div>
           <van-icon name="arrow" />
         </div>
@@ -156,7 +177,7 @@ const showReminderMsg = ref(false);
     <!-- USD Pool 模块 -->
     <div class="module-item">
       <div class="module-title">
-        <span>USD Pool</span>
+        <span>{{ $t("pool.USDPool") }}</span>
         <img
           class="img-icon"
           src="@/assets/icon-info.svg"
@@ -164,10 +185,13 @@ const showReminderMsg = ref(false);
           @click="showGameplay"
         />
       </div>
-      <div class="content-box bg-green" v-show="selectedPool === '1'">
-        <div class="text-grey">Current prize pool</div>
-        <div class="text-num">$123,876,323</div>
-        <div class="text-grey">Your tickets</div>
+      <div
+        v-show="selectedPool === '1'"
+        class="content-box bg-green"
+      >
+        <div class="text-grey">{{ $t("pool.CurrentPrizePool") }}</div>
+        <div class="text-num">$126,323</div>
+        <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
         <div class="ticket-box">
           <img
             class="img-tickets"
@@ -176,11 +200,16 @@ const showReminderMsg = ref(false);
           />
           <div class="ticket-num">x100</div>
         </div>
-        <button class="btn-main" @click="lineLogin">Join Now</button>
+        <button
+          class="btn-main"
+          @click="lineLogin"
+        >
+          {{ $t("pool.JoinNow") }}
+        </button>
       </div>
       <div
-        class="content-box bg-green jackpot-content"
         v-show="selectedPool === '2'"
+        class="content-box bg-green jackpot-content"
       >
         <img
           class="module-inner-bg left-bg"
@@ -194,16 +223,23 @@ const showReminderMsg = ref(false);
         />
         <div class="content-item-title-wrap">
           <div class="text-grey content-item-title">
-            <img class="img-icon" src="@/assets/icon-dollar.svg" alt="dollar" />
-            Current prize pool
+            <img
+              class="img-icon"
+              src="@/assets/icon-dollar.svg"
+              alt="dollar"
+            />
+            {{ $t("pool.CurrentPrizePool") }}
           </div>
         </div>
         <div class="text-num">
-          <span>$123,876</span>
+          <span>$16,323</span>
           <span class="text-num-sub">/ $10,000</span>
         </div>
-        <Progress :percentage="65" bg-color="#06c756" />
-        <div class="text-grey">Your tickets</div>
+        <Progress
+          :percentage="65"
+          bg-color="#06c756"
+        />
+        <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
         <div class="ticket-box">
           <img
             class="img-tickets"
@@ -213,19 +249,25 @@ const showReminderMsg = ref(false);
           <div class="ticket-num">x100</div>
         </div>
         <van-divider class="divider" />
-        <div class="previous-winners" @click="showPreviousWinner">
+        <div
+          class="previous-winners"
+          @click="showPreviousWinner"
+        >
           <div class="previous-winners-left">
             <img
               class="img-jiangbei"
               src="@/assets/icon-jiangbei.svg"
               alt="jiangbei"
             />
-            <span>Previous winners</span>
+            <span>{{ $t("pool.PreviousWinners") }}</span>
           </div>
           <van-icon name="arrow" />
         </div>
-        <button class="btn-main margin-top-16" @click="lineLogin">
-          Join Now
+        <button
+          class="btn-main margin-top-16"
+          @click="lineLogin"
+        >
+          {{ $t("pool.JoinNow") }}
         </button>
       </div>
     </div>
@@ -233,7 +275,7 @@ const showReminderMsg = ref(false);
     <!-- KAIA Pool 模块 -->
     <div class="module-item">
       <div class="module-title">
-        <span>KAIA Pool</span>
+        <span>{{ $t("pool.KAIAPool") }}</span>
         <img
           class="img-icon"
           src="@/assets/icon-info.svg"
@@ -241,13 +283,20 @@ const showReminderMsg = ref(false);
           @click="showGameplay"
         />
       </div>
-      <div class="content-box bg-2" v-show="selectedPool === '1'">
-        <div class="text-grey">Current prize pool</div>
+      <div
+        v-show="selectedPool === '1'"
+        class="content-box bg-2"
+      >
+        <div class="text-grey">$76,323</div>
         <div class="text-num">
-          <img class="icon-kaia" src="@/assets/icon-kaia.svg" alt="kaia" />
+          <img
+            class="icon-kaia"
+            src="@/assets/icon-kaia.svg"
+            alt="kaia"
+          />
           <span>123,876,323</span>
         </div>
-        <div class="text-grey">Your tickets</div>
+        <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
         <div class="ticket-box">
           <img
             class="img-tickets"
@@ -257,16 +306,24 @@ const showReminderMsg = ref(false);
           <div class="ticket-num">x100</div>
         </div>
         <div class="btn-wrap">
-          <button class="btn-main btn-withdraw" @click="showWithdrawDialog">
-            Withdraw
+          <button
+            class="btn-main btn-withdraw"
+            @click="showWithdrawDialog"
+          >
+            {{ $t("pool.Withdraw") }}
           </button>
-          <button class="btn-main" @click="showDepositDialog">Deposit</button>
+          <button
+            class="btn-main"
+            @click="showDepositDialog"
+          >
+            {{ $t("pool.Deposit") }}
+          </button>
         </div>
       </div>
 
       <div
-        class="content-box bg-2 jackpot-content"
         v-show="selectedPool === '2'"
+        class="content-box bg-2 jackpot-content"
       >
         <img
           class="module-inner-bg left-bg"
@@ -280,17 +337,28 @@ const showReminderMsg = ref(false);
         />
         <div class="content-item-title-wrap">
           <div class="text-grey content-item-title">
-            <img class="img-icon" src="@/assets/icon-dollar.svg" alt="dollar" />
-            Current prize pool
+            <img
+              class="img-icon"
+              src="@/assets/icon-dollar.svg"
+              alt="dollar"
+            />
+            {{ $t("pool.CurrentPrizePool") }}
           </div>
         </div>
         <div class="text-num text-num-yellow">
-          <img class="icon-kaia" src="@/assets/icon-kaia.svg" alt="kaia" />
-          <span>3,876</span>
-          <span class="text-num-sub">/ 10,000</span>
+          <img
+            class="icon-kaia"
+            src="@/assets/icon-kaia.svg"
+            alt="kaia"
+          />
+          <span>6,323</span>
+          <span class="text-num-sub">/ $10,000</span>
         </div>
-        <Progress :percentage="55" bg-color="#fee719" />
-        <div class="text-grey">Your tickets</div>
+        <Progress
+          :percentage="55"
+          bg-color="#fee719"
+        />
+        <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
         <div class="ticket-box">
           <img
             class="img-tickets"
@@ -300,23 +368,34 @@ const showReminderMsg = ref(false);
           <div class="ticket-num">x100</div>
         </div>
         <van-divider class="divider" />
-        <div class="previous-winners" @click="showPreviousWinner">
+        <div
+          class="previous-winners"
+          @click="showPreviousWinner"
+        >
           <div class="previous-winners-left">
             <img
               class="img-jiangbei"
               src="@/assets/icon-jiangbei.svg"
               alt="jiangbei"
             />
-            <span>Previous winners</span>
+            <span>{{ $t("pool.PreviousWinners") }}</span>
           </div>
           <van-icon name="arrow" />
         </div>
 
         <div class="btn-wrap margin-top-16">
-          <button class="btn-main btn-withdraw" @click="showWithdrawDialog">
-            Withdraw
+          <button
+            class="btn-main btn-withdraw"
+            @click="showWithdrawDialog"
+          >
+            {{ $t("pool.Withdraw") }}
           </button>
-          <button class="btn-main" @click="showDepositDialog">Deposit</button>
+          <button
+            class="btn-main"
+            @click="showDepositDialog"
+          >
+            {{ $t("pool.Deposit") }}
+          </button>
         </div>
       </div>
     </div>
@@ -325,12 +404,19 @@ const showReminderMsg = ref(false);
   <GameplayDialog ref="gameplayDialogRef" />
   <PreviousDialog ref="previousDialogRef" />
   <!-- 弹窗 USD Deposit -->
-  <van-overlay :show="showDeposit" class-name="custom-dialog">
+  <van-overlay
+    :show="showDeposit"
+    class-name="custom-dialog"
+  >
     <div class="content-box">
       <div class="dialog-title">
         <div class="dialog-title-left">
-          <img class="img-icon" src="@/assets/icon-ustd.svg" alt="ustd" />
-          <span>USD Deposit</span>
+          <img
+            class="img-icon"
+            src="@/assets/icon-ustd.svg"
+            alt="ustd"
+          />
+          <span>{{ $t("pool.USDDeposit") }}</span>
         </div>
         <van-icon
           name="cross"
@@ -343,39 +429,56 @@ const showReminderMsg = ref(false);
       <div class="dialog-content">
         <div class="content-item">
           <div class="title-wrap">
-            <div class="label">Amount</div>
+            <div class="label">{{ $t("pool.Amount") }}</div>
             <div class="available">
-              <span>Available</span>
+              <span>{{ $t("pool.Available") }}</span>
               <span class="item-value">{{ available }}</span>
             </div>
           </div>
-          <van-field v-model="amount" placeholder="0.00" class="custom-field">
+          <van-field
+            v-model="amount"
+            placeholder="0.00"
+            class="custom-field"
+          >
             <template #right-icon>
-              <span class="max-btn" @click="setMaxAmount">Max</span>
+              <span
+                class="max-btn"
+                @click="setMaxAmount"
+                >{{ $t("pool.Max") }}</span
+              >
             </template>
           </van-field>
 
-          <div class="warning-text" v-show="amount > available">
-            <span>The amount exceeds the available balance!</span>
+          <div
+            v-show="amount > available"
+            class="warning-text"
+          >
+            <span>{{ $t("pool.TheAmountExceedsTheAvailableBalance") }}</span>
           </div>
         </div>
         <div class="content-item fee-info">
-          <span>Gas fee</span>
-          <span class="item-value">1.2 KAIA</span>
+          <span>{{ $t("pool.GasFee") }}</span>
+          <span class="item-value">{{ withdrawInfo.gasFee }} KAIA</span>
         </div>
         <div class="content-item item-desc">
-          You will never lose your principal and can withdraw at any time. Your
-          yields will be rolled into the Daily Pool and the $10k Jackpot at a
-          50%:50% ratio.
+          {{ $t("pool.DailyPoolTip") }}
         </div>
       </div>
       <div class="dialog-footer">
-        <button class="btn-main" @click="confirmDeposit">Deposit</button>
+        <button
+          class="btn-main"
+          @click="confirmDeposit"
+        >
+          {{ $t("pool.Deposit") }}
+        </button>
       </div>
     </div>
   </van-overlay>
   <!-- 弹窗 Withdraw -->
-  <van-overlay :show="showWithdraw" class-name="custom-dialog">
+  <van-overlay
+    :show="showWithdraw"
+    class-name="custom-dialog"
+  >
     <div class="content-box">
       <div class="dialog-title">
         <div class="dialog-title-left">
@@ -384,7 +487,7 @@ const showReminderMsg = ref(false);
             :src="withdrawInfo.type === 'usd' ? iconUsdt : iconKaia"
             alt="icon"
           />
-          <span>{{ withdrawInfo.type }} Withdraw</span>
+          <span>{{ withdrawInfo.type }} {{ $t("pool.Withdraw") }}</span>
         </div>
         <van-icon
           name="cross"
@@ -396,13 +499,13 @@ const showReminderMsg = ref(false);
 
       <div class="dialog-content">
         <div class="content-item dialog-content-item">
-          <div class="item-top">Your current savings</div>
+          <div class="item-top">{{ $t("pool.YourCurrentSavings") }}</div>
           <div class="item-bottom">
-            <span>$1,000</span>
+            <span>{{ withdrawInfo.savings }} {{ withdrawInfo.type }}</span>
           </div>
         </div>
         <div class="content-item fee-info">
-          <span>Gas fee</span>
+          <span>{{ $t("pool.GasFee") }}</span>
           <span class="item-value">{{ withdrawInfo.gasFee }} KAIA</span>
         </div>
         <div class="content-item item-desc">
@@ -410,17 +513,25 @@ const showReminderMsg = ref(false);
         </div>
       </div>
       <div class="dialog-footer">
-        <button class="btn-main" @click="confirmWithdraw">Withdraw</button>
+        <button
+          class="btn-main"
+          @click="confirmWithdraw"
+        >
+          {{ $t("pool.Withdraw") }}
+        </button>
       </div>
     </div>
   </van-overlay>
 
   <!-- 弹窗 Reminder Message -->
-  <van-overlay :show="showReminderMsg" class-name="custom-dialog">
+  <van-overlay
+    :show="showReminderMsg"
+    class-name="custom-dialog"
+  >
     <div class="content-box">
       <div class="dialog-title">
         <div class="dialog-title-left">
-          <span>Reminder Message</span>
+          <span>{{ $t("pool.ReminderMessage") }}</span>
         </div>
         <van-icon
           name="cross"
@@ -432,19 +543,16 @@ const showReminderMsg = ref(false);
 
       <div class="dialog-content no-margin-b">
         <div class="content-item content-item-reminder">
-          <div class="item-top">👋 Pup-ups update!</div>
+          <div class="item-top">{{ $t("pool.PupUpsUpdate") }}</div>
           <div class="item-bottom">
-            We just updated the Popups mission, in total 2000 Badges!
+            {{ $t("pool.PupUpsUpdateTip") }}
           </div>
-          <div class="btn-main">Go</div>
+          <div class="btn-main">{{ $t("pool.Go") }}</div>
         </div>
         <div class="content-item content-item-reminder no-margin-b">
-          <div class="item-top">‍💻 LuckySavings goes to V1.1!</div>
+          <div class="item-top">{{ $t("pool.LuckySavingsGoesToV1Point1") }}</div>
           <div class="item-bottom">
-            blablablabalblabalbalba, read more:
-            <a href="http://blababalbala" target="_blank" class="txt-link"
-              >http://blababalbala</a
-            >
+            {{ $t("pool.urlTip") }}
           </div>
         </div>
       </div>
@@ -488,8 +596,26 @@ const showReminderMsg = ref(false);
     border-radius: 14px;
     border: 1px solid var(--ls-line-4, rgba(24, 24, 27, 0.04));
     background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.9) 100%);
+    position: relative;
+    overflow: hidden;
 
+    .img-countdown-box-bg {
+      position: absolute;
+      width: 64px;
+      height: 64px;
+
+      &.left-bg {
+        left: 5px;
+        bottom: 25px;
+      }
+      &.right-bg {
+        right: 5px;
+        top: 30px;
+      }
+    }
     :deep(.time-display) {
+      height: 40px;
+      line-height: 40px;
       font-size: 36px;
       font-weight: 700;
       text-align: center;

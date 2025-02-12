@@ -7,10 +7,10 @@ export default {
       unitPrecision: 4, // 转化精度，转换后保留位数
       viewportUnit: "vmin", // 转换后的单位
       fontViewportUnit: "vmin", // 字体单位
-      unitToConvert: "px" // 需要转换的单位
+      unitToConvert: "px", // 需要转换的单位
     },
     autoprefixer: {
-      overrideBrowserslist: ["Android >= 4.0", "iOS >= 7"]
-    }
-  }
+      overrideBrowserslist: ["Android >= 4.0", "iOS >= 7"],
+    },
+  },
 };

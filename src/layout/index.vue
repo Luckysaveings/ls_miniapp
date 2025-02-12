@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useRoute } from 'vue-router';
+import { useRoute } from "vue-router";
 
 import tabbar from "@/components/tabbar/index.vue";
 import { useCachedViewStoreHook } from "@/store/modules/cached-view";

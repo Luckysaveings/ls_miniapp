@@ -1,29 +1,29 @@
 <script setup lang="ts" name="Ranking">
-import { useRouter } from 'vue-router';
-import { reactive } from 'vue';
+import { useRouter } from "vue-router";
+import { reactive } from "vue";
 const router = useRouter();
 const onClickLeft = () => {
   router.back();
 };
-const selectedType = ref('points');
+const selectedType = ref("points");
 const changeType = (type) => {
   selectedType.value = type;
 };
 const tableData = ref([
-  { place: '1', name: 'John Doe', points: '1000' },
-  { place: '2', name: 'Jane Smith', points: '900' },
-  { place: '3', name: 'Alice Johnson', points: '800' },
-  { place: '4', name: 'Bob Brown', points: '700' },
-  { place: '5', name: 'Charlie Davis', points: '600' },
-  { place: '6', name: 'David Wilson', points: '500' },
-  { place: '7', name: 'Eva Martinez', points: '400' },
-  { place: '8', name: 'Frank Garcia', points: '300' },
-  { place: '9', name: 'Grace Lopez', points: '200' },
-  { place: '10', name: 'Henry Lopez', points: '100' },
+  { place: "1", name: "John Doe", points: "1000" },
+  { place: "2", name: "Jane Smith", points: "900" },
+  { place: "3", name: "Alice Johnson", points: "800" },
+  { place: "4", name: "Bob Brown", points: "700" },
+  { place: "5", name: "Charlie Davis", points: "600" },
+  { place: "6", name: "David Wilson", points: "500" },
+  { place: "7", name: "Eva Martinez", points: "400" },
+  { place: "8", name: "Frank Garcia", points: "300" },
+  { place: "9", name: "Grace Lopez", points: "200" },
+  { place: "10", name: "Henry Lopez", points: "100" },
 ]);
-import winner1 from '@/assets/icon-winner-1.svg';
-import winner2 from '@/assets/icon-winner-2.svg';
-import winner3 from '@/assets/icon-winner-3.svg';
+import winner1 from "@/assets/icon-winner-1.svg";
+import winner2 from "@/assets/icon-winner-2.svg";
+import winner3 from "@/assets/icon-winner-3.svg";
 const tierIcons = [winner1, winner2, winner3];
 </script>
 
@@ -35,11 +35,10 @@ const tierIcons = [winner1, winner2, winner3];
     <van-nav-bar
       title="Ranking"
       left-arrow
-      @click-left="onClickLeft"
       class="nav-bar-wrap"
       :border="false"
-    >
-    </van-nav-bar>
+      @click-left="onClickLeft"
+    />
 
     <div class="page-content">
       <div class="type-select content-box">
@@ -48,14 +47,14 @@ const tierIcons = [winner1, winner2, winner3];
           :class="{ active: selectedType === 'points' }"
           @click="changeType('points')"
         >
-          Points
+          {{ $t("ranking.Points") }}
         </div>
         <div
           class="type-btn"
           :class="{ active: selectedType === 'badges' }"
           @click="changeType('badges')"
         >
-          Badges
+          {{ $t("ranking.Badges") }}
         </div>
       </div>
 
@@ -63,13 +62,13 @@ const tierIcons = [winner1, winner2, winner3];
         <div class="content-box-yellow achievement-box">
           <div class="inner-color">
             <div class="achievement-item">
-              <div class="item-top">Your ranking</div>
+              <div class="item-top">{{ $t("ranking.YourRanking") }}</div>
               <div class="item-bottom">
                 <span>No.330</span>
               </div>
             </div>
             <div class="achievement-item">
-              <div class="item-top">Holding Points</div>
+              <div class="item-top">{{ $t("ranking.HoldingPoints") }}</div>
               <div class="item-bottom">
                 <span>112,241</span>
                 <img
@@ -85,18 +84,18 @@ const tierIcons = [winner1, winner2, winner3];
 
       <div class="module-item">
         <div class="module-title">
-          <span>Place</span>
+          <span>{{ $t("ranking.Place") }}</span>
         </div>
         <div class="content-box table-box">
           <div class="table-title">
-            <div class="title-place">Place</div>
-            <div class="title-name">Name</div>
-            <div class="title-points">Points</div>
+            <div class="title-place">{{ $t("ranking.Place") }}</div>
+            <div class="title-name">{{ $t("ranking.Name") }}</div>
+            <div class="title-points">{{ $t("ranking.Points") }}</div>
           </div>
           <div
-            class="table-item"
             v-for="item in tableData"
             :key="item.place"
+            class="table-item"
           >
             <div class="item-place">
               <img
@@ -116,7 +115,7 @@ const tierIcons = [winner1, winner2, winner3];
           </div>
         </div>
         <div class="tip-box">
-          <div class="tip-text">The leaderboard will be updated weekly.</div>
+          <div class="tip-text">{{ $t("ranking.TipText") }}</div>
         </div>
       </div>
     </div>

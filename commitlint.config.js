@@ -1,5 +1,5 @@
 export default {
-  ignores: [commit => commit.includes("init")],
+  ignores: [(commit) => commit.includes("init")],
   extends: ["@commitlint/config-conventional"],
   rules: {
     "body-leading-blank": [2, "always"],
@@ -10,23 +10,7 @@ export default {
     "type-enum": [
       2,
       "always",
-      [
-        "feat",
-        "fix",
-        "perf",
-        "style",
-        "docs",
-        "test",
-        "refactor",
-        "build",
-        "ci",
-        "chore",
-        "revert",
-        "wip",
-        "workflow",
-        "types",
-        "release"
-      ]
-    ]
-  }
+      ["feat", "fix", "perf", "style", "docs", "test", "refactor", "build", "ci", "chore", "revert", "wip", "workflow", "types", "release"],
+    ],
+  },
 };

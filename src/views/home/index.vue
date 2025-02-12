@@ -1,5 +1,6 @@
 <script setup lang="ts" name="Home">
 import liff from "@line/liff";
+import DappPortalSDK from "@linenext/dapp-portal-sdk";
 import qs from "qs";
 import { useRouter } from "vue-router";
 import { useClickAway } from "@vant/use";
@@ -10,7 +11,6 @@ import ustd from "@/assets/icon-ustd.svg";
 import kaia2 from "@/assets/icon-kaia.svg";
 import imgBadges from "@/assets/img-badges.svg";
 import imgPoints from "@/assets/img-points.svg";
-
 const router = useRouter();
 const showInfo = ref(false);
 const infoType = ref("");
@@ -28,40 +28,55 @@ const balanceInfo = reactive({
   USDT: {
     balance: 1000,
     savings: 10000,
-    drawRewards: 10
+    drawRewards: 10,
   },
   KAIA: {
     balance: 1000,
     savings: 10000,
-    drawRewards: 10
-  }
+    drawRewards: 10,
+  },
 });
 
 const userInfo = reactive({
   avatar: userAvatar,
-  nickName: "Arthorn"
+  nickName: "Arthorn",
 });
 const time = ref(13600 * 1000);
-const formatTime = value => {
+const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
 };
 const lineLogin = () => {
-  // console.log('click');
-  // const line_auth = 'https://access.line.me/oauth2/v2.1/authorize';
-  // const auth_params = {
-  //   response_type: 'code',
-  //   client_id: '2006818858',
-  //   redirect_uri: window.location.href, // 在LINE Developers Console上注册的回调 URL 的 URL 编码字符串。您可以添加任何查询参数。
-  //   state: 'STATE', // 用于防止跨站点请求伪造的唯一字母数字字符串. 您的网络应用应为每个登录会话生成一个随机值。这不能是 URL 编码的字符串。
-  //   scope: 'profile openid email', // 向用户请求的权限,查询范围可以看官网(https://developers.line.biz/en/docs/line-login/integrate-line-login/#scopes)
-  // };
-  // // 这里使用了第三方库qs来处理参数
-  // const paramsString = qs.stringify(auth_params);
-  // console.log(line_auth, paramsString);
-  // window.location.href = `${line_auth}?${paramsString}`;
+  console.log("click");
+  const line_auth = "https://access.line.me/oauth2/v2.1/authorize";
+  const auth_params = {
+    response_type: "code",
+    client_id: "2006818858",
+    redirect_uri: window.location.href, // 在LINE Developers Console上注册的回调 URL 的 URL 编码字符串。您可以添加任何查询参数。
+    state: "STATE", // 用于防止跨站点请求伪造的唯一字母数字字符串. 您的网络应用应为每个登录会话生成一个随机值。这不能是 URL 编码的字符串。
+    scope: "profile openid email", // 向用户请求的权限,查询范围可以看官网(https://developers.line.biz/en/docs/line-login/integrate-line-login/#scopes)
+  };
+  // 这里使用了第三方库qs来处理参数
+  const paramsString = qs.stringify(auth_params);
+  console.log(line_auth, paramsString);
+  window.location.href = `${line_auth}?${paramsString}`;
 };
 const lineLoginLiff = async () => {
-  // await liff.init({ liffId: '2006818858-1a2PrWjY' });
+  liff
+    .init({
+      liffId: "2006818858-1a2PrWjY",
+      withLoginOnExternalBrowser: true,
+    })
+    .then(async () => {
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
+        const DecodedToken = await liff.getDecodedIDToken();
+        console.log(DecodedToken);
+        liff.getProfile().then((profile) => {
+          console.log(profile);
+        });
+      }
+    });
   // if (!liff.isLoggedIn()) {
   //   liff.login();
   // } else {
@@ -69,6 +84,18 @@ const lineLoginLiff = async () => {
   //   const profile = await liff.getProfile();
   //   console.log(DecodedToken, profile);
   // }
+};
+const getWallet = async () => {
+  const sdk = await DappPortalSDK.init({
+    clientId: import.meta.env.VITE_LINE_CLIENT_ID || "",
+  });
+  const walletProvider = sdk.getWalletProvider();
+};
+const openLineWallet = () => {
+  liff.openWindow({
+    url: "https://blockchain-wallet.line.me", // LINE Blockchain Wallet 的 URL
+    external: true, // 在外部浏览器中打开
+  });
 };
 const popoverShow = ref(false);
 const popoverRef = ref();
@@ -101,19 +128,28 @@ const handlePopoverItem = (type: string) => {
           class="product-img"
           @click="router.push('/profile')"
         />
-        <div class="text-content">
+        <div
+          class="text-content"
+          @click="lineLoginLiff"
+        >
           {{ userInfo.nickName }}
         </div>
       </div>
-      <div class="header-right">
-        <van-icon :name="iconLanguage" size="16" />
+      <div
+        class="header-right"
+        @click="getWallet"
+      >
+        <van-icon
+          :name="iconLanguage"
+          size="16"
+        />
         <span class="current-language">EN</span>
       </div>
     </div>
     <div class="content">
       <div class="content-box-yellow">
         <div class="inner-color">
-          <div class="balance-title">Wallet Balance</div>
+          <div class="balance-title">{{ $t("home.WalletBalance") }}</div>
           <div class="balance-content">
             <div class="balance-item">
               <van-image
@@ -153,28 +189,27 @@ const handlePopoverItem = (type: string) => {
         </div>
       </div>
       <div class="space-h-16">
-        <div class="text-title">Prize pool</div>
+        <div class="text-title">{{ $t("home.prizePool") }}</div>
         <div class="content-box">
           <div class="box-top">
-            <div class="box-title">Total prize pool</div>
+            <div class="box-title">{{ $t("home.totalPrizePool") }}</div>
             <div class="box-num">$123,876,323</div>
           </div>
 
           <div class="box-center">
-            <div class="center-label">Next draw open in</div>
+            <div class="center-label">{{ $t("home.NextDrawOpenIn") }}</div>
             <div class="center-time">
-              <van-count-down :time="time" format="HH:mm:ss">
+              <van-count-down
+                :time="time"
+                format="HH:mm:ss"
+              >
                 <template #default="timeData">
                   <div class="time-inner">
                     <span class="block">{{ formatTime(timeData.hours) }}</span>
                     <span class="colon">:</span>
-                    <span class="block">{{
-                      formatTime(timeData.minutes)
-                    }}</span>
+                    <span class="block">{{ formatTime(timeData.minutes) }}</span>
                     <span class="colon">:</span>
-                    <span class="block">{{
-                      formatTime(timeData.seconds)
-                    }}</span>
+                    <span class="block">{{ formatTime(timeData.seconds) }}</span>
                   </div>
                 </template>
               </van-count-down>
@@ -184,14 +219,17 @@ const handlePopoverItem = (type: string) => {
             :percentage="55"
             bg-color="linear-gradient(90deg, #10D260 0%, #65E01C 100%)"
           />
-          <button class="btn-main" @click="router.push('/pool')">
-            Join Now
+          <button
+            class="btn-main"
+            @click="router.push('/pool')"
+          >
+            {{ $t("home.JoinNow") }}
           </button>
         </div>
       </div>
 
       <div class="space-h-16">
-        <div class="text-title">Available rewards</div>
+        <div class="text-title">{{ $t("home.AvailableRewards") }}</div>
         <div class="content-box">
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="box-top">
@@ -206,7 +244,7 @@ const handlePopoverItem = (type: string) => {
                 />
                 <span class="img-num">x13</span>
               </div>
-              <div class="main-text">Points</div>
+              <div class="main-text">{{ $t("home.Points") }}</div>
             </div>
             <div class="box-top">
               <div class="img-num-wrap">
@@ -220,47 +258,78 @@ const handlePopoverItem = (type: string) => {
                 />
                 <span class="img-num color-blue-01">x13</span>
               </div>
-              <div class="main-text">Badges</div>
+              <div class="main-text">{{ $t("home.Badges") }}</div>
             </div>
           </div>
 
-          <button class="btn-main" @click="router.push('/rewards')">
-            Claim Now
+          <button
+            class="btn-main"
+            @click="router.push('/rewards')"
+          >
+            {{ $t("home.ClaimNow") }}
           </button>
         </div>
       </div>
     </div>
-    <div ref="popoverRef" class="popover-wrap" v-show="popoverShow">
+    <div
+      v-show="popoverShow"
+      ref="popoverRef"
+      class="popover-wrap"
+    >
       <div class="popover-content">
-        <div class="popover-item" @click="handlePopoverItem('deposit')">
+        <div
+          class="popover-item"
+          @click="handlePopoverItem('deposit')"
+        >
           <img
             class="popover-img"
             src="@/assets/img-deposit.svg"
             alt="deposit"
           />
-          <span class="popover-text">Deposit</span>
+          <span class="popover-text">{{ $t("home.Deposit") }}</span>
         </div>
-        <div class="popover-item" @click="handlePopoverItem('withdraw')">
+        <div
+          class="popover-item"
+          @click="handlePopoverItem('withdraw')"
+        >
           <img
             class="popover-img"
             src="@/assets/img-withdraw.svg"
             alt="withdraw"
           />
-          <span class="popover-text">Withdraw</span>
+          <span class="popover-text">{{ $t("home.Withdraw") }}</span>
         </div>
-        <div class="popover-item" @click="handlePopoverItem('swap')">
-          <img class="popover-img" src="@/assets/img-swap.svg" alt="swap" />
-          <span class="popover-text">Swap</span>
+        <div
+          class="popover-item"
+          @click="handlePopoverItem('swap')"
+        >
+          <img
+            class="popover-img"
+            src="@/assets/img-swap.svg"
+            alt="swap"
+          />
+          <span class="popover-text">{{ $t("home.Swap") }}</span>
         </div>
       </div>
     </div>
-    <button ref="popoverBtnRef" class="btn-add" @click="handlePopover">
-      <van-icon name="plus" size="24" color="#fff" />
+    <button
+      ref="popoverBtnRef"
+      class="btn-add"
+      @click="handlePopover"
+    >
+      <van-icon
+        name="plus"
+        size="24"
+        color="#fff"
+      />
     </button>
-    <van-overlay :show="showInfo" class-name="balance-dialog">
+    <van-overlay
+      :show="showInfo"
+      class-name="balance-dialog"
+    >
       <div class="content-box">
         <div class="balance-title">
-          <span>{{ infoType }} Balance</span>
+          <span>{{ infoType }} {{ $t("home.Balance") }}</span>
           <van-icon
             name="cross"
             size="20"
@@ -271,29 +340,49 @@ const handlePopoverItem = (type: string) => {
 
         <div class="balance-content">
           <div class="balance-row">
-            <span class="label">Balance</span>
+            <span class="label">{{ $t("home.Balance") }}</span>
             <span class="value">
-              <van-image fit="cover" :src="infoIcon" round class="van-img" />
+              <van-image
+                fit="cover"
+                :src="infoIcon"
+                round
+                class="van-img"
+              />
               {{ balanceInfo[infoType].balance }}</span
             >
           </div>
           <div class="balance-row">
-            <span class="label">Savings</span>
+            <span class="label">{{ $t("home.Savings") }}</span>
             <span class="value">
-              <van-image fit="cover" :src="infoIcon" round class="van-img" />
+              <van-image
+                fit="cover"
+                :src="infoIcon"
+                round
+                class="van-img"
+              />
               {{ balanceInfo[infoType].savings }}</span
             >
           </div>
           <div class="balance-row">
-            <span class="label">Draw Rewards</span>
+            <span class="label">{{ $t("home.DrawRewards") }}</span>
             <span class="value">
-              <van-image fit="cover" :src="infoIcon" round class="van-img" />
+              <van-image
+                fit="cover"
+                :src="infoIcon"
+                round
+                class="van-img"
+              />
               {{ balanceInfo[infoType].drawRewards }}</span
             >
           </div>
         </div>
         <div class="balance-footer">
-          <button class="btn-main" @click="hiddenInfo">Close</button>
+          <button
+            class="btn-main"
+            @click="hiddenInfo"
+          >
+            {{ $t("common.Close") }}
+          </button>
         </div>
       </div>
     </van-overlay>

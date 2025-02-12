@@ -1,25 +1,24 @@
 <template>
   <div class="page-wrap">
     <van-nav-bar
-      title="Swap"
+      :title="$t('swap.Swap')"
       left-arrow
-      @click-left="onClickLeft"
       class="nav-bar-wrap"
       :border="false"
-    >
-    </van-nav-bar>
+      @click-left="onClickLeft"
+    />
 
     <div class="page-content">
       <div class="content-box">
         <div class="box-top">
-          <div class="box-left">From</div>
+          <div class="box-left">{{ $t("swap.From") }}</div>
           <div class="box-right">
-            <span>Balance</span>
+            <span>{{ $t("swap.Balance") }}</span>
             <span class="num">{{ maxData.usdt }}</span>
             <span
               class="max"
               @click="handleMax('usdt')"
-              >Max</span
+              >{{ $t("swap.Max") }}</span
             >
           </div>
         </div>
@@ -36,7 +35,7 @@
             <van-field
               v-model="usdtAmount"
               type="number"
-              placeholder="0.00"
+              :placeholder="$t('swap.PlaceholderAmount')"
               class="custom-field amount-field"
             />
           </div>
@@ -49,14 +48,14 @@
       />
       <div class="content-box no-margin-top">
         <div class="box-top">
-          <div class="box-left">To (Estimate)</div>
+          <div class="box-left">{{ $t("swap.ToEstimate") }}</div>
           <div class="box-right">
-            <span>Balance</span>
+            <span>{{ $t("swap.Balance") }}</span>
             <span class="num">{{ maxData.kaia }}</span>
             <span
               class="max"
               @click="handleMax('kaia')"
-              >Max</span
+              >{{ $t("swap.Max") }}</span
             >
           </div>
         </div>
@@ -73,19 +72,19 @@
             <van-field
               v-model="kaiaAmount"
               type="number"
-              placeholder="0.00"
+              :placeholder="$t('swap.PlaceholderAmount')"
               class="custom-field amount-field"
             />
           </div>
         </div>
       </div>
-      <div class="swap-tip">Slippage: 0.1%~0.5%</div>
+      <div class="swap-tip">{{ $t("swap.Slippage") }}</div>
 
       <div
         v-if="overMax"
         class="btn-main over-max"
       >
-        Insufficient balance
+        {{ $t("swap.InsufficientBalance") }}
       </div>
       <div
         v-else
@@ -93,16 +92,16 @@
         :class="{ disabled: !isValidNext }"
         @click="handleSwap"
       >
-        Swap
+        {{ $t("swap.Swap") }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { showToast } from 'vant';
-import { useRouter } from 'vue-router';
-import { reactive } from 'vue';
+import { showToast } from "vant";
+import { useRouter } from "vue-router";
+import { reactive } from "vue";
 const router = useRouter();
 
 const usdtAmount = ref(null);
@@ -115,7 +114,7 @@ const onClickLeft = () => {
   router.back();
 };
 const handleMax = (type) => {
-  if (type === 'usdt') {
+  if (type === "usdt") {
     usdtAmount.value = maxData.usdt;
   } else {
     kaiaAmount.value = maxData.kaia;
@@ -129,7 +128,7 @@ const overMax = computed(() => {
 });
 
 const handleSwap = () => {
-  console.log('handleSwap');
+  console.log("handleSwap");
 };
 </script>
 

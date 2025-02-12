@@ -1,8 +1,8 @@
-import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router';
-import routes from './routes';
-import { useCachedViewStoreHook } from '@/store/modules/cached-view';
-import NProgress from '@/utils/progress';
-import setPageTitle from '@/utils/set-page-title';
+import { createRouter, createWebHistory, type RouteLocationNormalized } from "vue-router";
+import routes from "./routes";
+import { useCachedViewStoreHook } from "@/store/modules/cached-view";
+import NProgress from "@/utils/progress";
+import setPageTitle from "@/utils/set-page-title";
 
 const router = createRouter({
   history: createWebHistory(),

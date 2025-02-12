@@ -1,49 +1,49 @@
 <script setup lang="ts" name="Rewards">
-import { useRouter } from 'vue-router';
-import { showToast } from 'vant';
-import userAvatar from '@/assets/user-avatar.svg';
-import TaskItem from './components/task-item.vue';
+import { useRouter } from "vue-router";
+import { showToast } from "vant";
+import userAvatar from "@/assets/user-avatar.svg";
+import TaskItem from "./components/task-item.vue";
 const router = useRouter();
 const userInfo = reactive({
   avatar: userAvatar,
-  nickName: 'Arthorn',
+  nickName: "Arthorn",
 });
 const dailyTasks = reactive([
   {
-    img: '/src/assets/tasks/daily-tasks-1.svg',
-    title: 'Login LuckySavings',
+    img: "/src/assets/tasks/daily-tasks-1.svg",
+    title: "Login LuckySavings",
     status: true,
     points: 11,
   },
   {
-    img: '/src/assets/tasks/daily-tasks-2.svg',
-    title: 'Daily Saving',
+    img: "/src/assets/tasks/daily-tasks-2.svg",
+    title: "Daily Saving",
     status: false,
     points: 12,
   },
   {
-    img: '/src/assets/tasks/daily-tasks-3.svg',
-    title: 'Daily Invite',
+    img: "/src/assets/tasks/daily-tasks-3.svg",
+    title: "Daily Invite",
     status: false,
     points: 13,
   },
   {
-    img: '/src/assets/tasks/daily-tasks-4.svg',
-    title: 'Daily Drawing',
+    img: "/src/assets/tasks/daily-tasks-4.svg",
+    title: "Daily Drawing",
     status: true,
     points: 14,
   },
 ]);
 const popups = reactive([
   {
-    img: '/src/assets/tasks/popups-tasks-1.svg',
-    title: 'Join the LINE channel',
+    img: "/src/assets/tasks/popups-tasks-1.svg",
+    title: "Join the LINE channel",
     status: true,
     points: 14,
   },
   {
-    img: '/src/assets/tasks/popups-tasks-2.svg',
-    title: 'Echo survey',
+    img: "/src/assets/tasks/popups-tasks-2.svg",
+    title: "Echo survey",
     status: false,
     points: 15,
   },
@@ -55,7 +55,7 @@ const customToast = (msg: string) => {
     closeOnClick: true,
     closeOnClickOverlay: true,
     duration: 3000,
-    className: 'custom-toast content-box',
+    className: "custom-toast content-box",
   });
 };
 </script>
@@ -94,7 +94,7 @@ const customToast = (msg: string) => {
 
     <div class="module-item">
       <div class="module-title">
-        <span>Your achievements</span>
+        <span>{{ $t("rewards.YourAchievements") }}</span>
         <img
           class="img-icon"
           src="@/assets/icon-info.svg"
@@ -129,7 +129,7 @@ const customToast = (msg: string) => {
     </div>
     <div class="module-item">
       <div class="module-title">
-        <span>Daily Tasks</span>
+        <span>{{ $t("rewards.DailyTasks") }}</span>
         <img
           class="img-icon"
           src="@/assets/icon-info.svg"
@@ -145,7 +145,7 @@ const customToast = (msg: string) => {
     </div>
     <div class="module-item">
       <div class="module-title">
-        <span>Pop-ups</span>
+        <span>{{ $t("rewards.Popups") }}</span>
         <img
           class="img-icon"
           src="@/assets/icon-info.svg"

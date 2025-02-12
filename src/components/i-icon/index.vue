@@ -3,7 +3,7 @@ import { Icon as IconifyIconComp } from "@iconify/vue";
 import type { IconifyIcon } from "@iconify/vue";
 
 defineOptions({
-  name: "IIcon"
+  name: "IIcon",
 });
 
 const props = defineProps<{
@@ -12,7 +12,10 @@ const props = defineProps<{
 </script>
 
 <template>
-  <IconifyIconComp :icon="props.icon" class="i-icon" />
+  <IconifyIconComp
+    :icon="props.icon"
+    class="i-icon"
+  />
 </template>
 
 <style scoped>

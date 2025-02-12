@@ -10,12 +10,12 @@ const routes: Array<RouteRecordRaw> = [
     redirect: { name: "Home" },
     children: [
       {
-        path: "/",
+        path: "home",
         name: "Home",
         component: Home,
         meta: {
-          title: "Home"
-        }
+          title: "Home",
+        },
       },
       {
         path: "withdraw",
@@ -23,8 +23,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/withdraw/index.vue"),
         meta: {
           title: "Withdraw",
-          showTabbar: false
-        }
+          showTabbar: false,
+        },
       },
       {
         path: "swap",
@@ -32,8 +32,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/swap/index.vue"),
         meta: {
           title: "Swap",
-          showTabbar: false
-        }
+          showTabbar: false,
+        },
       },
       {
         path: "email",
@@ -42,8 +42,8 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: "Email",
           showTabbar: false,
-          noCache: true
-        }
+          noCache: true,
+        },
       },
       {
         path: "pool",
@@ -52,8 +52,8 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: "Pool",
           showTabbar: true,
-          noCache: true
-        }
+          noCache: true,
+        },
       },
       {
         path: "rewards",
@@ -62,8 +62,8 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: "Rewards",
           showTabbar: true,
-          noCache: true
-        }
+          noCache: true,
+        },
       },
       {
         path: "ranking",
@@ -72,8 +72,8 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: "Ranking",
           showTabbar: false,
-          noCache: true
-        }
+          noCache: true,
+        },
       },
       {
         path: "profile",
@@ -81,8 +81,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/profile/index.vue"),
         meta: {
           title: "Profile",
-          showTabbar: false
-        }
+          showTabbar: false,
+        },
       },
       {
         path: "deposit",
@@ -90,8 +90,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/deposit/index.vue"),
         meta: {
           title: "Deposit",
-          showTabbar: false
-        }
+          showTabbar: false,
+        },
       },
       {
         path: "deposit-history",
@@ -99,11 +99,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/deposit-history/index.vue"),
         meta: {
           title: "Deposit History",
-          showTabbar: false
-        }
-      }
-    ]
-  }
+          showTabbar: false,
+        },
+      },
+    ],
+  },
 ];
 
 export default routes;

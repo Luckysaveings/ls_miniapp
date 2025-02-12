@@ -30,14 +30,14 @@ export default defineConfig(({ mode }) => {
       // vant 组件自动按需引入
       Components({
         dts: "src/typings/components.d.ts",
-        resolvers: [VantResolver()]
+        resolvers: [VantResolver()],
       }),
       // svg icon
       createSvgIconsPlugin({
         // 指定图标文件夹
         iconDirs: [path.resolve(root, "src/icons/svg")],
         // 指定 symbolId 格式
-        symbolId: "icon-[dir]-[name]"
+        symbolId: "icon-[dir]-[name]",
       }),
       // 生产环境 gzip 压缩资源
       viteCompression(),
@@ -45,9 +45,9 @@ export default defineConfig(({ mode }) => {
       createHtmlPlugin({
         inject: {
           data: {
-            ENABLE_ERUDA: env.VITE_ENABLE_ERUDA || "false"
-          }
-        }
+            ENABLE_ERUDA: env.VITE_ENABLE_ERUDA || "false",
+          },
+        },
       }),
       // 生产环境默认不启用 CDN 加速
       enableCDN(env.VITE_CDN_DEPS),
@@ -55,47 +55,47 @@ export default defineConfig(({ mode }) => {
         imports: [
           "vue", // 自动导入 Vue 相关 API
           "vue-router", // 路由相关（若需要）
-          "pinia" // 状态管理（若需要）
+          "pinia", // 状态管理（若需要）
         ],
         dts: true, // 生成 auto-imports.d.ts 类型声明文件
         eslintrc: {
           // 更新 ESLint 配置
-          enabled: true
-        }
-      })
+          enabled: true,
+        },
+      }),
     ],
     resolve: {
       alias: {
-        "@": fileURLToPath(new URL("./src", import.meta.url))
-      }
+        "@": fileURLToPath(new URL("./src", import.meta.url)),
+      },
     },
     server: {
       host: "0.0.0.0",
       allowedHosts: true,
-      https: {
-        key: fs.readFileSync(
-          path.resolve(__dirname, "./mock/ssl/localhost-key.pem")
-        ),
-        cert: fs.readFileSync(
-          path.resolve(__dirname, "./mock/ssl/localhost.pem")
-        )
-      },
+      // https: {
+      //   key: fs.readFileSync(
+      //     path.resolve(__dirname, "./mock/ssl/localhost-key.pem")
+      //   ),
+      //   cert: fs.readFileSync(
+      //     path.resolve(__dirname, "./mock/ssl/localhost.pem")
+      //   )
+      // },
       // 仅在 proxy 中配置的代理前缀， mock-dev-server 才会拦截并 mock
       // doc: https://github.com/pengzhanbo/vite-plugin-mock-dev-server
       proxy: {
         "^/dev-api": {
-          target: ""
-        }
-      }
+          target: "",
+        },
+      },
     },
     build: {
       rollupOptions: {
         output: {
           chunkFileNames: "static/js/[name]-[hash].js",
           entryFileNames: "static/js/[name]-[hash].js",
-          assetFileNames: "static/[ext]/[name]-[hash].[ext]"
-        }
-      }
-    }
+          assetFileNames: "static/[ext]/[name]-[hash].[ext]",
+        },
+      },
+    },
   };
 });

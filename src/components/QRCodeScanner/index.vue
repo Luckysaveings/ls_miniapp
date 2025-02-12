@@ -1,6 +1,9 @@
 <template>
   <div class="scanner-container">
-    <div id="reader" style="width: 100%; height: 100%"></div>
+    <div
+      id="reader"
+      style="width: 100%; height: 100%"
+    />
   </div>
 </template>
 
@@ -16,7 +19,7 @@ const startScanner = () => {
       { facingMode: "environment" }, // 使用后置摄像头
       {
         fps: 10, // 每秒扫描10次
-        qrbox: { width: 250, height: 250 } // 扫码框的大小
+        qrbox: { width: 250, height: 250 }, // 扫码框的大小
       },
       (decodedText, decodedResult) => {
         showInfo.value = false;
@@ -26,12 +29,12 @@ const startScanner = () => {
         console.log(`二维码内容: ${decodedText}`);
         // 在此处理扫码结果，例如跳转页面或显示信息
       },
-      errorMessage => {
+      (errorMessage) => {
         // 扫码失败的回调
         console.error(`扫码失败: ${errorMessage}`);
       }
     )
-    .catch(err => {
+    .catch((err) => {
       console.error(`启动扫码失败: ${err}`);
     });
 };
@@ -39,10 +42,10 @@ const stopQrCode = () => {
   // 组件销毁前停止扫码
   html5QrCode.value
     .stop()
-    .then(ignore => {
+    .then((ignore) => {
       // QR Code scanning is stopped.
     })
-    .catch(err => {
+    .catch((err) => {
       // Stop failed, handle it.
     });
 };

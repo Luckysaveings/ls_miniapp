@@ -3,39 +3,38 @@
     <van-nav-bar
       title="Deposit History"
       left-arrow
-      @click-left="onClickLeft"
       class="nav-bar-wrap"
       :border="false"
-    >
-    </van-nav-bar>
+      @click-left="onClickLeft"
+    />
 
     <van-cell-group :border="false">
       <van-cell
         :border="false"
-        title="Deposit Address"
+        :title="$t('deposit.DepositAddress')"
         :value="depositAddress"
       />
       <van-cell
         :border="false"
-        title="TXID"
+        :title="$t('deposit.TXID')"
         :value="txid"
       />
       <van-cell
         :border="false"
-        title="Amount"
+        :title="$t('deposit.Amount')"
         :value="amount"
       />
       <van-cell
         :border="false"
-        title="Time"
+        :title="$t('deposit.Time')"
         :value="time"
       />
       <van-cell
-        title="State"
+        :title="$t('deposit.State')"
         :border="false"
       >
         <template #value>
-          <span class="state-transferred">Transferred</span>
+          <span class="state-transferred">{{ $t("deposit.Transferred") }}</span>
         </template>
       </van-cell>
     </van-cell-group>
@@ -43,30 +42,30 @@
     <van-cell-group class="mt-4">
       <van-cell
         :border="false"
-        title="Deposit Address"
+        :title="$t('deposit.DepositAddress')"
         :value="depositAddress"
       />
       <van-cell
         :border="false"
-        title="TXID"
+        :title="$t('deposit.TXID')"
         :value="txid"
       />
       <van-cell
         :border="false"
-        title="Amount"
+        :title="$t('deposit.Amount')"
         :value="amount"
       />
       <van-cell
         :border="false"
-        title="Time"
+        :title="$t('deposit.Time')"
         :value="time"
       />
       <van-cell
-        title="State"
+        :title="$t('deposit.State')"
         :border="false"
       >
         <template #value>
-          <span class="state-waiting">Waiting</span>
+          <span class="state-waiting">{{ $t("deposit.Waiting") }}</span>
         </template>
       </van-cell>
     </van-cell-group>
@@ -91,38 +90,20 @@
 </template>
 
 <script setup>
-import { showToast } from 'vant';
-import userAvatar from '@/assets/user-avatar.svg';
-import checkCircle from '@/assets/check-circle.svg';
-import { useRouter } from 'vue-router';
+import { showToast } from "vant";
+import checkCircle from "@/assets/check-circle.svg";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 const onClickLeft = () => {
   router.back();
 };
-const depositAddress = '0xb5a8116592b4b4630b93d61ace006482b76d1e28';
-const txid = '0xb5a8116592b4b4630b93d61ace006482b76d1e28';
-const time = '2025/01/10 02:00:50';
-const amount = '+1000 KAIA';
+const depositAddress = "0xb5a8116592b4b4630b93d61ace006482b76d1e28";
+const txid = "0xb5a8116592b4b4630b93d61ace006482b76d1e28";
+const time = "2025/01/10 02:00:50";
+const amount = "+1000 KAIA";
 const show = ref(false);
-const toastText = ref('Copy Success');
-const copyEmail = () => {
-  navigator.clipboard.writeText('care@luckysavings.io');
-  toastText.value = 'Email copied to clipboard';
-  show.value = true;
-};
-
-const copyUserId = () => {
-  navigator.clipboard.writeText('88888888');
-  toastText.value = 'Copy Success';
-  show.value = true;
-};
-
-const handleLogout = () => {
-  toastText.value = 'Logging out...';
-  show.value = true;
-  // Add your logout logic here
-};
+const toastText = ref("Copy Success");
 </script>
 
 <style>

@@ -1,29 +1,35 @@
 <template>
   <div class="page-wrap">
     <van-nav-bar
-      title="Withdraw"
+      :title="$t('withdraw.Withdraw')"
       left-arrow
-      @click-left="onClickLeft"
-      @click-right="onClickRight"
       class="nav-bar-wrap"
       :border="false"
+      @click-left="onClickLeft"
+      @click-right="onClickRight"
     >
       <template #right>
-        <van-icon :name="iconScan" size="24" />
+        <van-icon
+          :name="iconScan"
+          size="24"
+        />
       </template>
     </van-nav-bar>
 
     <div class="page-content">
       <!-- Token 选择 -->
       <div class="content-item">
-        <div class="label">Select Tokens</div>
+        <div class="label">{{ $t("withdraw.SelectTokens") }}</div>
         <div class="token-select">
           <div
             class="token-btn"
             :class="{ active: selectedToken === 'USDT' }"
             @click="selectedToken = 'USDT'"
           >
-            <img src="@/assets/icon-ustd.svg" alt="USDT" />
+            <img
+              src="@/assets/icon-ustd.svg"
+              alt="USDT"
+            />
             USDT
           </div>
           <div
@@ -31,7 +37,10 @@
             :class="{ active: selectedToken === 'KAIA' }"
             @click="selectedToken = 'KAIA'"
           >
-            <img src="@/assets/icon-kaia.svg" alt="KAIA" />
+            <img
+              src="@/assets/icon-kaia.svg"
+              alt="KAIA"
+            />
             KAIA
           </div>
         </div>
@@ -39,10 +48,10 @@
 
       <!-- 提现地址输入 -->
       <div class="content-item">
-        <div class="label">Withdraw Address</div>
+        <div class="label">{{ $t("withdraw.WithdrawAddress") }}</div>
         <van-field
           v-model="address"
-          placeholder="Address"
+          :placeholder="$t('withdraw.Address')"
           class="custom-field"
           clearable
         />
@@ -51,22 +60,30 @@
       <!-- 金额输入 -->
       <div class="content-item">
         <div class="title-wrap">
-          <div class="label">Amount</div>
+          <div class="label">{{ $t("withdraw.Amount") }}</div>
           <div class="available">
-            <span>Available</span>
+            <span>{{ $t("withdraw.Available") }}</span>
             <span class="item-value">{{ available }} USDT</span>
           </div>
         </div>
-        <van-field v-model="amount" placeholder="0.00" class="custom-field">
+        <van-field
+          v-model="amount"
+          :placeholder="$t('withdraw.EnterAmount')"
+          class="custom-field"
+        >
           <template #right-icon>
-            <span class="max-btn" @click="setMaxAmount">Max</span>
+            <span
+              class="max-btn"
+              @click="setMaxAmount"
+              >{{ $t("withdraw.Max") }}</span
+            >
           </template>
         </van-field>
       </div>
 
       <!-- Gas Fee -->
       <div class="content-item fee-info">
-        <span>Gas fee</span>
+        <span>{{ $t("withdraw.GasFee") }}</span>
         <span class="item-value">1.2 KAIA</span>
       </div>
       <van-divider />
@@ -74,12 +91,22 @@
       <!-- 提现地址历史 -->
       <div class="history-section">
         <div class="history-title">
-          <van-icon name="clock-o" size="24px" />
-          Withdraw Address
+          <van-icon
+            name="clock-o"
+            size="24px"
+          />
+          {{ $t("withdraw.WithdrawAddress") }}
         </div>
         <div class="no-history">
-          <div class="list-wrap" v-if="withdrawList.length > 0">
-            <div class="list-item" v-for="item in withdrawList" :key="item.id">
+          <div
+            v-if="withdrawList.length > 0"
+            class="list-wrap"
+          >
+            <div
+              v-for="item in withdrawList"
+              :key="item.id"
+              class="list-item"
+            >
               <div class="list-item-label">
                 <img
                   src="@/assets/icon-wallet.svg"
@@ -97,7 +124,7 @@
             v-else
             :image="iconEmpty"
             image-size="40"
-            description="No historical address"
+            :description="$t('withdraw.NoHistoricalAddress')"
           />
         </div>
       </div>
@@ -109,46 +136,65 @@
         :class="{ disabled: !isValidNext }"
         @click="handleNext"
       >
-        Next
+        {{ $t("withdraw.Next") }}
       </div>
     </div>
   </div>
 
-  <van-overlay :show="showInfo" class-name="custom-dialog">
+  <van-overlay
+    :show="showInfo"
+    class-name="custom-dialog"
+  >
     <div class="content-box">
       <div class="dialog-title">
-        <span>Withdraw</span>
-        <van-icon name="cross" size="20" color="#A1A1AA" @click="hiddenInfo" />
+        <span>{{ $t("withdraw.Withdraw") }}</span>
+        <van-icon
+          name="cross"
+          size="20"
+          color="#A1A1AA"
+          @click="hiddenInfo"
+        />
       </div>
 
       <div class="dialog-content">
         <div class="dialog-content-item">
-          <div class="item-label">You are sending</div>
+          <div class="item-label">{{ $t("withdraw.YouAreSending") }}</div>
           <div class="item-value top">
             <span>{{ amount }} USDT</span>
           </div>
         </div>
         <div class="dialog-content-item">
-          <div class="item-label">To</div>
+          <div class="item-label">{{ $t("withdraw.To") }}</div>
           <div class="item-value bottom">
             <span>{{ address }}</span>
           </div>
         </div>
       </div>
       <div class="dialog-footer">
-        <button class="btn-main" @click="confirmWithdraw">Confirm</button>
+        <button
+          class="btn-main"
+          @click="confirmWithdraw"
+        >
+          {{ $t("withdraw.Confirm") }}
+        </button>
         <div class="warning-text">
-          <img src="@/assets/icon-warning.svg" alt="warning" />
-          <span> Once confirmed,there is no retracting </span>
+          <img
+            src="@/assets/icon-warning.svg"
+            alt="warning"
+          />
+          <span>{{ $t("withdraw.OnceConfirmed") }}</span>
         </div>
       </div>
     </div>
   </van-overlay>
 
-  <van-overlay :show="showInfoStatus" class-name="custom-dialog">
+  <van-overlay
+    :show="showInfoStatus"
+    class-name="custom-dialog"
+  >
     <div class="content-box">
       <div class="dialog-title">
-        <span></span>
+        <span />
         <van-icon
           name="cross"
           size="20"
@@ -171,14 +217,8 @@
           class="img-status"
         />
         <div class="status-bottom">
-          <span class="item-status">{{
-            infoStatus === "success" ? "Withdraw Success" : "Withdraw Failed"
-          }}</span>
-          <span class="item-desc">{{
-            infoStatus === "success"
-              ? "Withdrawal success please check your wallet."
-              : "Please try again"
-          }}</span>
+          <span class="item-status">{{ infoStatus === "success" ? $t("withdraw.WithdrawSuccess") : $t("withdraw.WithdrawFailed") }}</span>
+          <span class="item-desc">{{ infoStatus === "success" ? $t("withdraw.WithdrawalSuccessMessage") : $t("withdraw.PleaseTryAgain") }}</span>
         </div>
       </div>
       <div class="dialog-footer">
@@ -187,8 +227,8 @@
           :class="{ success: infoStatus === 'success' }"
           @click="confirmStatus"
         >
-          <span v-if="infoStatus === 'success'">OK</span>
-          <span v-else>Retry</span>
+          <span v-if="infoStatus === 'success'">{{ $t("withdraw.OK") }}</span>
+          <span v-else>{{ $t("withdraw.Retry") }}</span>
         </button>
       </div>
     </div>
@@ -201,14 +241,21 @@
   >
     <template #message>
       <div class="toast-message">
-        <van-icon :name="checkCircle" size="24" color="red" />
+        <van-icon
+          :name="checkCircle"
+          size="24"
+          color="red"
+        />
         <span class="toast-text">{{ toastText }}</span>
       </div>
     </template>
   </van-toast>
 
   <!-- 扫码功能 -->
-  <QRCodeScanner ref="qrRef" @success="handleQrRes" />
+  <QRCodeScanner
+    ref="qrRef"
+    @success="handleQrRes"
+  />
 </template>
 
 <script setup name="Withdraw">
@@ -227,7 +274,7 @@ const showInfoStatus = ref(false);
 const infoStatus = ref("");
 
 const qrRef = ref(null);
-const handleQrRes = res => {
+const handleQrRes = (res) => {
   console.log("res", res);
   showToast({ message: `Scan Success: ${res}` });
   // qrRef.value.stopQrCode();
@@ -261,7 +308,7 @@ const toastText = ref("Copy Success");
 const withdrawList = ref([
   { address: "6xvni1...dyEfW7", time: "Used 1 days ago ", id: 1 },
   { address: "6xvni1...dyEfW7", time: "Used 1 days ago ", id: 2 },
-  { address: "6xvni1...dyEfW7", time: "Used 1 days ago ", id: 3 }
+  { address: "6xvni1...dyEfW7", time: "Used 1 days ago ", id: 3 },
 ]);
 
 const handleNext = () => {

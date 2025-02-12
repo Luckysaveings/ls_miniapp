@@ -1,12 +1,12 @@
 <template>
   <div class="page-wrap">
     <van-nav-bar
-      title="Deposit"
+      title="{{ $t('deposit.Deposit') }}"
       left-arrow
-      @click-left="onClickLeft"
-      @click-right="onClickRight"
       class="nav-bar-wrap"
       :border="false"
+      @click-left="onClickLeft"
+      @click-right="onClickRight"
     >
       <template #right>
         <van-icon
@@ -22,8 +22,8 @@
         alt="KAIA"
         class="img-qr"
       />
-      <div class="deposit-title">Your KAIA Address</div>
-      <div class="deposit-desc">Use this address to receive tokens on <span class="bold">KAIA</span>.</div>
+      <div class="deposit-title">{{ $t("deposit.YourKAIAAddress") }}</div>
+      <div class="deposit-desc">{{ $t("deposit.addressTip") }} <span class="bold">KAIA</span>.</div>
     </div>
 
     <!--  Button -->
@@ -43,7 +43,7 @@
         class="btn-share"
         @click="handleShare"
       >
-        Share
+        {{ $t("deposit.Share") }}
       </div>
     </div>
   </div>
@@ -67,34 +67,34 @@
 </template>
 
 <script setup>
-import { showToast } from 'vant';
-import iconHistory from '@/assets/icon-history.svg';
-import checkCircle from '@/assets/check-circle.svg';
-import { useRouter } from 'vue-router';
+import { showToast } from "vant";
+import iconHistory from "@/assets/icon-history.svg";
+import checkCircle from "@/assets/check-circle.svg";
+import { useRouter } from "vue-router";
 const router = useRouter();
 
 const onClickRight = () => {
-  router.push('/deposit-history');
+  router.push("/deposit-history");
 };
 const onClickLeft = () => {
   router.back();
 };
 const show = ref(false);
-const toastText = ref('Copy Success');
+const toastText = ref("Copy Success");
 const copyEmail = () => {
-  navigator.clipboard.writeText('care@luckysavings.io');
-  toastText.value = 'Email copied to clipboard';
+  navigator.clipboard.writeText("care@luckysavings.io");
+  toastText.value = "Email copied to clipboard";
   show.value = true;
 };
 
 const copyUserId = () => {
-  navigator.clipboard.writeText('88888888');
-  toastText.value = 'Copy Success';
+  navigator.clipboard.writeText("88888888");
+  toastText.value = "Copy Success";
   show.value = true;
 };
 
 const handleLogout = () => {
-  toastText.value = 'Logging out...';
+  toastText.value = "Logging out...";
   show.value = true;
   // Add your logout logic here
 };
