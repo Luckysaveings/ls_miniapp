@@ -65,7 +65,8 @@ const lineLogin = () => {
 const lineLoginLiff = async () => {
   liff
     .init({
-      liffId: "2006818858-1a2PrWjY",
+      // liffId: "2006818858-1a2PrWjY",
+      liffId: import.meta.env.VITE_LINE_LIFF_ID || "2006815241-YKKvp8yb",
       withLoginOnExternalBrowser: true,
     })
     .then(async () => {
