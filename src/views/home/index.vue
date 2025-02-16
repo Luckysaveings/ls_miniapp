@@ -65,18 +65,20 @@ const lineLogin = () => {
 const lineLoginLiff = async () => {
   liff
     .init({
-      // liffId: "2006818858-1a2PrWjY",
-      liffId: import.meta.env.VITE_LINE_LIFF_ID || "2006815241-YKKvp8yb",
+      liffId: "2006818858-1a2PrWjY",
+      // liffId: import.meta.env.VITE_LINE_LIFF_ID || "2006815241-YKKvp8yb",
       withLoginOnExternalBrowser: true,
     })
     .then(async () => {
       if (!liff.isLoggedIn()) {
         liff.login();
       } else {
+        const idToken = await liff.getIDToken();
         const DecodedToken = await liff.getDecodedIDToken();
-        console.log(DecodedToken);
+        console.log("idToken:", idToken);
+        console.log("DecodedToken:", DecodedToken);
         liff.getProfile().then((profile) => {
-          console.log(profile);
+          console.log("profile:", profile);
         });
       }
     });
