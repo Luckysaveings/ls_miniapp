@@ -1,6 +1,5 @@
 <script setup lang="ts" name="Ranking">
 import { useRouter } from "vue-router";
-import { reactive } from "vue";
 const router = useRouter();
 const onClickLeft = () => {
   router.back();
