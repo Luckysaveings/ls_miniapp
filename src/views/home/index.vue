@@ -2,7 +2,7 @@
 import liff from "@line/liff";
 import DappPortalSDK from "@linenext/dapp-portal-sdk";
 // import { WalletType, PaymentProvider } from "@linenext/dapp-portal-sdk";
-import { Web3Provider as w3 } from "@kaiachain/ethers-ext/v6";
+// import { Web3Provider as w3 } from "@kaiachain/ethers-ext/v6";
 import qs from "qs";
 import { useRouter } from "vue-router";
 import { useClickAway } from "@vant/use";
@@ -95,15 +95,9 @@ const getWallet = async () => {
     clientId: import.meta.env.VITE_LINE_CLIENT_ID || "",
   });
   const walletProvider = sdk.getWalletProvider();
-  const web3Provider = new w3(walletProvider);
-  const accounts = await web3Provider.send("kaia_requestAccounts", []);
-  const pProvider = sdk?.getPaymentProvider();
-};
-const openLineWallet = () => {
-  liff.openWindow({
-    url: "https://blockchain-wallet.line.me", // LINE Blockchain Wallet 的 URL
-    external: true, // 在外部浏览器中打开
-  });
+  // const web3Provider = new w3(walletProvider);
+  // const accounts = await web3Provider.send("kaia_requestAccounts", []);
+  // const pProvider = sdk?.getPaymentProvider();
 };
 const popoverShow = ref(false);
 const popoverRef = ref();
