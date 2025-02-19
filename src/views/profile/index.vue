@@ -14,6 +14,7 @@
     <!-- Profile Information List -->
     <van-cell-group class="info-group">
       <van-cell
+        class="cell-class-custom"
         :border="false"
         title-class="title-class"
         value-class="value-class"
@@ -33,6 +34,7 @@
       </van-cell>
       <van-cell
         :border="false"
+        class="cell-class-custom"
         title-class="title-class"
         value-class="value-class"
         title="Nickname"
@@ -51,12 +53,12 @@
         </template>
       </van-cell>
       <van-cell
+        class="cell-class-custom"
         :border="false"
         title-class="title-class"
         value-class="value-class"
         title="User ID"
         value="88888888"
-        @click="copyUserId"
       >
         <template #title>
           <div class="cell-title-wrap">
@@ -73,10 +75,39 @@
             class="img-icon icon-copy"
             src="@/assets/icon-copy.svg"
             alt="copy"
+            @click="copyUserId"
           />
         </template>
       </van-cell>
       <van-cell
+        class="cell-class-custom"
+        :border="false"
+        title-class="title-class"
+        value-class="value-class"
+        title="User ID"
+        value="0xb5a8...1e28"
+      >
+        <template #title>
+          <div class="cell-title-wrap">
+            <img
+              class="title-icon"
+              src="@/assets/profile-userId.svg"
+              alt="icon"
+            />
+            <span>{{ $t("common.WalletAddress") }}</span>
+          </div>
+        </template>
+        <template #right-icon>
+          <img
+            class="img-icon icon-copy"
+            src="@/assets/icon-copy.svg"
+            alt="copy"
+            @click="copyUserId"
+          />
+        </template>
+      </van-cell>
+      <van-cell
+        class="cell-class-custom"
         :border="false"
         title-class="title-class"
         value-class="value-class"
@@ -100,6 +131,7 @@
 
     <van-cell-group class="settings-group">
       <van-cell
+        class="cell-class-custom"
         :border="false"
         title="Terms of Use"
         is-link
@@ -118,6 +150,7 @@
 
       <van-cell
         :border="false"
+        class="cell-class-custom"
         title-class="title-class"
         value-class="value-class"
         title="Privacy Policy"
@@ -139,6 +172,7 @@
     <van-cell-group>
       <van-cell
         :border="false"
+        class="cell-class-custom"
         title-class="title-class"
         value-class="value-class"
         value="care@luckysavings.io"
@@ -164,6 +198,7 @@
       </van-cell>
       <van-cell
         :border="false"
+        class="cell-class-custom"
         title-class="title-class"
         value-class="value-class"
         :value="version"
@@ -286,11 +321,15 @@ const handleLogout = () => {
 .page-wrap {
   min-height: 100vh;
   background: linear-gradient(180deg, #fff9e1 0%, #fff 100%);
-  padding: 32px 8px;
+  padding: 32px 24px;
 
   .settings-group {
     margin: 24px 0;
   }
+}
+.cell-class-custom {
+  padding: 0;
+  margin: 16px 0 !important;
 }
 .title-class {
   font-size: 16px;

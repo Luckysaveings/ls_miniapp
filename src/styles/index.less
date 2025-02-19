@@ -22,6 +22,17 @@ html {
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: "CustomFont";
+  src: url("../assets/fonts/GenSenRounded2TW-R.ttf") format("truetype");
+  /* url('./assets/fonts/GenSenRounded2TW-M.ttf') format('truetype'); */
+  font-display: swap;
+}
+
+* {
+  font-family: "CustomFont";
+}
+
 #app {
   height: 100%;
 }
@@ -40,9 +51,11 @@ a:hover {
   animation: none;
   mix-blend-mode: normal;
 }
+
 ::view-transition-old(root) {
   z-index: 1;
 }
+
 ::view-transition-new(root) {
   z-index: 9999;
 }
@@ -59,10 +72,12 @@ a:hover {
   font-weight: 500;
   text-align: center;
 }
+
 .btn-main.success {
   background: var(--LS-Secondary-Green-01, #06c756);
   color: #fff;
 }
+
 .color-blue-01 {
   color: var(--LS-Blue-01, #2d87fa);
 }
@@ -77,23 +92,27 @@ a:hover {
   font-weight: 500;
   font-size: 14px;
 }
+
 .nav-bar-wrap {
   background-color: transparent !important;
   padding: 12px 0px 12px 16px;
 
   .van-nav-bar__left {
     padding: 0;
+
     .van-icon {
       font-size: 18px;
       color: #a1a1aa;
     }
   }
+
   .van-nav-bar__title {
     font-size: 18px;
     color: #18181b;
     font-weight: 500;
   }
 }
+
 // 常规内容模块
 .content-box {
   padding: 13px;
@@ -133,6 +152,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+
   .content-box {
     box-sizing: content-box;
     width: 314px;
@@ -152,18 +172,21 @@ a:hover {
       color: #18181b;
       margin-bottom: 16px;
     }
+
     .dialog-content {
       display: flex;
       flex-direction: column;
       border-radius: 12px;
       margin: 16px auto;
       align-items: center;
+
       &.status-content {
         margin: 0;
 
         .dialog-title {
           margin: 0;
         }
+
         .img-status {
           margin-top: -40px;
           width: 64px;
@@ -201,18 +224,21 @@ a:hover {
         border-radius: 12px;
         margin-bottom: 6px;
         width: 100%;
+
         .item-label {
           color: var(--LS-Gray-05, #83838f);
           font-size: 14px;
           font-weight: 500;
           line-height: 20px;
         }
+
         .item-value {
           margin-top: 6px;
           font-size: 18px;
           font-weight: 500;
           color: #18181b;
           line-height: 28px;
+
           &.top {
             font-size: 24px;
             font-weight: 700;
@@ -220,6 +246,7 @@ a:hover {
         }
       }
     }
+
     .dialog-footer {
       display: flex;
       flex-direction: column;
@@ -248,21 +275,26 @@ a:hover {
   background: var(--LS-Gray-01, #fff);
   box-shadow: 0px 6px 0px 0px #18181b;
 }
+
 .img-icon {
   display: inline-block;
   width: 20px;
   height: 20px;
 }
+
 .txt-link {
   color: #0066cc;
   text-decoration: underline;
 }
+
 .no-margin-b {
   margin-bottom: 0px !important;
 }
+
 .margin-top-16 {
   margin-top: 16px;
 }
+
 .content-item {
   margin-bottom: 16px;
 
@@ -271,6 +303,7 @@ a:hover {
     font-weight: 500;
     margin-bottom: 6px;
   }
+
   .token-btn {
     background: transparent;
     display: flex;
@@ -294,6 +327,7 @@ a:hover {
     margin-left: 6px;
     color: #18181b;
   }
+
   .title-wrap {
     display: flex;
     justify-content: space-between;
@@ -305,6 +339,7 @@ a:hover {
       font-weight: 400;
     }
   }
+
   .max-btn {
     font-size: 16px;
     color: #2d87fa;
@@ -327,6 +362,7 @@ a:hover {
     align-items: center;
     margin-top: 16px;
     margin-bottom: 16px;
+
     .text-content {
       margin-left: 16px;
       font-size: 18px;
@@ -348,4 +384,7 @@ a:hover {
       height: 24px;
     }
   }
+}
+.margin-top-16 {
+  margin-top: 16px;
 }

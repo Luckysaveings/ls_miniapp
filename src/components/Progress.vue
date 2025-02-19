@@ -10,7 +10,7 @@
       />
       <van-icon
         :style="{
-          left: `${percentage}%`,
+          left: `${percentage - 0.5}%`,
         }"
         class="pivot"
         :name="iconGift"

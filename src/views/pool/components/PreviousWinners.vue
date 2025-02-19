@@ -28,17 +28,17 @@
         <div class="type-select">
           <div
             class="type-btn"
-            :class="{ active: selectedType === 'usd' }"
-            @click="changeType('usd')"
-          >
-            USD Pool
-          </div>
-          <div
-            class="type-btn"
             :class="{ active: selectedType === 'kaia' }"
             @click="changeType('kaia')"
           >
             KAIA Pool
+          </div>
+          <div
+            class="type-btn"
+            :class="{ active: selectedType === 'usd' }"
+            @click="changeType('usd')"
+          >
+            USD Pool
           </div>
         </div>
         <div
@@ -120,10 +120,10 @@ const data = ref({
 const currentData = ref(data.value[selectedType.value]);
 /*
  * 显示弹窗
- * @param {string} type - 选择池子 1: Daily Pool 2: $10K Jackpot
+ * @param {string} type: 1: KAIA Pool 2: USD Pool
  */
 const showDialog = (type) => {
-  selectedType.value = type === "1" ? "usd" : "kaia";
+  selectedType.value = type === "1" ? "kaia" : "usd";
   currentData.value = data.value[selectedType.value];
   nextTick(() => {
     show.value = true;
@@ -160,7 +160,7 @@ defineExpose({ showDialog });
     &.type-kaia {
       .type-btn {
         &.active {
-          background: #ddb305;
+          background: #fee719;
         }
       }
       .list-item-value {

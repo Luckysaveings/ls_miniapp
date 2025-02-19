@@ -12,13 +12,13 @@ const userInfo = reactive({
   avatar: userAvatar,
   nickName: "Arthorn",
 });
-// 选择池子 1: Daily Pool 2: $10K Jackpot
+// 选择池子 1: KAIA Pool 2: USD Pool
 const selectedPool = ref("1");
 const gamePlayDialogRef = ref(null);
-const showGameplay = () => {
+const showGameplay = (category) => {
   const type = selectedPool.value;
   nextTick(() => {
-    gamePlayDialogRef.value.showGameplayContent(type);
+    gamePlayDialogRef.value.showGameplayContent(type, category);
   });
 };
 const previousDialogRef = ref(null);
@@ -105,25 +105,33 @@ const showReminderMsg = ref(false);
         :class="{ daily: selectedPool === '1' }"
         @click="selectedPool = '1'"
       >
-        {{ $t("pool.DailyPool") }}
+        {{ $t("pool.KAIAPool") }}
       </div>
       <div
         class="token-btn"
-        :class="{ jackpot: selectedPool === '2' }"
+        :class="{ USDPool: selectedPool === '2' }"
         @click="selectedPool = '2'"
       >
-        {{ $t("pool.DollarTenKJackpot") }}
+        {{ $t("pool.USDPool") }}
       </div>
     </div>
 
-    <!-- 下次开奖时间模块 -->
-    <div
-      v-show="selectedPool === '1'"
-      class="module-item"
-    >
-      <div class="module-title">{{ $t("pool.NextWinnerDrawn") }}</div>
-      <div class="module-content content-box bg-yellow">
-        <div class="countdown-box">
+    <!-- Daily Pool -->
+    <div class="module-item">
+      <div class="module-title">
+        <span>{{ $t("pool.DailyPool") }}</span>
+        <img
+          class="img-icon"
+          src="@/assets/icon-info.svg"
+          alt="info"
+          @click="showGameplay('1')"
+        />
+      </div>
+      <div class="module-content content-box bg-white">
+        <div
+          class="countdown-box"
+          :class="selectedPool === '2' ? 'bg-green' : 'bg-yellow'"
+        >
           <img
             class="img-countdown-box-bg left-bg"
             src="@/assets/icon-clocker.svg"
@@ -154,159 +162,57 @@ const showReminderMsg = ref(false);
         </div>
         <Progress
           :percentage="75"
-          bg-color="#18181B"
+          :bg-color="selectedPool === '2' ? '#06C756' : '#FEE719'"
         />
-        <div class="next-winner-drawn-tip">{{ $t("pool.NextWinnerDrawnTip") }}</div>
-        <van-divider class="divider" />
-        <div
-          class="previous-winners"
-          @click="showPreviousWinner"
-        >
-          <div class="previous-winners-left">
-            <img
-              class="img-jiangbei"
-              src="@/assets/icon-jiangbei.svg"
-              alt="jiangbei"
-            />
-            <span>{{ $t("pool.PreviousWinners") }}</span>
-          </div>
-          <van-icon name="arrow" />
-        </div>
-      </div>
-    </div>
-
-    <!-- USD Pool 模块 -->
-    <div class="module-item">
-      <div class="module-title">
-        <span>{{ $t("pool.USDPool") }}</span>
-        <img
-          class="img-icon"
-          src="@/assets/icon-info.svg"
-          alt="info"
-          @click="showGameplay"
-        />
-      </div>
-      <div
-        v-show="selectedPool === '1'"
-        class="content-box bg-green"
-      >
         <div class="text-grey">{{ $t("pool.CurrentPrizePool") }}</div>
-        <div class="text-num">$126,323</div>
-        <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
-        <div class="ticket-box">
-          <img
-            class="img-tickets"
-            src="@/assets/img-tickets.svg"
-            alt="tickets"
-          />
-          <div class="ticket-num">x100</div>
-        </div>
-        <button
-          class="btn-main"
-          @click="lineLogin"
-        >
-          {{ $t("pool.JoinNow") }}
-        </button>
-      </div>
-      <div
-        v-show="selectedPool === '2'"
-        class="content-box bg-green jackpot-content"
-      >
-        <img
-          class="module-inner-bg left-bg"
-          src="@/assets/icon-dollar-y.svg"
-          alt="dollar"
-        />
-        <img
-          class="module-inner-bg right-bg"
-          src="@/assets/icon-gift-r.svg"
-          alt="gift"
-        />
-        <div class="content-item-title-wrap">
-          <div class="text-grey content-item-title">
-            <img
-              class="img-icon"
-              src="@/assets/icon-dollar.svg"
-              alt="dollar"
-            />
-            {{ $t("pool.CurrentPrizePool") }}
-          </div>
-        </div>
-        <div class="text-num">
-          <span>$16,323</span>
-          <span class="text-num-sub">/ $10,000</span>
-        </div>
-        <Progress
-          :percentage="65"
-          bg-color="#06c756"
-        />
-        <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
-        <div class="ticket-box">
-          <img
-            class="img-tickets"
-            src="@/assets/img-tickets.svg"
-            alt="tickets"
-          />
-          <div class="ticket-num">x100</div>
-        </div>
-        <van-divider class="divider" />
         <div
-          class="previous-winners"
-          @click="showPreviousWinner"
+          class="text-num"
+          :class="selectedPool === '2' ? '' : 'text-num-yellow'"
         >
-          <div class="previous-winners-left">
-            <img
-              class="img-jiangbei"
-              src="@/assets/icon-jiangbei.svg"
-              alt="jiangbei"
-            />
-            <span>{{ $t("pool.PreviousWinners") }}</span>
-          </div>
-          <van-icon name="arrow" />
-        </div>
-        <button
-          class="btn-main margin-top-16"
-          @click="lineLogin"
-        >
-          {{ $t("pool.JoinNow") }}
-        </button>
-      </div>
-    </div>
-
-    <!-- KAIA Pool 模块 -->
-    <div class="module-item">
-      <div class="module-title">
-        <span>{{ $t("pool.KAIAPool") }}</span>
-        <img
-          class="img-icon"
-          src="@/assets/icon-info.svg"
-          alt="info"
-          @click="showGameplay"
-        />
-      </div>
-      <div
-        v-show="selectedPool === '1'"
-        class="content-box bg-2"
-      >
-        <div class="text-grey">$76,323</div>
-        <div class="text-num">
           <img
+            v-show="selectedPool === '1'"
             class="icon-kaia"
             src="@/assets/icon-kaia.svg"
             alt="kaia"
           />
+          <span v-show="selectedPool === '2'">$</span>
           <span>123,876,323</span>
         </div>
         <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
         <div class="ticket-box">
           <img
+            v-show="selectedPool === '1'"
             class="img-tickets"
             src="@/assets/img-tickets-kaia.svg"
             alt="tickets"
           />
+          <img
+            v-show="selectedPool === '2'"
+            class="img-tickets"
+            src="@/assets/img-tickets.svg"
+            alt="tickets"
+          />
           <div class="ticket-num">x100</div>
         </div>
-        <div class="btn-wrap">
+        <van-divider class="divider" />
+        <div
+          class="previous-winners"
+          @click="showPreviousWinner"
+        >
+          <div class="previous-winners-left">
+            <img
+              class="img-jiangbei"
+              src="@/assets/icon-jiangbei.svg"
+              alt="jiangbei"
+            />
+            <span>{{ $t("pool.PreviousWinners") }}</span>
+          </div>
+          <van-icon name="arrow" />
+        </div>
+        <div
+          v-show="selectedPool === '1'"
+          class="btn-wrap margin-top-16"
+        >
           <button
             class="btn-main btn-withdraw"
             @click="showWithdrawDialog"
@@ -320,12 +226,28 @@ const showReminderMsg = ref(false);
             {{ $t("pool.Deposit") }}
           </button>
         </div>
+        <button
+          v-show="selectedPool === '2'"
+          class="btn-main margin-top-16"
+          @click="router.push('/pool')"
+        >
+          {{ $t("home.JoinNow") }}
+        </button>
+      </div>
+    </div>
+
+    <div class="module-item">
+      <div class="module-title">
+        <span>{{ $t("pool.JackpotTitle") }}</span>
+        <img
+          class="img-icon"
+          src="@/assets/icon-info.svg"
+          alt="info"
+          @click="showGameplay('2')"
+        />
       </div>
 
-      <div
-        v-show="selectedPool === '2'"
-        class="content-box bg-2 jackpot-content"
-      >
+      <div class="content-box bg-2 USDPool-content">
         <img
           class="module-inner-bg left-bg"
           src="@/assets/icon-dollar-y.svg"
@@ -346,24 +268,36 @@ const showReminderMsg = ref(false);
             {{ $t("pool.CurrentPrizePool") }}
           </div>
         </div>
-        <div class="text-num text-num-yellow">
+        <div
+          class="text-num"
+          :class="selectedPool === '2' ? '' : 'text-num-yellow'"
+        >
           <img
+            v-show="selectedPool === '1'"
             class="icon-kaia"
             src="@/assets/icon-kaia.svg"
             alt="kaia"
           />
+          <span v-show="selectedPool === '2'">$</span>
           <span>6,323</span>
           <span class="text-num-sub">/ $10,000</span>
         </div>
         <Progress
           :percentage="55"
-          bg-color="#fee719"
+          :bg-color="selectedPool === '2' ? '#06C756' : '#FEE719'"
         />
         <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
         <div class="ticket-box">
           <img
+            v-show="selectedPool === '1'"
             class="img-tickets"
             src="@/assets/img-tickets-kaia.svg"
+            alt="tickets"
+          />
+          <img
+            v-show="selectedPool === '2'"
+            class="img-tickets"
+            src="@/assets/img-tickets.svg"
             alt="tickets"
           />
           <div class="ticket-num">x100</div>
@@ -384,7 +318,10 @@ const showReminderMsg = ref(false);
           <van-icon name="arrow" />
         </div>
 
-        <div class="btn-wrap margin-top-16">
+        <div
+          v-show="selectedPool === '1'"
+          class="btn-wrap margin-top-16"
+        >
           <button
             class="btn-main btn-withdraw"
             @click="showWithdrawDialog"
@@ -398,6 +335,13 @@ const showReminderMsg = ref(false);
             {{ $t("pool.Deposit") }}
           </button>
         </div>
+        <button
+          v-show="selectedPool === '2'"
+          class="btn-main margin-top-16"
+          @click="router.push('/pool')"
+        >
+          {{ $t("home.JoinNow") }}
+        </button>
       </div>
     </div>
   </div>
@@ -584,7 +528,7 @@ const showReminderMsg = ref(false);
     &.daily {
       background: var(--LS-Primary-01, #fee719);
     }
-    &.jackpot {
+    &.USDPool {
       background: #5aff9e;
     }
   }
@@ -600,6 +544,12 @@ const showReminderMsg = ref(false);
     position: relative;
     overflow: hidden;
 
+    &.bg-green {
+      background: #5aff9e;
+    }
+    &.bg-yellow {
+      background: #fee719;
+    }
     .img-countdown-box-bg {
       position: absolute;
       width: 64px;
@@ -683,14 +633,8 @@ const showReminderMsg = ref(false);
     &.bg-2 {
       background: linear-gradient(180deg, #ffffed 0%, #fff 100%);
     }
-    &.jackpot-content {
+    &.USDPool-content {
       padding-top: 0px;
-
-      .text-num {
-        &.text-num-yellow {
-          color: var(--LS-Primary-02, #ddb305);
-        }
-      }
     }
     .text-grey {
       color: #83838f;
@@ -706,6 +650,9 @@ const showReminderMsg = ref(false);
       margin-top: 2px;
       margin-bottom: 12px;
 
+      &.text-num-yellow {
+        color: var(--LS-Primary-02, #ddb305);
+      }
       .text-num-sub {
         font-size: 16px;
         font-weight: 700;

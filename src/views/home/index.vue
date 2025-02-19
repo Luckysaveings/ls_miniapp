@@ -342,8 +342,17 @@ const handlePopoverItem = (type: string) => {
             @click="hiddenInfo"
           />
         </div>
-
         <div class="balance-content">
+          <div class="balance-row">
+            <span class="label">{{ $t("common.WalletAddress") }}</span>
+            <span class="value">
+              <span>0xb5a8...1e28</span>
+              <img
+                src="@/assets/icon-copy.svg"
+                alt="copy"
+                class="img-copy"
+            /></span>
+          </div>
           <div class="balance-row">
             <span class="label">{{ $t("home.Balance") }}</span>
             <span class="value">
@@ -356,6 +365,9 @@ const handlePopoverItem = (type: string) => {
               {{ balanceInfo[infoType].balance }}</span
             >
           </div>
+        </div>
+
+        <div class="balance-content">
           <div class="balance-row">
             <span class="label">{{ $t("home.Savings") }}</span>
             <span class="value">
@@ -402,7 +414,7 @@ const handlePopoverItem = (type: string) => {
   .content-box {
     box-sizing: content-box;
     width: 314px;
-    height: 204px;
+    // height: 204px;
     padding: 20px;
     border-radius: 24px;
     border: 3px solid var(--LS-Gray-07, #18181b);
@@ -441,6 +453,9 @@ const handlePopoverItem = (type: string) => {
             height: 18px;
             border-radius: 100%;
             margin-right: 6px;
+          }
+          .img-copy {
+            margin-left: 6px;
           }
         }
       }
@@ -602,7 +617,6 @@ const handlePopoverItem = (type: string) => {
     }
     .box-num {
       color: #00ba4d;
-      font-family: "GenSenRounded2 TW";
       font-size: 32px;
       font-style: normal;
       font-weight: 700;
