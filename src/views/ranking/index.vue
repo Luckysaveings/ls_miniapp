@@ -67,7 +67,7 @@ const tierIcons = [winner1, winner2, winner3];
               </div>
             </div>
             <div class="achievement-item">
-              <div class="item-top">{{ $t("ranking.HoldingPoints") }}</div>
+              <div class="item-top">{{ selectedType === "points" ? $t("ranking.Points") : $t("ranking.Badges") }}</div>
               <div class="item-bottom">
                 <span>112,241</span>
                 <img

@@ -95,6 +95,7 @@ export default defineConfig(({ mode }) => {
           entryFileNames: "static/js/[name]-[hash].js",
           assetFileNames: "static/[ext]/[name]-[hash].[ext]",
         },
+        sourcemap: true,
       },
     },
   };

@@ -1,4 +1,5 @@
 <script setup lang="ts" name="Rewards">
+// import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import { showToast } from "vant";
 import userAvatar from "@/assets/user-avatar.svg";

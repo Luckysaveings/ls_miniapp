@@ -82,22 +82,25 @@ const lineLoginLiff = async () => {
         // });
       }
     });
-  // if (!liff.isLoggedIn()) {
-  //   liff.login();
-  // } else {
-  //   const DecodedToken = await liff.getDecodedIDToken();
-  //   const profile = await liff.getProfile();
-  //   console.log(DecodedToken, profile);
-  // }
 };
 const getWallet = async () => {
   const sdk = await DappPortalSDK.init({
     clientId: import.meta.env.VITE_LINE_CLIENT_ID || "",
+    chainId: import.meta.env.NEXT_PUBLIC_CHAIN_ID,
   });
   const walletProvider = sdk.getWalletProvider();
   // const web3Provider = new w3(walletProvider);
   // const accounts = await web3Provider.send("kaia_requestAccounts", []);
   // const pProvider = sdk?.getPaymentProvider();
+  const accounts = await walletProvider.request({ method: "kaia_requestAccounts" });
+  const accountAddress = accounts[0];
+  console.log("accountAddress", accountAddress);
+};
+const openLineWallet = () => {
+  liff.openWindow({
+    url: "https://blockchain-wallet.line.me", // LINE Blockchain Wallet 的 URL
+    external: true, // 在外部浏览器中打开
+  });
 };
 const popoverShow = ref(false);
 const popoverRef = ref();
@@ -301,7 +304,7 @@ const handlePopoverItem = (type: string) => {
           />
           <span class="popover-text">{{ $t("home.Withdraw") }}</span>
         </div>
-        <div
+        <!-- <div
           class="popover-item"
           @click="handlePopoverItem('swap')"
         >
@@ -311,7 +314,7 @@ const handlePopoverItem = (type: string) => {
             alt="swap"
           />
           <span class="popover-text">{{ $t("home.Swap") }}</span>
-        </div>
+        </div> -->
       </div>
     </div>
     <button
@@ -366,7 +369,7 @@ const handlePopoverItem = (type: string) => {
             >
           </div>
           <div class="balance-row">
-            <span class="label">{{ $t("home.DrawRewards") }}</span>
+            <span class="label">{{ $t("home.LotteryWinnings") }}</span>
             <span class="value">
               <van-image
                 fit="cover"

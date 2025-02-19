@@ -3,7 +3,7 @@ import { useRouter } from "vue-router";
 import iconUsdt from "@/assets/icon-ustd.svg";
 import iconKaia from "@/assets/icon-kaia.svg";
 import userAvatar from "@/assets/user-avatar.svg";
-import GameplayDialog from "./components/GameplayDialog.vue";
+import GamePlayDialog from "./components/GamePlayDialog.vue";
 import PreviousDialog from "./components/PreviousWinners.vue";
 import Progress from "@/components/Progress.vue";
 
@@ -14,11 +14,11 @@ const userInfo = reactive({
 });
 // 选择池子 1: Daily Pool 2: $10K Jackpot
 const selectedPool = ref("1");
-const gameplayDialogRef = ref(null);
+const gamePlayDialogRef = ref(null);
 const showGameplay = () => {
   const type = selectedPool.value;
   nextTick(() => {
-    gameplayDialogRef.value.showGameplayContent(type);
+    gamePlayDialogRef.value.showGameplayContent(type);
   });
 };
 const previousDialogRef = ref(null);
@@ -156,6 +156,7 @@ const showReminderMsg = ref(false);
           :percentage="75"
           bg-color="#18181B"
         />
+        <div class="next-winner-drawn-tip">{{ $t("pool.NextWinnerDrawnTip") }}</div>
         <van-divider class="divider" />
         <div
           class="previous-winners"
@@ -401,7 +402,7 @@ const showReminderMsg = ref(false);
     </div>
   </div>
   <!-- 弹窗 Daily Pool和10K Jackpot Gameplay -->
-  <GameplayDialog ref="gameplayDialogRef" />
+  <GamePlayDialog ref="gamePlayDialogRef" />
   <PreviousDialog ref="previousDialogRef" />
   <!-- 弹窗 USD Deposit -->
   <van-overlay
@@ -568,9 +569,9 @@ const showReminderMsg = ref(false);
 .content-box.token-select {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 32px;
   margin-top: 0;
-  padding: 8px;
+  padding: 12px;
 
   .token-btn {
     font-size: 16px;
@@ -625,6 +626,13 @@ const showReminderMsg = ref(false);
         opacity: 0.5;
       }
     }
+  }
+  .next-winner-drawn-tip {
+    margin: 12px 0;
+    font-size: 14px;
+    line-height: 20px; /* 142.857% */
+    opacity: 0.56;
+    color: var(--LS-Gray-07, #18181b);
   }
   .divider {
     border-color: rgba(24, 24, 27, 0.08);

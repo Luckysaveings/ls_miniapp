@@ -39,8 +39,9 @@ const switchGameplayContent = (type) => {
       content: `
     <p>1. The USD and KAIA prize pools will be drawn every day at 20:00 (UTC+0).</p>  
     <p>2. You will never lose your principal and can withdraw at any time.</p>
-    <p>3. Your yields will be rolled into the Daily Pool and the $10k Jackpot at a 50%:50% ratio.</p>
-    <p>4. Based on smart contracts, the more you deposit, the more tickets you receive, and the higher your chances of winning.</p>
+    <p>3. Your deposit is used to earn yield from XYZ protocol, which creates the prize pool and your tickets.</p>
+    <p>4. Your yields will be rolled into the Daily Pool and the $10k Jackpot at a 50%:50% ratio.</p>
+    <p>5. Based on smart contracts, the more you deposit, the more tickets you receive, and the higher your chances of winning.</p>
     <p>5. Your savings will automatically roll over into the next pool unless you withdraw.</p>`,
       waring: `
       Due to KAIA restrictions, withdrawing from KAIA pool might require a 7 days unlock due to Kaia Chain staking requirements.

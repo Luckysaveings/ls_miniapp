@@ -14,7 +14,7 @@ export default {
     Swap: "Swap",
     Balance: "Balance",
     Savings: "Savings",
-    DrawRewards: "Draw Rewards",
+    LotteryWinnings: "Lottery Winnings",
     JoinNow: "Join Now",
   },
   deposit: {
@@ -38,7 +38,8 @@ export default {
   pool: {
     DailyPool: "Daily Pool",
     DollarTenKJackpot: "10K Jackpot",
-    NextWinnerDrawn: "Next Winner Drawn",
+    NextWinnerDrawn: "Next winner drawn",
+    NextWinnerDrawnTip: "Your savings will automatically roll over into the next pool unless you pull out.",
     USDPool: "USD Pool",
     JoinNow: "Join Now",
     PreviousWinners: "Previous Winners",

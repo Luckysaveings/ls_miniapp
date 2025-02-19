@@ -19,7 +19,18 @@
         value-class="value-class"
         title="Account Level"
         value="Lv.0"
-      />
+      >
+        <template #title>
+          <div class="cell-title-wrap">
+            <img
+              class="title-icon"
+              src="@/assets/icon-jiangbei.svg"
+              alt="icon"
+            />
+            <span>Account Level</span>
+          </div>
+        </template>
+      </van-cell>
       <van-cell
         :border="false"
         title-class="title-class"
@@ -27,7 +38,18 @@
         title="Nickname"
         value="Arthorn"
         is-link
-      />
+      >
+        <template #title>
+          <div class="cell-title-wrap">
+            <img
+              class="title-icon"
+              src="@/assets/profile-nickname.svg"
+              alt="icon"
+            />
+            <span>Nickname</span>
+          </div>
+        </template>
+      </van-cell>
       <van-cell
         :border="false"
         title-class="title-class"
@@ -36,6 +58,16 @@
         value="88888888"
         @click="copyUserId"
       >
+        <template #title>
+          <div class="cell-title-wrap">
+            <img
+              class="title-icon"
+              src="@/assets/profile-userId.svg"
+              alt="icon"
+            />
+            <span>User ID</span>
+          </div>
+        </template>
         <template #right-icon>
           <img
             class="img-icon icon-copy"
@@ -52,7 +84,18 @@
         value="arthorn@gmail.com"
         is-link
         @click="router.push('/email')"
-      />
+      >
+        <template #title>
+          <div class="cell-title-wrap">
+            <img
+              class="title-icon"
+              src="@/assets/profile-email.svg"
+              alt="icon"
+            />
+            <span>Email</span>
+          </div>
+        </template>
+      </van-cell>
     </van-cell-group>
 
     <van-cell-group class="settings-group">
@@ -60,14 +103,37 @@
         :border="false"
         title="Terms of Use"
         is-link
-      />
+      >
+        <template #title>
+          <div class="cell-title-wrap">
+            <img
+              class="title-icon"
+              src="@/assets/profile-terms.svg"
+              alt="icon"
+            />
+            <span>Terms of Use</span>
+          </div>
+        </template>
+      </van-cell>
+
       <van-cell
         :border="false"
         title-class="title-class"
         value-class="value-class"
         title="Privacy Policy"
         is-link
-      />
+      >
+        <template #title>
+          <div class="cell-title-wrap">
+            <img
+              class="title-icon"
+              src="@/assets/profile-terms.svg"
+              alt="icon"
+            />
+            <span>Privacy Policy</span>
+          </div>
+        </template>
+      </van-cell>
     </van-cell-group>
 
     <van-cell-group>
@@ -75,10 +141,19 @@
         :border="false"
         title-class="title-class"
         value-class="value-class"
-        title="Support"
         value="care@luckysavings.io"
         @click="copyEmail"
       >
+        <template #title>
+          <div class="cell-title-wrap">
+            <img
+              class="title-icon"
+              src="@/assets/profile-info.svg"
+              alt="icon"
+            />
+            <span>Support</span>
+          </div>
+        </template>
         <template #right-icon>
           <img
             class="img-icon icon-copy"
@@ -91,11 +166,21 @@
         :border="false"
         title-class="title-class"
         value-class="value-class"
-        title="Version"
         :value="version"
         is-link
         @click="showVersion = true"
-      />
+      >
+        <template #title>
+          <div class="cell-title-wrap">
+            <img
+              class="title-icon"
+              src="@/assets/profile-info.svg"
+              alt="icon"
+            />
+            <span>Version</span>
+          </div>
+        </template>
+      </van-cell>
     </van-cell-group>
     <!-- Logout Button -->
     <div class="logout-wrapper">
@@ -201,7 +286,11 @@ const handleLogout = () => {
 .page-wrap {
   min-height: 100vh;
   background: linear-gradient(180deg, #fff9e1 0%, #fff 100%);
-  padding: 32px 24px;
+  padding: 32px 8px;
+
+  .settings-group {
+    margin: 24px 0;
+  }
 }
 .title-class {
   font-size: 16px;
@@ -240,10 +329,6 @@ const handleLogout = () => {
 }
 .info-group {
   margin-bottom: 12px;
-}
-
-.settings-group {
-  margin-bottom: 32px;
 }
 
 :deep(.van-cell__value) {
@@ -312,6 +397,16 @@ const handleLogout = () => {
     font-size: 16px;
     font-weight: 500;
     color: #fff;
+  }
+}
+.cell-title-wrap {
+  display: flex;
+  align-items: center;
+
+  .title-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
   }
 }
 </style>
