@@ -21,3 +21,11 @@ export function getListApiError(data?: object): Promise<ListResult> {
     data,
   });
 }
+
+export function login(data?: object): Promise<ListResult> {
+  return http.request({
+    url: "/base/lineLogin",
+    method: "post",
+    data,
+  });
+}

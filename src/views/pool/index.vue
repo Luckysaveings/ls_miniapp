@@ -3,7 +3,7 @@ import { useRouter } from "vue-router";
 import iconUsdt from "@/assets/icon-ustd.svg";
 import iconKaia from "@/assets/icon-kaia.svg";
 import userAvatar from "@/assets/user-avatar.svg";
-import GamePlayDialog from "./components/GamePlayDialog.vue";
+import GamePlayDialog from "./components/GameplayDialog.vue";
 import PreviousDialog from "./components/PreviousWinners.vue";
 import Progress from "@/components/Progress.vue";
 
