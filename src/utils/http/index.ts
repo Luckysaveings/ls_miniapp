@@ -7,7 +7,7 @@ import "vant/es/toast/style";
 // 默认 axios 实例请求配置
 const configDefault = {
   headers: {
-    "Content-Type": ContentTypeEnum.FORM_URLENCODED,
+    "Content-Type": ContentTypeEnum.JSON,
   },
   timeout: 0,
   baseURL: import.meta.env.VITE_BASE_API,
@@ -29,6 +29,11 @@ class Http {
         // if (token) {
         //   config.headers['token'] = token
         // }
+        // TODO token 过期，自动刷新 token
+        // config.headers["Authorization"] =
+        // `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MDY2Njk3MCwibmJmIjoxNzQwMDYyMTcwfQ.pLgUOYSSaulttuzXDUV_RMP5OxHKTkEWw75UclhWDmo`;
+        console.log("config interceptors.request", config);
+
         return config;
       },
       (error: AxiosError) => {
@@ -116,6 +121,8 @@ class Http {
   // 通用请求函数
   public request<T>(paramConfig: AxiosRequestConfig): Promise<T> {
     const config = { ...Http.axiosConfigDefault, ...paramConfig };
+    console.log("config", config);
+
     return new Promise((resolve, reject) => {
       Http.axiosInstance
         .request(config)
@@ -130,3 +137,5 @@ class Http {
 }
 
 export const http = new Http(configDefault);
+
+export default http.request;

@@ -13,6 +13,27 @@ import ustd from "@/assets/icon-ustd.svg";
 import kaia2 from "@/assets/icon-kaia.svg";
 import imgBadges from "@/assets/img-badges.svg";
 import imgPoints from "@/assets/img-points.svg";
+import { useGlobalStore } from "@/store/globalStore";
+import { getRanking, login } from "@/api/index";
+
+onMounted(() => {
+  // const data = JSON.stringify();
+  // login({
+  //   idToken: `eyJraWQiOiI3MTU5ZTNlYWUwZjdmMmQ4NjhmM2MwOWI2ZGU5MzBlYzMzNjNlYzA0NTI2ZjQwY2FlYzliMWYwOGUwZjQzY2E2IiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJodHRwczovL2FjY2Vzcy5saW5lLm1lIiwic3ViIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiYXVkIjoiMjAwNjgxNTI0MSIsImV4cCI6MTc0MDA2NTEzNCwiaWF0IjoxNzQwMDYxNTM0LCJhbXIiOlsibGluZXNzbyJdLCJuYW1lIjoib2dncnIifQ.McmcEidckM5J9g4YRXdkbUO-_bXdml6oDKaVIUeQlOK7AHDVPk0P0srO-ZVh-cd73lYL06BYLSNz0xoaSaN7Uw`,
+  // }).then((res: any) => {
+  //   console.log("res-login", res);
+  //   // globalStore.setToken(res.idToken);
+  // });
+  // getRanking({
+  //   page: 1,
+  //   pageSize: 10,
+  //   type: 1,
+  // }).then((res) => {
+  //   console.log("res", res);
+  // });
+});
+// 初始化 Store
+const globalStore = useGlobalStore();
 const router = useRouter();
 const showInfo = ref(false);
 const infoType = ref("");
@@ -80,20 +101,25 @@ const lineLoginLiff = async () => {
         // liff.getProfile().then((profile) => {
         //   console.log("profile:", profile);
         // });
+        login({
+          idToken,
+        }).then((res: any) => {
+          console.log("res-login", res);
+          // globalStore.setToken(res.idToken);
+        });
       }
     });
 };
 const getWallet = async () => {
   const sdk = await DappPortalSDK.init({
     clientId: import.meta.env.VITE_LINE_CLIENT_ID || "",
-    chainId: import.meta.env.NEXT_PUBLIC_CHAIN_ID,
+    chainId: import.meta.env.VITE_PUBLIC_CHAIN_ID,
   });
+  globalStore.setSdk(sdk);
   const walletProvider = sdk.getWalletProvider();
-  // const web3Provider = new w3(walletProvider);
-  // const accounts = await web3Provider.send("kaia_requestAccounts", []);
-  // const pProvider = sdk?.getPaymentProvider();
   const accounts = await walletProvider.request({ method: "kaia_requestAccounts" });
   const accountAddress = accounts[0];
+  globalStore.setWalletAddress(accountAddress);
   console.log("accountAddress", accountAddress);
 };
 const openLineWallet = () => {

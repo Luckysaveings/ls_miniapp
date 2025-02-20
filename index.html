@@ -22,12 +22,73 @@
       }
 
       .__spinner-container {
+        width: 100%;
         height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-image: url(/img-loading.webp);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
       }
+
+      .__spinner-progress {
+        position: absolute;
+        top: 75%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        width: 200px;
+        border-radius: 12px;
+        border: 1px solid rgba(18, 18, 18, 0.06);
+        background: #FFF;
+        height: 20px;
+
+        .__spinner-progress-bar {
+          height: 100%;
+          width: 0%;
+          border-radius: 12px;
+          background-color: #FFCD00;
+          animation: cube-shadow-spinner 600ms linear forwards;
+
+        }
+      }
+
+      @keyframes cube-shadow-spinner {
+        0% {
+          width: 0%;
+        }
+
+        100ms {
+          width: 15%;
+        }
+
+        200ms {
+          width: 30%;
+        }
+
+        300ms {
+          width: 45%;
+        }
+
+        400ms {
+          width: 60%;
+        }
+
+        500ms {
+          width: 75%;
+        }
+
+        600ms {
+          width: 90%;
+        }
+
+        100% {
+          width: 90%;
+        }
+      }
+
 
       .__spinner {
         position: relative;
@@ -37,7 +98,7 @@
         animation: cube-shadow-spinner 1.8s cubic-bezier(0.75, 0, 0.5, 1) infinite;
       }
 
-      @keyframes cube-shadow-spinner {
+      /* @keyframes cube-shadow-spinner {
         50% {
           border-radius: 50%;
           transform: scale(0.5) rotate(360deg);
@@ -46,10 +107,12 @@
         100% {
           transform: scale(1) rotate(720deg);
         }
-      }
+      } */
     </style>
     <div class="__spinner-container">
-      <div class="__spinner"></div>
+      <div class="__spinner-progress">
+        <div class="__spinner-progress-bar"></div>
+      </div>
     </div>
   </div>
   <script type="module" src="/src/main.ts"></script>
