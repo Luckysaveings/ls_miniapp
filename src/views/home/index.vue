@@ -77,14 +77,10 @@ const lineLogin = () => {
   window.location.href = `${line_auth}?${paramsString}`;
 };
 const lineLoginLiff = async () => {
-  // login({
-  //   idToken:
-  //     "eyJraWQiOiI5MjkxZTZiNmEzOGM3ZDhhZjY4YzUyNjZmYWEyODIwOGQ2ZGQ1OTg0NWZhYTAyNGU1NDFiZGIzOWZlMTM1ZDRiIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJodHRwczovL2FjY2Vzcy5saW5lLm1lIiwic3ViIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiYXVkIjoiMjAwNjgxNTI0MSIsImV4cCI6MTc0MDEyMTEzNywiaWF0IjoxNzQwMTE3NTM3LCJhbXIiOlsibGluZXNzbyJdLCJuYW1lIjoib2dncnIifQ.PPSb6oF9UfwEKCvKEoZUmE1YbnRig8QlJDUhCBn5570Yh9ed-fFUDMzCCgS2Ne6Q3d025R-FEd6N30XmxzhQoQ",
-  // }).then((res: any) => {
-  //   console.log("res-login", res);
-  //   globalStore.setToken(res.data.token);
-  //   console.log("globalStore.token", globalStore.token);
-  // });
+  // const token =
+  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MDc0NzczMCwibmJmIjoxNzQwMTQyOTMwfQ.-w9hoePP3xn1cYEp7v_3noVtybs4N1uBBQ81GrFx-I4";
+  // globalStore.setToken(token);
+  // console.log(globalStore.token);
   // return;
   liff
     .init({
@@ -94,22 +90,21 @@ const lineLoginLiff = async () => {
     })
     .then(async () => {
       if (!liff.isLoggedIn()) {
-        await liff.login();
-        const idToken = await liff.getIDToken();
-        console.log("idToken:", idToken);
+        liff.login();
       } else {
         const idToken = await liff.getIDToken();
-        console.log("idToken:", idToken);
+        console.log("idToken: ", idToken);
         // console.log("DecodedToken:", DecodedToken);
         // liff.getProfile().then((profile) => {
         //   console.log("profile:", profile);
         // });
         login({
           idToken,
-        }).then((res: any) => {
+        }).then(async (res: any) => {
           console.log("res-login", res);
-          globalStore.setToken(res.data.idToken);
-          console.log("globalStore.token", globalStore.token);
+          await globalStore.setToken(res.data.token);
+          console.log("globalStore.token: ", globalStore.token);
+          console.log("res.data.token: ", res.data.token);
         });
       }
     });

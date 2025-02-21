@@ -3,24 +3,31 @@
     <div class="task-item">
       <img
         class="task-img"
-        :src="item.img"
+        :src="item.iconUrl || imgTask"
         alt="task"
       />
       <div class="task-text">
-        <span class="task-title">{{ item.title }}</span>
+        <span class="task-title">{{ item.name }}</span>
         <div class="task-points">
           <img
+            v-if="item.rewardCategory === 0"            
             class="img-icon"
             src="@/assets/img-points.svg"
             alt="points"
           />
-          <span class="task-points-text">+{{ item.points }}</span>
+          <img
+            v-else           
+            class="img-icon"
+            src="@/assets/img-badges.svg"
+            alt="badge"
+          />
+          <span class="task-points-text">+{{ item.rewardAmount }}</span>
         </div>
       </div>
     </div>
     <div class="task-status">
       <img
-        v-if="item.status"
+        v-if="item.status === 3"
         class="img-status"
         src="@/assets/icon-success.svg"
         alt="status"
@@ -35,9 +42,11 @@
   </div>
 </template>
 <script setup lang="ts">
+import imgTask from "@/assets/tasks/daily-tasks-2.svg";
 const props = defineProps<{
   item: any;
 }>();
+
 </script>
 <style scoped>
 .tasks-box {

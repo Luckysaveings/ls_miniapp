@@ -4,12 +4,13 @@ import { useRouter } from "vue-router";
 import { showToast } from "vant";
 import userAvatar from "@/assets/user-avatar.svg";
 import TaskItem from "./components/task-item.vue";
+import { getTaskList } from "@/api/index";
 const router = useRouter();
 const userInfo = reactive({
   avatar: userAvatar,
   nickName: "Arthorn",
 });
-const dailyTasks = reactive([
+const dailyTasks = ref([
   {
     img: "/src/assets/tasks/daily-tasks-1.svg",
     title: "Login LuckySavings",
@@ -59,6 +60,13 @@ const customToast = (msg: string) => {
     className: "custom-toast content-box",
   });
 };
+onMounted( () => {
+  getTaskList().then(res => {
+    const list = res.data && res.data.list || [];
+    dailyTasks.value = list;
+    console.log("res任务", res)
+  })
+})
 </script>
 
 <template>

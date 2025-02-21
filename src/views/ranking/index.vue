@@ -1,29 +1,48 @@
 <script setup lang="ts" name="Ranking">
 import { useRouter } from "vue-router";
+import { getRanking } from "@/api/index";
 const router = useRouter();
 const onClickLeft = () => {
   router.back();
 };
 const selectedType = ref("points");
-const changeType = (type) => {
-  selectedType.value = type;
+const changeType = (t) => {
+  selectedType.value = t;
+  const type = t === "points" ? 0 : 1;
+  getRanking({
+    type,
+  }).then(res => {
+    const list = res.data && res.data.list || [];
+    tableData.value = list;
+    console.log("res任务", res)
+  })
 };
 const tableData = ref([
-  { place: "1", name: "John Doe", points: "1000" },
-  { place: "2", name: "Jane Smith", points: "900" },
-  { place: "3", name: "Alice Johnson", points: "800" },
-  { place: "4", name: "Bob Brown", points: "700" },
-  { place: "5", name: "Charlie Davis", points: "600" },
-  { place: "6", name: "David Wilson", points: "500" },
-  { place: "7", name: "Eva Martinez", points: "400" },
-  { place: "8", name: "Frank Garcia", points: "300" },
-  { place: "9", name: "Grace Lopez", points: "200" },
-  { place: "10", name: "Henry Lopez", points: "100" },
+  { no: "1", username: "John Doe", point: "1000" },
+  { no: "2", username: "Jane Smith", point: "900" },
+  { no: "3", username: "Alice Johnson", point: "800" },
+  { no: "4", username: "Bob Brown", point: "700" },
+  { no: "5", username: "Charlie Davis", point: "600" },
+  { no: "6", username: "David Wilson", point: "500" },
+  { no: "7", username: "Eva Martinez", point: "400" },
+  { no: "8", username: "Frank Garcia", point: "300" },
+  { no: "9", username: "Grace Lopez", point: "200" },
+  { no: "10", username: "Henry Lopez", point: "100" },
 ]);
 import winner1 from "@/assets/icon-winner-1.svg";
 import winner2 from "@/assets/icon-winner-2.svg";
 import winner3 from "@/assets/icon-winner-3.svg";
 const tierIcons = [winner1, winner2, winner3];
+onMounted(() => {
+  // 0-积分point，1-徽章badge
+  getRanking({
+    type: 0,
+  }).then(res => {
+    const list = res.data && res.data.list || [];
+    tableData.value = list;
+    console.log("res任务", res)
+  })
+})
 </script>
 
 <template>
@@ -87,30 +106,30 @@ const tierIcons = [winner1, winner2, winner3];
         </div>
         <div class="content-box table-box">
           <div class="table-title">
-            <div class="title-place">{{ $t("ranking.Place") }}</div>
-            <div class="title-name">{{ $t("ranking.Name") }}</div>
+            <div class="title-no">{{ $t("ranking.Place") }}</div>
+            <div class="title-username">{{ $t("ranking.Name") }}</div>
             <div class="title-points">{{ $t("ranking.Points") }}</div>
           </div>
           <div
             v-for="item in tableData"
-            :key="item.place"
+            :key="item.no"
             class="table-item"
           >
-            <div class="item-place">
+            <div class="item-no">
               <img
-                v-if="item.place <= 3"
+                v-if="item.no <= 3"
                 class="img-icon"
-                :src="tierIcons[item.place - 1]"
+                :src="tierIcons[item.no - 1]"
                 alt="tier"
               />
               <span
                 v-else
-                class="place-text"
-                >{{ item.place }}</span
+                class="no-text"
+                >{{ item.no }}</span
               >
             </div>
-            <div class="item-name">{{ item.name }}</div>
-            <div class="item-points">{{ item.points }}</div>
+            <div class="item-username">{{ item.username }}</div>
+            <div class="item-points">{{ item.point }}</div>
           </div>
         </div>
         <div class="tip-box">
@@ -217,6 +236,20 @@ const tierIcons = [winner1, winner2, winner3];
     padding: 24px 32px;
 
     &.table-box {
+      
+      .title-no,
+      .item-no {
+          width: 22%;
+        }
+        .title-username,
+        .title-points,
+        .item-username,
+        .item-points  {
+          width: 39%;
+          text-align: center;
+          overflow: hidden;
+        }
+
       .table-title {
         display: flex;
         align-items: center;
@@ -225,17 +258,6 @@ const tierIcons = [winner1, winner2, winner3];
         font-weight: 500;
         line-height: 20px;
 
-        .title-place {
-          width: 22%;
-        }
-        .title-name {
-          flex: 1;
-          text-align: center;
-        }
-        .title-points {
-          flex: 1;
-          text-align: center;
-        }
       }
       .table-item {
         margin: 14px 0;
@@ -248,25 +270,16 @@ const tierIcons = [winner1, winner2, winner3];
         &:last-child {
           margin-bottom: 0;
         }
-        .item-place {
-          width: 22%;
+        .item-no {
           .img-icon {
             width: 24px;
             height: 24px;
           }
-          .place-text {
+          .no-text {
             display: inline-block;
             width: 24px;
             text-align: center;
           }
-        }
-        .item-name {
-          flex: 1;
-          text-align: center;
-        }
-        .item-points {
-          flex: 1;
-          text-align: center;
         }
       }
     }

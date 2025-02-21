@@ -9,7 +9,14 @@ import Progress from "@/components/Progress.vue";
 import { ethers } from "ethers";
 import DappPortalSDK from "@linenext/dapp-portal-sdk";
 import { useGlobalStore } from "@/store/globalStore";
+import { getPoolList } from "@/api/index";
 
+onMounted(() => {
+  console.log("Pool Page Mounted");
+  getPoolList({ page: 10, pageSize: 1 }).then((res) => {
+    console.log(res);
+  });
+});
 // 初始化 Store
 const globalStore = useGlobalStore();
 const router = useRouter();

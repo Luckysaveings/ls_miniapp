@@ -3,6 +3,7 @@ import { ContentTypeEnum } from "@/enums/request-enum";
 import NProgress from "../progress";
 import { showFailToast } from "vant";
 import "vant/es/toast/style";
+import { useGlobalStore } from "@/store/globalStore";
 
 // 默认 axios 实例请求配置
 const configDefault = {
@@ -25,14 +26,15 @@ class Http {
     Http.axiosInstance.interceptors.request.use(
       (config) => {
         NProgress.start();
+        const globalStore = useGlobalStore();
         // 发送请求前，可在此携带 token
-        // if (token) {
-        //   config.headers['token'] = token
-        // }
+        if (globalStore.token) {
+          config.headers["x-token"] = globalStore.token;
+        }
         // TODO token 过期，自动刷新 token
         // config.headers["Authorization"] =
         // `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MDY2Njk3MCwibmJmIjoxNzQwMDYyMTcwfQ.pLgUOYSSaulttuzXDUV_RMP5OxHKTkEWw75UclhWDmo`;
-        console.log("config interceptors.request", config);
+        // console.log("config interceptors.request", config);
 
         return config;
       },
@@ -48,7 +50,7 @@ class Http {
     Http.axiosInstance.interceptors.response.use(
       (response: AxiosResponse) => {
         NProgress.done();
-        console.log("response interceptors.response", response);
+        // console.log("response interceptors.response", response);
         // 与后端协定的返回字段
         const { code } = response.data;
         // const { message } = response.data;
