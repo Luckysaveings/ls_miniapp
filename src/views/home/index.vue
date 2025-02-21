@@ -94,10 +94,11 @@ const lineLoginLiff = async () => {
     })
     .then(async () => {
       if (!liff.isLoggedIn()) {
-        liff.login();
+        await liff.login();
+        const idToken = await liff.getIDToken();
+        console.log("idToken:", idToken);
       } else {
         const idToken = await liff.getIDToken();
-        // const DecodedToken = await liff.getDecodedIDToken();
         console.log("idToken:", idToken);
         // console.log("DecodedToken:", DecodedToken);
         // liff.getProfile().then((profile) => {
