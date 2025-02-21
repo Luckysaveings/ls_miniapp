@@ -20,22 +20,10 @@ onMounted(() => {
   window["fromHome"] = true;
   const loadingElement = document.getElementById("loading");
   if (loadingElement) {
-    loadingElement.remove();
+    window.setTimeout(() => {
+      loadingElement.remove();
+    }, 600);
   }
-  // const data = JSON.stringify();
-  // login({
-  //   idToken: `eyJraWQiOiI3MTU5ZTNlYWUwZjdmMmQ4NjhmM2MwOWI2ZGU5MzBlYzMzNjNlYzA0NTI2ZjQwY2FlYzliMWYwOGUwZjQzY2E2IiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJodHRwczovL2FjY2Vzcy5saW5lLm1lIiwic3ViIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiYXVkIjoiMjAwNjgxNTI0MSIsImV4cCI6MTc0MDA2NTEzNCwiaWF0IjoxNzQwMDYxNTM0LCJhbXIiOlsibGluZXNzbyJdLCJuYW1lIjoib2dncnIifQ.McmcEidckM5J9g4YRXdkbUO-_bXdml6oDKaVIUeQlOK7AHDVPk0P0srO-ZVh-cd73lYL06BYLSNz0xoaSaN7Uw`,
-  // }).then((res: any) => {
-  //   console.log("res-login", res);
-  //   // globalStore.setToken(res.idToken);
-  // });
-  // getRanking({
-  //   page: 1,
-  //   pageSize: 10,
-  //   type: 1,
-  // }).then((res) => {
-  //   console.log("res", res);
-  // });
 });
 // 初始化 Store
 const globalStore = useGlobalStore();
@@ -89,6 +77,15 @@ const lineLogin = () => {
   window.location.href = `${line_auth}?${paramsString}`;
 };
 const lineLoginLiff = async () => {
+  // login({
+  //   idToken:
+  //     "eyJraWQiOiI5MjkxZTZiNmEzOGM3ZDhhZjY4YzUyNjZmYWEyODIwOGQ2ZGQ1OTg0NWZhYTAyNGU1NDFiZGIzOWZlMTM1ZDRiIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJodHRwczovL2FjY2Vzcy5saW5lLm1lIiwic3ViIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiYXVkIjoiMjAwNjgxNTI0MSIsImV4cCI6MTc0MDEyMTEzNywiaWF0IjoxNzQwMTE3NTM3LCJhbXIiOlsibGluZXNzbyJdLCJuYW1lIjoib2dncnIifQ.PPSb6oF9UfwEKCvKEoZUmE1YbnRig8QlJDUhCBn5570Yh9ed-fFUDMzCCgS2Ne6Q3d025R-FEd6N30XmxzhQoQ",
+  // }).then((res: any) => {
+  //   console.log("res-login", res);
+  //   globalStore.setToken(res.data.token);
+  //   console.log("globalStore.token", globalStore.token);
+  // });
+  // return;
   liff
     .init({
       // liffId: "2006818858-1a2PrWjY",
@@ -110,7 +107,8 @@ const lineLoginLiff = async () => {
           idToken,
         }).then((res: any) => {
           console.log("res-login", res);
-          // globalStore.setToken(res.idToken);
+          globalStore.setToken(res.data.idToken);
+          console.log("globalStore.token", globalStore.token);
         });
       }
     });

@@ -1,5 +1,5 @@
 import Axios, { type AxiosInstance, type AxiosError, type AxiosResponse, type AxiosRequestConfig } from "axios";
-import { ContentTypeEnum, ResultEnum } from "@/enums/request-enum";
+import { ContentTypeEnum } from "@/enums/request-enum";
 import NProgress from "../progress";
 import { showFailToast } from "vant";
 import "vant/es/toast/style";
@@ -48,13 +48,14 @@ class Http {
     Http.axiosInstance.interceptors.response.use(
       (response: AxiosResponse) => {
         NProgress.done();
+        console.log("response interceptors.response", response);
         // 与后端协定的返回字段
-        const { code, result } = response.data;
+        const { code } = response.data;
         // const { message } = response.data;
         // 判断请求是否成功
-        const isSuccess = result && Reflect.has(response.data, "code") && code === ResultEnum.SUCCESS;
+        const isSuccess = code === 0;
         if (isSuccess) {
-          return result;
+          return response.data;
         } else {
           // 处理请求错误
           // showFailToast(message);
