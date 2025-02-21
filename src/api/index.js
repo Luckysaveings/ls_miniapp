@@ -7,7 +7,7 @@ export const login = (data) => {
     method: "post",
     data,
   });
-}
+};
 // 获取任务列表
 export const getTaskList = (params) => {
   return http.request({
@@ -26,4 +26,4 @@ export const getRanking = (params) => {
     method: "get",
     params,
   });
-}
+};

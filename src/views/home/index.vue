@@ -17,6 +17,11 @@ import { useGlobalStore } from "@/store/globalStore";
 import { getRanking, login } from "@/api/index";
 
 onMounted(() => {
+  window["fromHome"] = true;
+  const loadingElement = document.getElementById("loading");
+  if (loadingElement) {
+    loadingElement.remove();
+  }
   // const data = JSON.stringify();
   // login({
   //   idToken: `eyJraWQiOiI3MTU5ZTNlYWUwZjdmMmQ4NjhmM2MwOWI2ZGU5MzBlYzMzNjNlYzA0NTI2ZjQwY2FlYzliMWYwOGUwZjQzY2E2IiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJodHRwczovL2FjY2Vzcy5saW5lLm1lIiwic3ViIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiYXVkIjoiMjAwNjgxNTI0MSIsImV4cCI6MTc0MDA2NTEzNCwiaWF0IjoxNzQwMDYxNTM0LCJhbXIiOlsibGluZXNzbyJdLCJuYW1lIjoib2dncnIifQ.McmcEidckM5J9g4YRXdkbUO-_bXdml6oDKaVIUeQlOK7AHDVPk0P0srO-ZVh-cd73lYL06BYLSNz0xoaSaN7Uw`,
