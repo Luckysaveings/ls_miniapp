@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrap">
     <van-nav-bar
-      title="{{ $t('deposit.Deposit') }}"
+      :title="$t('deposit.Deposit')"
       left-arrow
       class="nav-bar-wrap"
       :border="false"

@@ -20,7 +20,7 @@ export default {
   deposit: {
     Deposit: "Deposit",
     YourKAIAAddress: "Your KAIA Address",
-    addressTip: "Use this address to receive tokens on KAIA",
+    addressTip: "Use this address to receive tokens on",
     Share: "Share",
     DepositAddress: "Deposit Address",
     TXID: "TXID",

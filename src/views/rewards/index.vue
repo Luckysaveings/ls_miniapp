@@ -1,15 +1,16 @@
 <script setup lang="ts" name="Rewards">
-// import { reactive } from "vue";
+import liff from "@line/liff";
 import { useRouter } from "vue-router";
 import { showToast } from "vant";
 import userAvatar from "@/assets/user-avatar.svg";
 import TaskItem from "./components/task-item.vue";
-import { getTaskList } from "@/api/index";
+import { getTaskList, getAchievement } from "@/api/index";
 const router = useRouter();
 const userInfo = reactive({
   avatar: userAvatar,
   nickName: "Arthorn",
 });
+const inviteLink = ref("");
 const dailyTasks = ref([
   {
     img: "/src/assets/tasks/daily-tasks-1.svg",
@@ -60,13 +61,24 @@ const customToast = (msg: string) => {
     className: "custom-toast content-box",
   });
 };
-onMounted( () => {
-  getTaskList().then(res => {
-    const list = res.data && res.data.list || [];
+// 生成邀请链接
+const generateInviteLink = () => {
+  liff.permanentLink.createUrlBy("https://line.luckysavings.io/home?inviteCode=abcdefg").then((permanentLink) => {
+    console.log("permanentLink:", permanentLink);
+    inviteLink.value = permanentLink;
+  });
+  return;
+};
+onMounted(() => {
+  getTaskList().then((res) => {
+    const list = (res.data && res.data.list) || [];
     dailyTasks.value = list;
-    console.log("res任务", res)
-  })
-})
+    console.log("res任务", res);
+  });
+  getAchievement().then((res) => {
+    console.log("res成就", res);
+  });
+});
 </script>
 
 <template>
@@ -97,6 +109,7 @@ onMounted( () => {
           class="img-header-right"
           src="@/assets/icon-upload.svg"
           alt="upload"
+          @click="generateInviteLink"
         />
       </div>
     </div>

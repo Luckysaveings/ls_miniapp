@@ -11,7 +11,7 @@ const globalStore = useGlobalStore();
 onMounted(() => {
   liff
     .init({
-      liffId: import.meta.env.VITE_LINE_LIFF_ID || "2006815241-YKKvp8yb",
+      liffId: import.meta.env.VITE_LINE_LIFF_ID,
       withLoginOnExternalBrowser: true,
     })
     .then(async () => {

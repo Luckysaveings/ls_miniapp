@@ -1,6 +1,12 @@
 <script setup lang="ts" name="Ranking">
 import { useRouter } from "vue-router";
-import { getRanking } from "@/api/index";
+import { getRanking, getMyRanking, getAchievement } from "@/api/index";
+
+import winner1 from "@/assets/icon-winner-1.svg";
+import winner2 from "@/assets/icon-winner-2.svg";
+import winner3 from "@/assets/icon-winner-3.svg";
+const tierIcons = [winner1, winner2, winner3];
+
 const router = useRouter();
 const onClickLeft = () => {
   router.back();
@@ -8,40 +14,51 @@ const onClickLeft = () => {
 const selectedType = ref("points");
 const changeType = (t) => {
   selectedType.value = t;
-  const type = t === "points" ? 0 : 1;
+  const type = t === "points" ? 0 : 1;  
+  fetchData(type);
+};
+const selfRanking = reactive({
+  no: 0,
+  selfNum: 0,
+});
+const tableData = ref([
+  // { no: "1", username: "John Doe", point: "1000" },
+  // { no: "2", username: "Jane Smith", point: "900" },
+  // { no: "3", username: "Alice Johnson", point: "800" },
+  // { no: "4", username: "Bob Brown", point: "700" },
+  // { no: "5", username: "Charlie Davis", point: "600" },
+  // { no: "6", username: "David Wilson", point: "500" },
+  // { no: "7", username: "Eva Martinez", point: "400" },
+  // { no: "8", username: "Frank Garcia", point: "300" },
+  // { no: "9", username: "Grace Lopez", point: "200" },
+  // { no: "10", username: "Henry Lopez", point: "100" },
+]);
+
+const fetchData = (type) => {
+  // 0-积分point，1-徽章badge
   getRanking({
     type,
   }).then(res => {
     const list = res.data && res.data.list || [];
     tableData.value = list;
-    console.log("res任务", res)
   })
-};
-const tableData = ref([
-  { no: "1", username: "John Doe", point: "1000" },
-  { no: "2", username: "Jane Smith", point: "900" },
-  { no: "3", username: "Alice Johnson", point: "800" },
-  { no: "4", username: "Bob Brown", point: "700" },
-  { no: "5", username: "Charlie Davis", point: "600" },
-  { no: "6", username: "David Wilson", point: "500" },
-  { no: "7", username: "Eva Martinez", point: "400" },
-  { no: "8", username: "Frank Garcia", point: "300" },
-  { no: "9", username: "Grace Lopez", point: "200" },
-  { no: "10", username: "Henry Lopez", point: "100" },
-]);
-import winner1 from "@/assets/icon-winner-1.svg";
-import winner2 from "@/assets/icon-winner-2.svg";
-import winner3 from "@/assets/icon-winner-3.svg";
-const tierIcons = [winner1, winner2, winner3];
-onMounted(() => {
-  // 0-积分point，1-徽章badge
-  getRanking({
-    type: 0,
+  
+  getMyRanking({
+    type,
   }).then(res => {
-    const list = res.data && res.data.list || [];
-    tableData.value = list;
-    console.log("res任务", res)
+    console.log("res任务-getMyRanking", res)
+    selfRanking.no = res.data && res.data.no || 0;
   })
+  getAchievement().then(res => {
+    console.log("res任务-getAchievement", res)
+    if (res.data) {
+      const selfNum = type === 0 ? res.data.point : res.data.badge;
+      selfRanking.selfNum = selfNum || 0;
+    }
+  })
+}
+onMounted(() => {
+  fetchData(0);
 })
 </script>
 
@@ -82,13 +99,13 @@ onMounted(() => {
             <div class="achievement-item">
               <div class="item-top">{{ $t("ranking.YourRanking") }}</div>
               <div class="item-bottom">
-                <span>No.330</span>
+                <span>No. {{ selfRanking.no }}</span>
               </div>
             </div>
             <div class="achievement-item">
               <div class="item-top">{{ selectedType === "points" ? $t("ranking.Points") : $t("ranking.Badges") }}</div>
               <div class="item-bottom">
-                <span>112,241</span>
+                <span>{{ selfRanking.selfNum }}</span>
                 <img
                   class="img-icon"
                   :src="selectedType === 'points' ? 'src/assets/img-points.svg' : 'src/assets/img-badges.svg'"
@@ -248,6 +265,7 @@ onMounted(() => {
           width: 39%;
           text-align: center;
           overflow: hidden;
+          text-overflow: ellipsis;
         }
 
       .table-title {
