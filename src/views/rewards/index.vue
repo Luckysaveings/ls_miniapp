@@ -11,46 +11,14 @@ const userInfo = reactive({
   nickName: "Arthorn",
 });
 const inviteLink = ref("");
-const dailyTasks = ref([
-  {
-    img: "/src/assets/tasks/daily-tasks-1.svg",
-    title: "Login LuckySavings",
-    status: true,
-    points: 11,
-  },
-  {
-    img: "/src/assets/tasks/daily-tasks-2.svg",
-    title: "Daily Saving",
-    status: false,
-    points: 12,
-  },
-  {
-    img: "/src/assets/tasks/daily-tasks-3.svg",
-    title: "Daily Invite",
-    status: false,
-    points: 13,
-  },
-  {
-    img: "/src/assets/tasks/daily-tasks-4.svg",
-    title: "Daily Drawing",
-    status: true,
-    points: 14,
-  },
-]);
-const popups = reactive([
-  {
-    img: "/src/assets/tasks/popups-tasks-1.svg",
-    title: "Join the LINE channel",
-    status: true,
-    points: 14,
-  },
-  {
-    img: "/src/assets/tasks/popups-tasks-2.svg",
-    title: "Echo survey",
-    status: false,
-    points: 15,
-  },
-]);
+const showAllDailyTasks = ref(false);
+const showAllPopups = ref(false);
+const dailyTasks = ref([]);
+const popups = ref([]);
+const achievements = reactive({
+  points: 0,
+  badges: 0,
+});
 const customToast = (msg: string) => {
   showToast({
     message: msg,
@@ -72,11 +40,14 @@ const generateInviteLink = () => {
 onMounted(() => {
   getTaskList().then((res) => {
     const list = (res.data && res.data.list) || [];
-    dailyTasks.value = list;
-    console.log("res任务", res);
+    dailyTasks.value = list.filter((item) => item.type === 0);
+    popups.value = list.filter((item) => item.type === 1);
   });
   getAchievement().then((res) => {
-    console.log("res成就", res);
+    if (res.data) {
+      achievements.points = res.data.point || 0;
+      achievements.badges = res.data.badge || 0;
+    }
   });
 });
 </script>
@@ -133,7 +104,7 @@ onMounted(() => {
               alt="points"
             />
             <div class="achievement-text">
-              <span>x2,135</span>
+              <span>x{{ achievements.points }}</span>
             </div>
           </div>
           <div class="achievement-item">
@@ -143,7 +114,7 @@ onMounted(() => {
               alt="badges"
             />
             <div class="achievement-text right-text">
-              <span>x2,135</span>
+              <span>x{{ achievements.badges }}</span>
             </div>
           </div>
         </div>
@@ -160,10 +131,23 @@ onMounted(() => {
         />
       </div>
       <TaskItem
-        v-for="item in dailyTasks"
+        v-for="(item, index) in dailyTasks"
+        v-show="showAllDailyTasks || index < 2"
         :key="item.title"
         :item="item"
       />
+      <div
+        v-if="dailyTasks.length > 2 && !showAllDailyTasks"
+        class="more-tasks"
+        @click="showAllDailyTasks = true"
+      >
+        <span>{{ $t("rewards.MoreTasks") }}</span>
+        <van-icon
+          name="arrow-down"
+          size="16px"
+          color="#83838F"
+        />
+      </div>
     </div>
     <div class="module-item">
       <div class="module-title">
@@ -176,10 +160,23 @@ onMounted(() => {
         />
       </div>
       <TaskItem
-        v-for="item in popups"
+        v-for="(item, index) in popups"
+        v-show="showAllPopups || index < 2"
         :key="`${item.title}-${item.points}`"
         :item="item"
       />
+      <div
+        v-if="popups.length > 2 && !showAllPopups"
+        class="more-tasks"
+        @click="showAllPopups = true"
+      >
+        <span>{{ $t("rewards.MoreTasks") }}</span>
+        <van-icon
+          name="arrow-down"
+          size="16px"
+          color="#83838F"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -227,6 +224,15 @@ onMounted(() => {
     }
   }
 }
-.module-item {
+.more-tasks {
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 142.857% */
+  margin-top: 12px;
+  padding: 6px 0;
+  text-align: center;
+  color: var(--LS-Gray-05, #83838f);
+  cursor: pointer;
 }
 </style>

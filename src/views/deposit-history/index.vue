@@ -8,7 +8,12 @@
       @click-left="onClickLeft"
     />
 
-    <van-cell-group :border="false" v-for="depositItem in historyList" :key="depositItem.id">
+    <van-cell-group
+    class="deposit-item-wrap"
+      :border="false"
+      v-for="depositItem in historyList"
+      :key="depositItem.id"
+    >
       <van-cell
         class="cell-custom-history"
         :title="$t('deposit.DepositAddress')"
@@ -17,26 +22,24 @@
       <van-cell
         class="cell-custom-history"
         :title="$t('deposit.TXID')"
-        :value="depositItem.txid"
+        :value="depositItem.tx"
       />
       <van-cell
         class="cell-custom-history"
         :title="$t('deposit.Amount')"
-        :value="depositItem.amount"
-      />
+      >
+        <template #value>
+          <span class="">
+            <span>+{{ depositItem.amount }}</span>
+            <span class="unit">{{ depositItem.asset }}</span>
+          </span>
+        </template>
+      </van-cell>
       <van-cell
         class="cell-custom-history"
         :title="$t('deposit.Time')"
-        :value="depositItem.time"
+        :value="formatDateTime(depositItem.CreatedAt)"
       />
-      <van-cell
-        :title="$t('deposit.State')"
-        class="cell-custom-history"
-      >
-        <template #value>
-          <span class="state-transferred">{{ $t("deposit.Transferred") }}</span>
-        </template>
-      </van-cell>
     </van-cell-group>
   </div>
 </template>
@@ -44,23 +47,21 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { ref } from "vue";
+import dayjs from "dayjs";
 import { getRechargeRecord } from "@/api/index";
 const router = useRouter();
 const onClickLeft = () => {
   router.back();
 };
-const depositItem = ref({
-  wallet: "0xb5a8116592b4b4630b93d61ace006482b76d1e28",
-  txid: "0xb5a8116592b4b4630b93d61ace006482b76d1e28",
-  time: "2025/01/10 02:00:50",
-  amount: "+1000 KAIA",
-  status: 0,
-});
+// 添加日期格式化函数
+const formatDateTime = (dateTimeStr) => {
+  if (!dateTimeStr) return "";
+  return dayjs(dateTimeStr).format("YYYY/MM/DD HH:mm:ss");
+};
 const historyList = ref([]);
 onMounted(() => {
   getRechargeRecord().then((res) => {
-    console.log("res", res);
-    const list = res.data && res.data.list || [];
+    const list = (res.data && res.data.list) || [];
     historyList.value = list;
   });
 });
@@ -70,6 +71,7 @@ onMounted(() => {
 .page-wrap {
   padding: 0px;
   background: #fff !important;
+  padding-bottom: 20px;
 }
 .transaction-details {
   padding: 16px;
@@ -86,21 +88,37 @@ onMounted(() => {
 .mt-4 {
   margin-top: 16px;
 }
+.deposit-item-wrap {
+  border-radius: 0 !important;
+  border-bottom: 1px solid var(--ls-line-12, rgba(24, 24, 27, 0.12));
+  padding: 14px 0 !important;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
 .cell-custom-history {
   padding: 6px 16px;
   :deep(.van-cell__title) {
     font-size: 14px;
     font-weight: 400;
     color: var(--LS-Gray-05, #83838f);
+    width: 164px;
+    flex: none;
+    display: block;
   }
   :deep(.van-cell__value) {
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
     color: var(--LS-Gray-07, #18181b);
+
+    .unit {
+      margin-left: 4px;
+    }
   }
   &:after {
-    border-bottom: 0px solid var(--LS-Gray-03, #d1d1d6);
+    border-bottom-width: 0px ;
   }
 }
 .title-class {

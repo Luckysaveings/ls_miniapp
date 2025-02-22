@@ -124,8 +124,6 @@ class Http {
   // 通用请求函数
   public request<T>(paramConfig: AxiosRequestConfig): Promise<T> {
     const config = { ...Http.axiosConfigDefault, ...paramConfig };
-    console.log("config", config);
-
     return new Promise((resolve, reject) => {
       Http.axiosInstance
         .request(config)

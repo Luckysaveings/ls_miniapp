@@ -14,9 +14,29 @@ import kaia2 from "@/assets/icon-kaia.svg";
 import imgBadges from "@/assets/img-badges.svg";
 import imgPoints from "@/assets/img-points.svg";
 import { useGlobalStore } from "@/store/globalStore";
-import { getRanking, login } from "@/api/index";
+import { getTaskList, login } from "@/api/index";
+
+const availableRewards = reactive({
+  points: 100,
+  badges: 10,
+});
+const getAvailableRewards = () => {
+  getTaskList().then((res) => {
+    const list = (res.data && res.data.list) || [];
+    const unCompletedList = list.filter((item) => item.status !== 3);
+    const pointList = unCompletedList.filter((item) => item.rewardType === 0);
+    const badgeList = unCompletedList.filter((item) => item.rewardType === 1);
+
+    const totalPoints = pointList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
+    const totalBadges = badgeList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
+
+    availableRewards.points = totalPoints;
+    availableRewards.badges = totalBadges;
+  });
+};
 
 onMounted(() => {
+  getAvailableRewards();
   window["fromHome"] = true;
   const loadingElement = document.getElementById("loading");
   if (loadingElement) {
@@ -77,9 +97,10 @@ const lineLogin = () => {
   window.location.href = `${line_auth}?${paramsString}`;
 };
 const lineLoginLiff = async () => {
-  liff.permanentLink.createUrlBy("https://line.luckysavings.io/home?inviteCode=abcdefg").then((permanentLink) => {
-    console.log(permanentLink);
-  });
+  // const token =
+  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MDc0NzczMCwibmJmIjoxNzQwMTQyOTMwfQ.-w9hoePP3xn1cYEp7v_3noVtybs4N1uBBQ81GrFx-I4";
+  // globalStore.setToken(token);
+  // console.log(globalStore.token);
   return;
   liff
     .init({
@@ -89,10 +110,12 @@ const lineLoginLiff = async () => {
     })
     .then(async () => {
       if (!liff.isLoggedIn()) {
-        liff.login();
+        await liff.login();
+        const idToken = await liff.getIDToken();
+        console.log("idToken:", idToken);
       } else {
         const idToken = await liff.getIDToken();
-        console.log("idToken: ", idToken);
+        console.log("idToken:", idToken);
         // console.log("DecodedToken:", DecodedToken);
         // liff.getProfile().then((profile) => {
         //   console.log("profile:", profile);
@@ -102,8 +125,8 @@ const lineLoginLiff = async () => {
         }).then(async (res: any) => {
           console.log("res-login", res);
           await globalStore.setToken(res.data.token);
-          console.log("globalStore.token: ", globalStore.token);
-          console.log("res.data.token: ", res.data.token);
+          console.log("globalStore.token", globalStore.token);
+          console.log("res.data.token", res.data.token);
         });
       }
     });
@@ -157,10 +180,7 @@ const handlePopoverItem = (type: string) => {
           class="product-img"
           @click="router.push('/profile')"
         />
-        <div
-          class="text-content"
-          @click="lineLoginLiff"
-        >
+        <div class="text-content">
           {{ userInfo.nickName }}
         </div>
       </div>
@@ -271,7 +291,7 @@ const handlePopoverItem = (type: string) => {
                   round
                   class="product-img"
                 />
-                <span class="img-num">x13</span>
+                <span class="img-num">x{{ availableRewards.points }}</span>
               </div>
               <div class="main-text">{{ $t("home.Points") }}</div>
             </div>
@@ -285,7 +305,7 @@ const handlePopoverItem = (type: string) => {
                   round
                   class="product-img"
                 />
-                <span class="img-num color-blue-01">x13</span>
+                <span class="img-num">x{{ availableRewards.badges }}</span>
               </div>
               <div class="main-text">{{ $t("home.Badges") }}</div>
             </div>

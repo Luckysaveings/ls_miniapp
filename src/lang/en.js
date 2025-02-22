@@ -83,6 +83,7 @@ export default {
     YourAchievements: "Your Achievements",
     DailyTasks: "Daily Tasks", // 添加 DailyTasks 的翻译
     Popups: "Pop-ups",
+    "MoreTasks": "More Tasks"
   },
   swap: {
     Swap: "Swap",

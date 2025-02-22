@@ -10,18 +10,18 @@
         <span class="task-title">{{ item.name }}</span>
         <div class="task-points">
           <img
-            v-if="item.rewardCategory === 0"            
+            v-if="item.rewardType === 0"
             class="img-icon"
             src="@/assets/img-points.svg"
             alt="points"
           />
           <img
-            v-else           
+            v-else
             class="img-icon"
             src="@/assets/img-badges.svg"
             alt="badge"
           />
-          <span class="task-points-text">+{{ item.rewardAmount }}</span>
+          <span class="task-points-text" :class="item.rewardType === 1 ? 'badge' : ''">+{{ item.rewardAmount }}</span>
         </div>
       </div>
     </div>
@@ -46,9 +46,9 @@ import imgTask from "@/assets/tasks/daily-tasks-2.svg";
 const props = defineProps<{
   item: any;
 }>();
-
 </script>
-<style scoped>
+
+<style scoped lang="scss">
 .tasks-box {
   display: flex;
   align-items: center;
@@ -63,6 +63,7 @@ const props = defineProps<{
       height: 50px;
       margin-right: 16px;
     }
+
     .task-text {
       display: flex;
       flex-direction: column;
@@ -88,6 +89,10 @@ const props = defineProps<{
           font-size: 16px;
           font-weight: 700;
           line-height: 24px;
+          
+          &.badge {
+            color:  #2d87fa;
+          }
         }
       }
     }

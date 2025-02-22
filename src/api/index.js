@@ -34,8 +34,6 @@ export const claimTask = (id) => {
 };
 // 查看成就排行榜
 export const getRanking = (params) => {
-  console.log("查看", http.request);
-
   return http.request({
     url: "/task/ranking",
     method: "get",

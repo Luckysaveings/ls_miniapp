@@ -46,11 +46,9 @@ const fetchData = (type) => {
   getMyRanking({
     type,
   }).then(res => {
-    console.log("res任务-getMyRanking", res)
     selfRanking.no = res.data && res.data.no || 0;
   })
   getAchievement().then(res => {
-    console.log("res任务-getAchievement", res)
     if (res.data) {
       const selfNum = type === 0 ? res.data.point : res.data.badge;
       selfRanking.selfNum = selfNum || 0;
