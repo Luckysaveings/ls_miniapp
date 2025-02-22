@@ -77,11 +77,10 @@ const lineLogin = () => {
   window.location.href = `${line_auth}?${paramsString}`;
 };
 const lineLoginLiff = async () => {
-  // const token =
-  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MDc0NzczMCwibmJmIjoxNzQwMTQyOTMwfQ.-w9hoePP3xn1cYEp7v_3noVtybs4N1uBBQ81GrFx-I4";
-  // globalStore.setToken(token);
-  // console.log(globalStore.token);
-  // return;
+  liff.permanentLink.createUrlBy("https://line.luckysavings.io/home?inviteCode=abcdefg").then((permanentLink) => {
+    console.log(permanentLink);
+  });
+  return;
   liff
     .init({
       // liffId: "2006818858-1a2PrWjY",

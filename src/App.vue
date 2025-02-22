@@ -24,8 +24,9 @@ onMounted(() => {
           idToken,
         }).then(async (res: any) => {
           console.log("res-login", res);
-          await globalStore.setToken(res.data.idToken);
+          await globalStore.setToken(res.data.token);
           console.log("globalStore.token", globalStore.token);
+          console.log("res.data.token", res.data.token);
         });
       }
     });
