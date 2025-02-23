@@ -22,12 +22,20 @@ onMounted(() => {
         console.log("idToken:", idToken);
         login({
           idToken,
-        }).then(async (res: any) => {
-          console.log("res-login", res);
-          await globalStore.setToken(res.data.token);
-          console.log("globalStore.token", globalStore.token);
-          console.log("res.data.token", res.data.token);
-        });
+        })
+          .then(async (res: any) => {
+            console.log("res-login", res);
+            await globalStore.setToken(res.data.token);
+            console.log("globalStore.token", globalStore.token);
+            console.log("res.data.token", res.data.token);
+          })
+          .catch((err) => {
+            console.log("err-login", err);
+            if (liff.isLoggedIn()) {
+              liff.logout();
+            }
+            liff.login();
+          });
       }
     });
 });
