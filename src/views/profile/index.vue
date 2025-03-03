@@ -2,11 +2,9 @@
   <div class="page-wrap">
     <!-- Avatar and Name Section -->
     <div class="avatar-section">
-      <van-image
-        round
-        width="100"
-        height="100"
-        :src="userAvatar"
+      <img
+        src="@/assets/user-avatar.svg"
+        class="avatar-img"
       />
       <h2 class="username">Arthorn</h2>
     </div>
@@ -23,10 +21,9 @@
       >
         <template #title>
           <div class="cell-title-wrap">
-            <img
-              class="title-icon"
-              src="@/assets/icon-jiangbei.svg"
-              alt="icon"
+            <svg-icon
+              className="title-icon"
+              name="icon-jiangbei"
             />
             <span>Account Level</span>
           </div>
@@ -43,10 +40,9 @@
       >
         <template #title>
           <div class="cell-title-wrap">
-            <img
-              class="title-icon"
-              src="@/assets/profile-nickname.svg"
-              alt="icon"
+            <svg-icon
+              className="title-icon"
+              name="profile-nickname"
             />
             <span>Nickname</span>
           </div>
@@ -62,19 +58,17 @@
       >
         <template #title>
           <div class="cell-title-wrap">
-            <img
-              class="title-icon"
-              src="@/assets/profile-userId.svg"
-              alt="icon"
+            <svg-icon
+              className="title-icon"
+              name="profile-userId"
             />
             <span>User ID</span>
           </div>
         </template>
         <template #right-icon>
-          <img
-            class="img-icon icon-copy"
-            src="@/assets/icon-copy.svg"
-            alt="copy"
+          <svg-icon
+            className="img-icon icon-copy"
+            name="icon-copy"
             @click="copyUserId"
           />
         </template>
@@ -89,19 +83,17 @@
       >
         <template #title>
           <div class="cell-title-wrap">
-            <img
-              class="title-icon"
-              src="@/assets/profile-userId.svg"
-              alt="icon"
+            <svg-icon
+              className="title-icon"
+              name="profile-userId"
             />
             <span>{{ $t("common.WalletAddress") }}</span>
           </div>
         </template>
         <template #right-icon>
-          <img
-            class="img-icon icon-copy"
-            src="@/assets/icon-copy.svg"
-            alt="copy"
+          <svg-icon
+            className="img-icon icon-copy"
+            name="icon-copy"
             @click="copyUserId"
           />
         </template>
@@ -118,10 +110,9 @@
       >
         <template #title>
           <div class="cell-title-wrap">
-            <img
-              class="title-icon"
-              src="@/assets/profile-email.svg"
-              alt="icon"
+            <svg-icon
+              className="title-icon"
+              name="profile-email"
             />
             <span>Email</span>
           </div>
@@ -138,10 +129,9 @@
       >
         <template #title>
           <div class="cell-title-wrap">
-            <img
-              class="title-icon"
-              src="@/assets/profile-terms.svg"
-              alt="icon"
+            <svg-icon
+              className="title-icon"
+              name="profile-terms"
             />
             <span>Terms of Use</span>
           </div>
@@ -158,10 +148,9 @@
       >
         <template #title>
           <div class="cell-title-wrap">
-            <img
-              class="title-icon"
-              src="@/assets/profile-terms.svg"
-              alt="icon"
+            <svg-icon
+              className="title-icon"
+              name="profile-terms"
             />
             <span>Privacy Policy</span>
           </div>
@@ -180,19 +169,17 @@
       >
         <template #title>
           <div class="cell-title-wrap">
-            <img
-              class="title-icon"
-              src="@/assets/profile-info.svg"
-              alt="icon"
+            <svg-icon
+              className="title-icon"
+              name="profile-info"
             />
             <span>Support</span>
           </div>
         </template>
         <template #right-icon>
-          <img
-            class="img-icon icon-copy"
-            src="@/assets/icon-copy.svg"
-            alt="copy"
+          <svg-icon
+            className="img-icon icon-copy"
+            name="icon-copy"
           />
         </template>
       </van-cell>
@@ -207,25 +194,15 @@
       >
         <template #title>
           <div class="cell-title-wrap">
-            <img
+            <svg-icon
+              name="profile-info"
               class="title-icon"
-              src="@/assets/profile-info.svg"
-              alt="icon"
             />
             <span>Version</span>
           </div>
         </template>
       </van-cell>
     </van-cell-group>
-    <!-- Logout Button -->
-    <div class="logout-wrapper">
-      <div
-        class="logout-button"
-        @click="handleLogout"
-      >
-        Log Out
-      </div>
-    </div>
   </div>
 
   <van-overlay
@@ -244,14 +221,13 @@
       </div>
 
       <div class="dialog-content">
-        <img
-          src="@/assets/img-icon.svg"
-          alt="version"
+        <svg-icon
+          name="img-icon"
           class="version-icon"
         />
-        <img
-          src="@/assets/img-appname.svg"
-          alt="appname"
+
+        <svg-icon
+          name="img-appname"
           class="app-name"
         />
         <div class="version-text">
@@ -267,10 +243,9 @@
   >
     <template #message>
       <div class="toast-message">
-        <van-icon
-          :name="checkCircle"
-          size="24"
-          color="red"
+        <svg-icon
+          name="check-circle"
+          size="24px"
         />
         <span class="toast-text">{{ toastText }}</span>
       </div>
@@ -279,9 +254,6 @@
 </template>
 
 <script setup>
-import { showToast } from "vant";
-import userAvatar from "@/assets/user-avatar.svg";
-import checkCircle from "@/assets/check-circle.svg";
 import { useRouter } from "vue-router";
 const router = useRouter();
 const showVersion = ref(false);
@@ -325,6 +297,12 @@ const handleLogout = () => {
 
   .settings-group {
     margin: 24px 0;
+  }
+  .avatar-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
   }
 }
 .cell-class-custom {

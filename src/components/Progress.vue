@@ -8,21 +8,21 @@
           background: bgColor,
         }"
       />
-      <van-icon
+      <svg-icon
         :style="{
           left: `${percentage - 0.5}%`,
         }"
         class="pivot"
-        :name="iconGift"
+        name="icon-gift"
         color="#FF4E7A"
         size="26px"
       />
+
     </div>
   </div>
 </template>
 
 <script setup name="Progress">
-import iconGift from "@/assets/icon-gift.svg";
 defineProps({
   percentage: {
     type: Number,

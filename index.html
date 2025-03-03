@@ -10,6 +10,11 @@
 </head>
 
 <body>
+  <script>
+    if (window.location.href.indexOf('inviteCode') > -1) {
+      locaoStorage.setItem('inviteCode', window.location.href.split('inviteCode=')[1]);
+    }
+  </script>
   <div id="app"></div>
   <div id="loading">
     <style>

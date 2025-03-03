@@ -9,11 +9,11 @@
     >
       <div class="dialog-title">
         <div class="dialog-title-left">
-          <img
+          <svg-icon
+            name="icon-jiangbei-2"
             class="img-icon"
-            src="@/assets/icon-jiangbei-2.svg"
-            alt="icon"
           />
+
           <span>Previous winners</span>
         </div>
         <van-icon
@@ -47,10 +47,9 @@
           class="content-item"
         >
           <div class="content-item-title">
-            <img
+            <svg-icon
+              :name="`icon-winner-${tierNum + 1}`"
               class="img-icon"
-              :src="tierIcons[tierNum]"
-              alt="icon"
             />
             <span>Tier {{ tierNum + 1 }} Rewards:</span>
           </div>
@@ -77,12 +76,7 @@
   </van-overlay>
 </template>
 <script setup name="PreviousWinnersDialog">
-import winner1 from "@/assets/icon-winner-1.svg";
-import winner2 from "@/assets/icon-winner-2.svg";
-import winner3 from "@/assets/icon-winner-3.svg";
-
 const show = ref(false);
-const tierIcons = [winner1, winner2, winner3];
 
 const selectedType = ref("usd");
 const data = ref({
@@ -186,6 +180,7 @@ defineExpose({ showDialog });
   }
   .content-item {
     width: 100%;
+    margin-bottom: 0;
     .content-item-title {
       display: flex;
       align-items: center;

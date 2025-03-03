@@ -24,10 +24,9 @@
         </div>
         <div class="box-bottom">
           <div class="box-left">
-            <img
-              src="@/assets/icon-ustd.svg"
-              alt="usdt"
-              class="box-img"
+            <svg-icon
+              className="box-img"
+              name="icon-ustd"
             />
             <span>USDT</span>
           </div>
@@ -41,10 +40,9 @@
           </div>
         </div>
       </div>
-      <img
-        src="@/assets/icon-swap.svg"
-        alt="swap"
+      <svg-icon
         class="swap-img"
+        name="icon-swap"
       />
       <div class="content-box no-margin-top">
         <div class="box-top">
@@ -61,10 +59,9 @@
         </div>
         <div class="box-bottom">
           <div class="box-left">
-            <img
-              src="@/assets/icon-kaia.svg"
-              alt="kaia"
-              class="box-img"
+            <svg-icon
+              className="box-img"
+              name="icon-kaia"
             />
             <span>KAIA</span>
           </div>

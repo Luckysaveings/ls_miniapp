@@ -1,10 +1,11 @@
 import Axios, { type AxiosInstance, type AxiosError, type AxiosResponse, type AxiosRequestConfig } from "axios";
+import { useRouter } from "vue-router"; // 添加这行导入
+
 import { ContentTypeEnum } from "@/enums/request-enum";
 import NProgress from "../progress";
-import { showFailToast } from "vant";
+import { showFailToast, showLoadingToast, closeToast } from "vant";
 import "vant/es/toast/style";
 import { useGlobalStore } from "@/store/globalStore";
-
 // 默认 axios 实例请求配置
 const configDefault = {
   headers: {
@@ -26,6 +27,11 @@ class Http {
     Http.axiosInstance.interceptors.request.use(
       (config) => {
         NProgress.start();
+        showLoadingToast({
+          message: "",
+          forbidClick: true,
+          duration: 0,
+        });
         const globalStore = useGlobalStore();
         // 发送请求前，可在此携带 token
         if (globalStore.token) {
@@ -39,6 +45,7 @@ class Http {
         return config;
       },
       (error: AxiosError) => {
+        closeToast();
         showFailToast(error.message);
         return Promise.reject(error);
       }
@@ -50,6 +57,7 @@ class Http {
     Http.axiosInstance.interceptors.response.use(
       (response: AxiosResponse) => {
         NProgress.done();
+        closeToast();
         // console.log("response interceptors.response", response);
         // 与后端协定的返回字段
         const { code } = response.data;
@@ -61,11 +69,20 @@ class Http {
         } else {
           // 处理请求错误
           // showFailToast(message);
+          const router = useRouter();
+          router.push({
+            name: "error",
+            query: {
+              code: code.toString(),
+            },
+          });
           return Promise.reject(response.data);
         }
       },
       (error: AxiosError) => {
+        const router = useRouter();
         NProgress.done();
+        closeToast();
         // 处理 HTTP 网络错误
         let message = "";
         // HTTP 状态码
@@ -109,6 +126,14 @@ class Http {
         }
 
         showFailToast(message);
+        // 跳转到错误页面
+        router.push({
+          name: "error",
+          query: {
+            message: message,
+            status: status?.toString(),
+          },
+        });
         return Promise.reject(error);
       }
     );

@@ -7,7 +7,7 @@ import AutoImport from "unplugin-auto-import/vite";
 
 import Components from "unplugin-vue-components/vite";
 import { VantResolver } from "unplugin-vue-components/resolvers";
-import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
+import { createSvgIconsPlugin } from "@digitalacorn/vite-plugin-svg-icons";
 import path from "path";
 import mockDevServerPlugin from "vite-plugin-mock-dev-server";
 import viteCompression from "vite-plugin-compression";
@@ -38,6 +38,19 @@ export default defineConfig(({ mode }) => {
         iconDirs: [path.resolve(root, "src/icons/svg")],
         // 指定 symbolId 格式
         symbolId: "icon-[dir]-[name]",
+        replaceStrokeWithCurrentColor: false,
+
+        // svgoOptions: {
+        //   full: true,
+        //   plugins: [
+        //     {
+        //       name: "removeAttrs",
+        //       params: {
+        //         attrs: "fill",
+        //       },
+        //     },
+        //   ],
+        // },
       }),
       // 生产环境 gzip 压缩资源
       viteCompression(),

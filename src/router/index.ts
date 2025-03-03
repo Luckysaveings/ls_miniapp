@@ -17,7 +17,6 @@ export interface toRouteType extends RouteLocationNormalized {
 }
 
 router.beforeEach((to: toRouteType, from, next) => {
-  console.log(to.path);
   if (!window["fromHome"] && to.path !== "/home") {
     next({ path: "/home" });
     return;

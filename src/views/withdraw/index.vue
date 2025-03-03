@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrap">
     <van-nav-bar
-      :title="$t('withdraw.Withdraw')"
+      :title="$t('common.Withdraw')"
       left-arrow
       class="nav-bar-wrap"
       :border="false"
@@ -9,9 +9,9 @@
       @click-right="onClickRight"
     >
       <template #right>
-        <van-icon
-          :name="iconScan"
-          size="24"
+        <svg-icon
+          name="icon-scan"
+          size="24px"
         />
       </template>
     </van-nav-bar>
@@ -26,10 +26,7 @@
             :class="{ active: selectedToken === 'USDT' }"
             @click="selectedToken = 'USDT'"
           >
-            <img
-              src="@/assets/icon-ustd.svg"
-              alt="USDT"
-            />
+            <svg-icon name="icon-ustd" />
             USDT
           </div>
           <div
@@ -37,10 +34,7 @@
             :class="{ active: selectedToken === 'KAIA' }"
             @click="selectedToken = 'KAIA'"
           >
-            <img
-              src="@/assets/icon-kaia.svg"
-              alt="KAIA"
-            />
+            <svg-icon name="icon-kaia" />
             KAIA
           </div>
         </div>
@@ -108,10 +102,9 @@
               class="list-item"
             >
               <div class="list-item-label">
-                <img
-                  src="@/assets/icon-wallet.svg"
-                  class="list-item-icon"
-                  alt="USDT"
+                <svg-icon
+                  className="list-item-icon"
+                  name="icon-wallet"
                 />
                 <span>{{ item.address }}</span>
               </div>
@@ -147,7 +140,7 @@
   >
     <div class="content-box">
       <div class="dialog-title">
-        <span>{{ $t("withdraw.Withdraw") }}</span>
+        <span>{{ $t("common.Withdraw") }}</span>
         <van-icon
           name="cross"
           size="20"
@@ -178,10 +171,7 @@
           {{ $t("withdraw.Confirm") }}
         </button>
         <div class="warning-text">
-          <img
-            src="@/assets/icon-warning.svg"
-            alt="warning"
-          />
+          <svg-icon name="icon-warning" />
           <span>{{ $t("withdraw.OnceConfirmed") }}</span>
         </div>
       </div>
@@ -204,17 +194,15 @@
       </div>
 
       <div class="dialog-content status-content">
-        <img
+        <svg-icon
           v-if="infoStatus === 'success'"
-          src="@/assets/icon-success.svg"
-          alt="success"
-          class="img-status"
+          name="icon-success"
+          className="img-status"
         />
-        <img
+        <svg-icon
           v-if="infoStatus === 'error'"
-          src="@/assets/icon-error.svg"
-          alt="error"
-          class="img-status"
+          name="icon-error"
+          className="img-status"
         />
         <div class="status-bottom">
           <span class="item-status">{{ infoStatus === "success" ? $t("withdraw.WithdrawSuccess") : $t("withdraw.WithdrawFailed") }}</span>
@@ -241,10 +229,9 @@
   >
     <template #message>
       <div class="toast-message">
-        <van-icon
-          :name="checkCircle"
-          size="24"
-          color="red"
+        <svg-icon
+          name="check-circle"
+          size="24px"
         />
         <span class="toast-text">{{ toastText }}</span>
       </div>
@@ -261,10 +248,7 @@
 <script setup name="Withdraw">
 import { computed } from "vue";
 import { showToast } from "vant";
-import iconHistory from "@/assets/icon-history.svg";
-import iconScan from "@/assets/icon-scan.svg";
 import iconEmpty from "@/assets/icon-empty.svg";
-import checkCircle from "@/assets/check-circle.svg";
 import { useRouter } from "vue-router";
 import QRCodeScanner from "@/components/QRCodeScanner/index.vue";
 
@@ -272,7 +256,6 @@ const router = useRouter();
 const showInfo = ref(false);
 const showInfoStatus = ref(false);
 const infoStatus = ref("");
-
 const qrRef = ref(null);
 const handleQrRes = (res) => {
   console.log("res", res);
@@ -280,8 +263,9 @@ const handleQrRes = (res) => {
   // qrRef.value.stopQrCode();
 };
 const onClickRight = () => {
-  qrRef.value.startScanner();
-  // router.push("/page-history");
+  nextTick(() => {
+    qrRef.value.startScanner();
+  });
 };
 const onClickLeft = () => {
   router.back();

@@ -102,6 +102,15 @@ const routes: Array<RouteRecordRaw> = [
           showTabbar: false,
         },
       },
+      {
+        path: "error",
+        name: "Error",
+        component: () => import("@/views/networkError/index.vue"),
+        meta: {
+          title: "Network Error",
+          showTabbar: false,
+        },
+      },
     ],
   },
 ];

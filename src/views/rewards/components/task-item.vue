@@ -2,35 +2,43 @@
   <div class="content-box tasks-box">
     <div class="task-item">
       <img
+        v-if="item.iconUrl"
         class="task-img"
-        :src="item.iconUrl || imgTask"
+        :src="item.iconUrl"
         alt="task"
       />
+      <svg-icon
+        v-else
+        name="tasks-daily-tasks-2"
+        class="task-img"
+      />
+
       <div class="task-text">
         <span class="task-title">{{ item.name }}</span>
         <div class="task-points">
-          <img
+          <svg-icon
             v-if="item.rewardType === 0"
-            class="img-icon"
-            src="@/assets/img-points.svg"
-            alt="points"
+            className="img-icon"
+            name="img-points"
           />
-          <img
+          <svg-icon
             v-else
-            class="img-icon"
-            src="@/assets/img-badges.svg"
-            alt="badge"
+            className="img-icon"
+            name="img-badges"
           />
-          <span class="task-points-text" :class="item.rewardType === 1 ? 'badge' : ''">+{{ item.rewardAmount }}</span>
+          <span
+            class="task-points-text"
+            :class="item.rewardType === 1 ? 'badge' : ''"
+            >+{{ item.rewardAmount }}</span
+          >
         </div>
       </div>
     </div>
     <div class="task-status">
-      <img
+      <svg-icon
         v-if="item.status === 3"
-        class="img-status"
-        src="@/assets/icon-success.svg"
-        alt="status"
+        className="img-status"
+        name="icon-success"
       />
       <div
         v-else
@@ -42,7 +50,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import imgTask from "@/assets/tasks/daily-tasks-2.svg";
 const props = defineProps<{
   item: any;
 }>();
@@ -89,9 +96,9 @@ const props = defineProps<{
           font-size: 16px;
           font-weight: 700;
           line-height: 24px;
-          
+
           &.badge {
-            color:  #2d87fa;
+            color: #2d87fa;
           }
         }
       }

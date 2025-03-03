@@ -70,16 +70,14 @@ onMounted(() => {
         </div>
       </div>
       <div class="header-right">
-        <img
-          class="img-header-right"
-          src="@/assets/icon-jiangbei-2.svg"
-          alt="jiangbei"
+        <svg-icon
+          className="img-header-right"
+          name="icon-jiangbei-2"
           @click="router.push('/ranking')"
         />
-        <img
-          class="img-header-right"
-          src="@/assets/icon-upload.svg"
-          alt="upload"
+        <svg-icon
+          className="img-header-right"
+          name="icon-upload"
           @click="generateInviteLink"
         />
       </div>
@@ -88,30 +86,27 @@ onMounted(() => {
     <div class="module-item">
       <div class="module-title">
         <span>{{ $t("rewards.YourAchievements") }}</span>
-        <img
-          class="img-icon"
-          src="@/assets/icon-info.svg"
-          alt="info"
+        <svg-icon
+          className="img-icon"
+          name="icon-info"
           @click="customToast('Points and badges will become redeemable after launchpad open.')"
         />
       </div>
       <div class="content-box-yellow achievement-box">
         <div class="inner-color">
           <div class="achievement-item">
-            <img
-              class="img-icon"
-              src="@/assets/img-points.svg"
-              alt="points"
+            <svg-icon
+              className="img-icon"
+              name="img-points"
             />
             <div class="achievement-text">
               <span>x{{ achievements.points }}</span>
             </div>
           </div>
           <div class="achievement-item">
-            <img
-              class="img-icon"
-              src="@/assets/img-badges.svg"
-              alt="badges"
+            <svg-icon
+              className="img-icon"
+              name="img-badges"
             />
             <div class="achievement-text right-text">
               <span>x{{ achievements.badges }}</span>
@@ -123,17 +118,16 @@ onMounted(() => {
     <div class="module-item">
       <div class="module-title">
         <span>{{ $t("rewards.DailyTasks") }}</span>
-        <img
-          class="img-icon"
-          src="@/assets/icon-info.svg"
-          alt="info"
+        <svg-icon
+          className="img-icon"
+          name="icon-info"
           @click="customToast('Will refresh daily at 00:00 (UTC+0).')"
         />
       </div>
       <TaskItem
         v-for="(item, index) in dailyTasks"
         v-show="showAllDailyTasks || index < 2"
-        :key="item.title"
+        :key="`${item.taskId}-${item.rewardAmount}`"
         :item="item"
       />
       <div
@@ -152,31 +146,17 @@ onMounted(() => {
     <div class="module-item">
       <div class="module-title">
         <span>{{ $t("rewards.Popups") }}</span>
-        <img
-          class="img-icon"
-          src="@/assets/icon-info.svg"
-          alt="info"
+        <svg-icon
+          className="img-icon"
+          name="icon-info"
           @click="customToast('One-time tasks cannot be completed repeatedly, and tasks will be updated from time to time.')"
         />
       </div>
       <TaskItem
         v-for="(item, index) in popups"
-        v-show="showAllPopups || index < 2"
-        :key="`${item.title}-${item.points}`"
+        :key="`${item.taskId}-${item.rewardAmount}`"
         :item="item"
       />
-      <div
-        v-if="popups.length > 2 && !showAllPopups"
-        class="more-tasks"
-        @click="showAllPopups = true"
-      >
-        <span>{{ $t("rewards.MoreTasks") }}</span>
-        <van-icon
-          name="arrow-down"
-          size="16px"
-          color="#83838F"
-        />
-      </div>
     </div>
   </div>
 </template>

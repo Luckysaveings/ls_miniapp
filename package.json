@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.5.0",
+    "@digitalacorn/vite-plugin-svg-icons": "^3.0.0-pre.2",
     "@eslint/js": "^9.14.0",
     "@iconify-icons/fa6-solid": "^1.2.13",
     "@iconify/vue": "^4.1.2",
@@ -83,7 +84,6 @@
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-html": "^3.2.2",
     "vite-plugin-mock-dev-server": "^1.8.0",
-    "vite-plugin-svg-icons": "^2.0.1",
     "vue-eslint-parser": "^9.4.3",
     "vue-tsc": "^2.1.10"
   },

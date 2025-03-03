@@ -5,6 +5,7 @@ import { isExternal } from "@/utils/validate";
 interface Props {
   name: string;
   className?: string;
+  size?: string;
 }
 const props = withDefaults(defineProps<Props>(), {
   name: "",
@@ -39,6 +40,7 @@ const styleExternalIcon = computed(() => {
   <svg
     v-else
     :class="svgClass"
+    :style="{ width: size, height: size }"
     aria-hidden="true"
     v-bind="$attrs"
   >
@@ -48,15 +50,16 @@ const styleExternalIcon = computed(() => {
 
 <style scoped>
 .svg-icon {
-  width: 1em;
-  height: 1em;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
   vertical-align: -0.15em;
-  fill: currentColor;
+  fill: transparent;
   overflow: hidden;
 }
 
 .svg-external-icon {
-  background-color: currentColor;
+  background-color: transparent; 
   mask-size: cover !important;
   display: inline-block;
 }

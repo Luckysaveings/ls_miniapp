@@ -6,13 +6,6 @@ import DappPortalSDK from "@linenext/dapp-portal-sdk";
 import qs from "qs";
 import { useRouter } from "vue-router";
 import { useClickAway } from "@vant/use";
-import userAvatar from "@/assets/user-avatar.svg";
-import iconLanguage from "@/assets/icon-language.svg";
-import iconInfo from "@/assets/icon-info.svg";
-import ustd from "@/assets/icon-ustd.svg";
-import kaia2 from "@/assets/icon-kaia.svg";
-import imgBadges from "@/assets/img-badges.svg";
-import imgPoints from "@/assets/img-points.svg";
 import { useGlobalStore } from "@/store/globalStore";
 import { getTaskList, login } from "@/api/index";
 
@@ -36,6 +29,10 @@ const getAvailableRewards = () => {
 };
 
 onMounted(() => {
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MDg4MzUwOCwibmJmIjoxNzQwMjc4NzA4fQ.eoZWS-MME1PC95FiOgkCeVUWKi980N8KSRgTB4812aI";
+  globalStore.setToken(token);
+  console.log("globalStore", globalStore);
   getAvailableRewards();
   window["fromHome"] = true;
   const loadingElement = document.getElementById("loading");
@@ -54,7 +51,7 @@ const infoIcon = ref("");
 const showBalanceInfo = (type: string) => {
   showInfo.value = true;
   infoType.value = type;
-  infoIcon.value = type === "USDT" ? ustd : kaia2;
+  infoIcon.value = type === "USDT" ? "icon-ustd" : "icon-kaia";
 };
 const hiddenInfo = () => {
   showInfo.value = false;
@@ -73,10 +70,6 @@ const balanceInfo = reactive({
   },
 });
 
-const userInfo = reactive({
-  avatar: userAvatar,
-  nickName: "Arthorn",
-});
 const time = ref(13600 * 1000);
 const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
@@ -95,41 +88,6 @@ const lineLogin = () => {
   const paramsString = qs.stringify(auth_params);
   console.log(line_auth, paramsString);
   window.location.href = `${line_auth}?${paramsString}`;
-};
-const lineLoginLiff = async () => {
-  // const token =
-  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MDc0NzczMCwibmJmIjoxNzQwMTQyOTMwfQ.-w9hoePP3xn1cYEp7v_3noVtybs4N1uBBQ81GrFx-I4";
-  // globalStore.setToken(token);
-  // console.log(globalStore.token);
-  return;
-  liff
-    .init({
-      // liffId: "2006818858-1a2PrWjY",
-      liffId: import.meta.env.VITE_LINE_LIFF_ID || "2006815241-YKKvp8yb",
-      withLoginOnExternalBrowser: true,
-    })
-    .then(async () => {
-      if (!liff.isLoggedIn()) {
-        await liff.login();
-        const idToken = await liff.getIDToken();
-        console.log("idToken:", idToken);
-      } else {
-        const idToken = await liff.getIDToken();
-        console.log("idToken:", idToken);
-        // console.log("DecodedToken:", DecodedToken);
-        // liff.getProfile().then((profile) => {
-        //   console.log("profile:", profile);
-        // });
-        login({
-          idToken,
-        }).then(async (res: any) => {
-          console.log("res-login", res);
-          await globalStore.setToken(res.data.token);
-          console.log("globalStore.token", globalStore.token);
-          console.log("res.data.token", res.data.token);
-        });
-      }
-    });
 };
 const getWallet = async () => {
   const sdk = await DappPortalSDK.init({
@@ -171,27 +129,24 @@ const handlePopoverItem = (type: string) => {
   <div class="page-wrap">
     <div class="header">
       <div class="header-left">
-        <van-image
-          width="36"
-          height="36"
-          fit="cover"
-          :src="userInfo.avatar"
-          round
+        <img
+          src="@/assets/user-avatar.svg"
           class="product-img"
           @click="router.push('/profile')"
         />
         <div class="text-content">
-          {{ userInfo.nickName }}
+          {{ globalStore.userInfo.nickname }}
         </div>
       </div>
       <div
         class="header-right"
         @click="getWallet"
       >
-        <van-icon
-          :name="iconLanguage"
-          size="16"
-        />
+        <svg-icon
+          name="icon-language"
+          size="16px"
+        ></svg-icon>
+
         <span class="current-language">EN</span>
       </div>
     </div>
@@ -201,35 +156,25 @@ const handlePopoverItem = (type: string) => {
           <div class="balance-title">{{ $t("home.WalletBalance") }}</div>
           <div class="balance-content">
             <div class="balance-item">
-              <van-image
-                width="24"
-                height="24"
-                fit="cover"
-                :src="ustd"
-                round
-                class="van-img"
+              <svg-icon
+                name="icon-ustd"
+                className="van-img"
               />
               <span class="balance-item-txt">11.12K</span>
-              <van-icon
-                :name="iconInfo"
-                color="#A1A1AA"
+              <svg-icon
+                name="icon-info"
                 size="16px"
                 @click="showBalanceInfo('USDT')"
               />
             </div>
             <div class="balance-item">
-              <van-image
-                width="24"
-                height="24"
-                fit="cover"
-                :src="kaia2"
-                round
-                class="van-img"
+              <svg-icon
+                name="icon-kaia"
+                className="van-img"
               />
               <span class="balance-item-txt">1.20K</span>
-              <van-icon
-                :name="iconInfo"
-                color="#A1A1AA"
+              <svg-icon
+                name="icon-info"
                 size="16px"
                 @click="showBalanceInfo('KAIA')"
               />
@@ -283,13 +228,10 @@ const handlePopoverItem = (type: string) => {
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="box-top">
               <div class="img-num-wrap">
-                <van-image
-                  width="36"
-                  height="36"
-                  fit="cover"
-                  :src="imgPoints"
-                  round
+                <svg-icon
+                  name="img-points"
                   class="product-img"
+                  size="36px"
                 />
                 <span class="img-num">x{{ availableRewards.points }}</span>
               </div>
@@ -297,14 +239,12 @@ const handlePopoverItem = (type: string) => {
             </div>
             <div class="box-top">
               <div class="img-num-wrap">
-                <van-image
-                  width="36"
-                  height="36"
-                  fit="cover"
-                  :src="imgBadges"
-                  round
+                <svg-icon
+                  name="img-badges"
                   class="product-img"
+                  size="36px"
                 />
+
                 <span class="img-num">x{{ availableRewards.badges }}</span>
               </div>
               <div class="main-text">{{ $t("home.Badges") }}</div>
@@ -330,10 +270,9 @@ const handlePopoverItem = (type: string) => {
           class="popover-item"
           @click="handlePopoverItem('deposit')"
         >
-          <img
+          <svg-icon
+            name="img-deposit"
             class="popover-img"
-            src="@/assets/img-deposit.svg"
-            alt="deposit"
           />
           <span class="popover-text">{{ $t("home.Deposit") }}</span>
         </div>
@@ -341,24 +280,12 @@ const handlePopoverItem = (type: string) => {
           class="popover-item"
           @click="handlePopoverItem('withdraw')"
         >
-          <img
+          <svg-icon
+            name="img-withdraw"
             class="popover-img"
-            src="@/assets/img-withdraw.svg"
-            alt="withdraw"
           />
-          <span class="popover-text">{{ $t("home.Withdraw") }}</span>
+          <span class="popover-text">{{ $t("common.Withdraw") }}</span>
         </div>
-        <!-- <div
-          class="popover-item"
-          @click="handlePopoverItem('swap')"
-        >
-          <img
-            class="popover-img"
-            src="@/assets/img-swap.svg"
-            alt="swap"
-          />
-          <span class="popover-text">{{ $t("home.Swap") }}</span>
-        </div> -->
       </div>
     </div>
     <button
@@ -391,19 +318,17 @@ const handlePopoverItem = (type: string) => {
             <span class="label">{{ $t("common.WalletAddress") }}</span>
             <span class="value">
               <span>0xb5a8...1e28</span>
-              <img
-                src="@/assets/icon-copy.svg"
-                alt="copy"
-                class="img-copy"
-            /></span>
+              <svg-icon
+                name="icon-copy"
+                className="img-copy"
+              />
+            </span>
           </div>
           <div class="balance-row">
             <span class="label">{{ $t("home.Balance") }}</span>
             <span class="value">
-              <van-image
-                fit="cover"
-                :src="infoIcon"
-                round
+              <svg-icon
+                :name="infoIcon"
                 class="van-img"
               />
               {{ balanceInfo[infoType].balance }}</span
@@ -415,22 +340,19 @@ const handlePopoverItem = (type: string) => {
           <div class="balance-row">
             <span class="label">{{ $t("home.Savings") }}</span>
             <span class="value">
-              <van-image
-                fit="cover"
-                :src="infoIcon"
-                round
+              <svg-icon
+                :name="infoIcon"
                 class="van-img"
               />
+
               {{ balanceInfo[infoType].savings }}</span
             >
           </div>
           <div class="balance-row">
             <span class="label">{{ $t("home.LotteryWinnings") }}</span>
             <span class="value">
-              <van-image
-                fit="cover"
-                :src="infoIcon"
-                round
+              <svg-icon
+                :name="infoIcon"
                 class="van-img"
               />
               {{ balanceInfo[infoType].drawRewards }}</span

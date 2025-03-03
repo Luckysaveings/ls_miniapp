@@ -2,11 +2,6 @@
 import { useRouter } from "vue-router";
 import { getRanking, getMyRanking, getAchievement } from "@/api/index";
 
-import winner1 from "@/assets/icon-winner-1.svg";
-import winner2 from "@/assets/icon-winner-2.svg";
-import winner3 from "@/assets/icon-winner-3.svg";
-const tierIcons = [winner1, winner2, winner3];
-
 const router = useRouter();
 const onClickLeft = () => {
   router.back();
@@ -14,7 +9,7 @@ const onClickLeft = () => {
 const selectedType = ref("points");
 const changeType = (t) => {
   selectedType.value = t;
-  const type = t === "points" ? 0 : 1;  
+  const type = t === "points" ? 0 : 1;
   fetchData(type);
 };
 const selfRanking = reactive({
@@ -38,26 +33,26 @@ const fetchData = (type) => {
   // 0-积分point，1-徽章badge
   getRanking({
     type,
-  }).then(res => {
-    const list = res.data && res.data.list || [];
+  }).then((res) => {
+    const list = (res.data && res.data.list) || [];
     tableData.value = list;
-  })
-  
+  });
+
   getMyRanking({
     type,
-  }).then(res => {
-    selfRanking.no = res.data && res.data.no || 0;
-  })
-  getAchievement().then(res => {
+  }).then((res) => {
+    selfRanking.no = (res.data && res.data.no) || 0;
+  });
+  getAchievement().then((res) => {
     if (res.data) {
       const selfNum = type === 0 ? res.data.point : res.data.badge;
       selfRanking.selfNum = selfNum || 0;
     }
-  })
-}
+  });
+};
 onMounted(() => {
   fetchData(0);
-})
+});
 </script>
 
 <template>
@@ -104,10 +99,9 @@ onMounted(() => {
               <div class="item-top">{{ selectedType === "points" ? $t("ranking.Points") : $t("ranking.Badges") }}</div>
               <div class="item-bottom">
                 <span>{{ selfRanking.selfNum }}</span>
-                <img
-                  class="img-icon"
-                  :src="selectedType === 'points' ? 'src/assets/img-points.svg' : 'src/assets/img-badges.svg'"
-                  alt="badges"
+                <svg-icon
+                  className="img-icon"
+                  :name="selectedType === 'points' ? 'img-points' : 'img-badges'"
                 />
               </div>
             </div>
@@ -131,12 +125,11 @@ onMounted(() => {
             class="table-item"
           >
             <div class="item-no">
-              <img
+              <svg-icon
                 v-if="item.no <= 3"
-                class="img-icon"
-                :src="tierIcons[item.no - 1]"
-                alt="tier"
-              />
+                :name="`icon-winner-${item.no}`"
+                className="img-icon"
+              ></svg-icon>
               <span
                 v-else
                 class="no-text"
@@ -157,6 +150,10 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .page-wrap {
+  padding: 0 24px;
+  .nav-bar-wrap {
+    padding-left: 0px;
+  }
   &.badges-wrap {
     background: linear-gradient(180deg, #e4f8ff 0%, #fff 100%);
     .type-select {
@@ -251,20 +248,19 @@ onMounted(() => {
     padding: 24px 32px;
 
     &.table-box {
-      
       .title-no,
       .item-no {
-          width: 22%;
-        }
-        .title-username,
-        .title-points,
-        .item-username,
-        .item-points  {
-          width: 39%;
-          text-align: center;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
+        width: 22%;
+      }
+      .title-username,
+      .title-points,
+      .item-username,
+      .item-points {
+        width: 39%;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
       .table-title {
         display: flex;
@@ -273,7 +269,6 @@ onMounted(() => {
         font-size: 16px;
         font-weight: 500;
         line-height: 20px;
-
       }
       .table-item {
         margin: 14px 0;

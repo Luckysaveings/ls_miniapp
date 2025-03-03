@@ -9,8 +9,8 @@
       @click-right="onClickRight"
     >
       <template #right>
-        <van-icon
-          :name="iconHistory"
+        <svg-icon
+          name="icon-history"
           size="24"
         />
       </template>
@@ -33,9 +33,8 @@
         @click="copyUserId"
       >
         <span>6xvni1...dyEfW7</span>
-        <img
-          src="@/assets/icon-copy.svg"
-          alt="copy"
+        <svg-icon
+          name="icon-copy"
           class="img-copy"
         />
       </div>
@@ -55,21 +54,17 @@
   >
     <template #message>
       <div class="toast-message">
-        <van-icon
-          :name="checkCircle"
-          size="24"
-          color="red"
-        />
+        <svg-icon
+          name="check-circle"
+          size="24px"
+        ></svg-icon>
         <span class="toast-text">{{ toastText }}</span>
       </div>
     </template>
   </van-toast>
 </template>
 
-<script setup>
-import { showToast } from "vant";
-import iconHistory from "@/assets/icon-history.svg";
-import checkCircle from "@/assets/check-circle.svg";
+<script setup name="Deposit">
 import { useRouter } from "vue-router";
 const router = useRouter();
 
@@ -81,22 +76,11 @@ const onClickLeft = () => {
 };
 const show = ref(false);
 const toastText = ref("Copy Success");
-const copyEmail = () => {
-  navigator.clipboard.writeText("care@luckysavings.io");
-  toastText.value = "Email copied to clipboard";
-  show.value = true;
-};
 
 const copyUserId = () => {
   navigator.clipboard.writeText("88888888");
   toastText.value = "Copy Success";
   show.value = true;
-};
-
-const handleLogout = () => {
-  toastText.value = "Logging out...";
-  show.value = true;
-  // Add your logout logic here
 };
 </script>
 

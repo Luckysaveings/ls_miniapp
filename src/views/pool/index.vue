@@ -1,8 +1,5 @@
 <script setup lang="ts" name="Pool">
 import { useRouter } from "vue-router";
-import iconUsdt from "@/assets/icon-ustd.svg";
-import iconKaia from "@/assets/icon-kaia.svg";
-import userAvatar from "@/assets/user-avatar.svg";
 import GamePlayDialog from "./components/GameplayDialog.vue";
 import PreviousDialog from "./components/PreviousWinners.vue";
 import Progress from "@/components/Progress.vue";
@@ -20,10 +17,7 @@ onMounted(() => {
 // 初始化 Store
 const globalStore = useGlobalStore();
 const router = useRouter();
-const userInfo = reactive({
-  avatar: userAvatar,
-  nickName: "Arthorn",
-});
+
 const poolInfos = {
   kaia: {
     daily: {
@@ -181,30 +175,24 @@ const showReminderMsg = ref(false);
   <div class="page-wrap">
     <div class="header">
       <div class="header-left">
-        <van-image
-          width="36"
-          height="36"
-          fit="cover"
-          :src="userInfo.avatar"
-          round
+        <img
+          src="@/assets/user-avatar.svg"
           class="product-img"
           @click="router.push('/profile')"
         />
         <div class="text-content">
-          {{ userInfo.nickName }}
+          {{ globalStore.userInfo.nickname }}
         </div>
       </div>
       <div class="header-right">
-        <img
-          class="img-header-right"
-          src="@/assets/icon-msg-tip.svg"
-          alt="msg-tip"
+        <svg-icon
+          className="img-header-right"
+          name="icon-msg-tip"
           @click="showReminderMsg = true"
         />
-        <img
-          class="img-header-right"
-          src="@/assets/icon-upload.svg"
-          alt="upload"
+        <svg-icon
+          className="img-header-right"
+          name="icon-upload"
         />
       </div>
     </div>
@@ -230,10 +218,9 @@ const showReminderMsg = ref(false);
     <div class="module-item">
       <div class="module-title">
         <span>{{ $t("pool.DailyPool") }}</span>
-        <img
-          class="img-icon"
-          src="@/assets/icon-info.svg"
-          alt="info"
+        <svg-icon
+          className="img-icon"
+          name="icon-info"
           @click="showGameplay('1')"
         />
       </div>
@@ -242,19 +229,14 @@ const showReminderMsg = ref(false);
           class="countdown-box"
           :class="selectedPool === '2' ? 'bg-green' : 'bg-yellow'"
         >
-          <img
-            class="img-countdown-box-bg left-bg"
-            src="@/assets/icon-clocker.svg"
-            alt="countdown-box-bg"
-            srcset=""
-          />
-          <img
-            class="img-countdown-box-bg right-bg"
-            src="@/assets/icon-gift-r.svg"
-            alt="countdown-box-bg"
-            srcset=""
-          />
-
+          <svg-icon
+            className="img-countdown-box-bg left-bg"
+            name="icon-clocker"
+          ></svg-icon>
+          <svg-icon
+            className="img-countdown-box-bg right-bg"
+            name="icon-gift-r"
+          ></svg-icon>
           <van-count-down
             :time="time"
             format="HH:mm:ss"
@@ -279,28 +261,25 @@ const showReminderMsg = ref(false);
           class="text-num"
           :class="selectedPool === '2' ? '' : 'text-num-yellow'"
         >
-          <img
+          <svg-icon
             v-show="selectedPool === '1'"
-            class="icon-kaia"
-            src="@/assets/icon-kaia.svg"
-            alt="kaia"
+            className="icon-kaia"
+            name="icon-kaia"
           />
           <span v-show="selectedPool === '2'">$</span>
           <span>123,876,323</span>
         </div>
         <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
         <div class="ticket-box">
-          <img
+          <svg-icon
             v-show="selectedPool === '1'"
             class="img-tickets"
-            src="@/assets/img-tickets-kaia.svg"
-            alt="tickets"
+            name="img-tickets-kaia"
           />
-          <img
+          <svg-icon
             v-show="selectedPool === '2'"
             class="img-tickets"
-            src="@/assets/img-tickets.svg"
-            alt="tickets"
+            name="img-tickets"
           />
           <div class="ticket-num">x100</div>
         </div>
@@ -310,10 +289,9 @@ const showReminderMsg = ref(false);
           @click="showPreviousWinner"
         >
           <div class="previous-winners-left">
-            <img
-              class="img-jiangbei"
-              src="@/assets/icon-jiangbei.svg"
-              alt="jiangbei"
+            <svg-icon
+              className="img-jiangbei"
+              name="icon-jiangbei"
             />
             <span>{{ $t("pool.PreviousWinners") }}</span>
           </div>
@@ -327,7 +305,7 @@ const showReminderMsg = ref(false);
             class="btn-main btn-withdraw"
             @click="showWithdrawDialog"
           >
-            {{ $t("pool.Withdraw") }}
+            {{ $t("common.Withdraw") }}
           </button>
           <button
             class="btn-main"
@@ -349,31 +327,27 @@ const showReminderMsg = ref(false);
     <div class="module-item">
       <div class="module-title">
         <span>{{ $t("pool.JackpotTitle") }}</span>
-        <img
-          class="img-icon"
-          src="@/assets/icon-info.svg"
-          alt="info"
+        <svg-icon
+          className="img-icon"
+          name="icon-info"
           @click="showGameplay('2')"
         />
       </div>
 
       <div class="content-box bg-2 USDPool-content">
-        <img
-          class="module-inner-bg left-bg"
-          src="@/assets/icon-dollar-y.svg"
-          alt="dollar"
+        <svg-icon
+          className="module-inner-bg left-bg"
+          name="icon-dollar-y"
         />
-        <img
-          class="module-inner-bg right-bg"
-          src="@/assets/icon-gift-r.svg"
-          alt="gift"
+        <svg-icon
+          className="module-inner-bg right-bg"
+          name="icon-gift-r"
         />
         <div class="content-item-title-wrap">
           <div class="text-grey content-item-title">
-            <img
-              class="img-icon"
-              src="@/assets/icon-dollar.svg"
-              alt="dollar"
+            <svg-icon
+              className="img-icon"
+              name="icon-dollar"
             />
             {{ $t("pool.CurrentPrizePool") }}
           </div>
@@ -382,11 +356,10 @@ const showReminderMsg = ref(false);
           class="text-num"
           :class="selectedPool === '2' ? '' : 'text-num-yellow'"
         >
-          <img
+          <svg-icon
             v-show="selectedPool === '1'"
-            class="icon-kaia"
-            src="@/assets/icon-kaia.svg"
-            alt="kaia"
+            className="icon-kaia"
+            name="icon-kaia"
           />
           <span v-show="selectedPool === '2'">$</span>
           <span>6,323</span>
@@ -398,17 +371,16 @@ const showReminderMsg = ref(false);
         />
         <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
         <div class="ticket-box">
-          <img
+          <svg-icon
             v-show="selectedPool === '1'"
             class="img-tickets"
-            src="@/assets/img-tickets-kaia.svg"
-            alt="tickets"
+            name="img-tickets-kaia"
           />
-          <img
+
+          <svg-icon
             v-show="selectedPool === '2'"
             class="img-tickets"
-            src="@/assets/img-tickets.svg"
-            alt="tickets"
+            name="img-tickets"
           />
           <div class="ticket-num">x100</div>
         </div>
@@ -418,10 +390,9 @@ const showReminderMsg = ref(false);
           @click="showPreviousWinner"
         >
           <div class="previous-winners-left">
-            <img
-              class="img-jiangbei"
-              src="@/assets/icon-jiangbei.svg"
-              alt="jiangbei"
+            <svg-icon
+              className="img-jiangbei"
+              name="icon-jiangbei"
             />
             <span>{{ $t("pool.PreviousWinners") }}</span>
           </div>
@@ -436,7 +407,7 @@ const showReminderMsg = ref(false);
             class="btn-main btn-withdraw"
             @click="showWithdrawDialog"
           >
-            {{ $t("pool.Withdraw") }}
+            {{ $t("common.Withdraw") }}
           </button>
           <button
             class="btn-main"
@@ -466,11 +437,11 @@ const showReminderMsg = ref(false);
     <div class="content-box">
       <div class="dialog-title">
         <div class="dialog-title-left">
-          <img
+          <svg-icon
             class="img-icon"
-            src="@/assets/icon-ustd.svg"
-            alt="ustd"
+            name="icon-ustd"
           />
+
           <span>{{ $t("pool.USDDeposit") }}</span>
         </div>
         <van-icon
@@ -537,11 +508,17 @@ const showReminderMsg = ref(false);
     <div class="content-box">
       <div class="dialog-title">
         <div class="dialog-title-left">
-          <img
-            class="img-icon"
-            :src="withdrawInfo.type === 'usd' ? iconUsdt : iconKaia"
-            alt="icon"
+          <svg-icon
+            v-if="withdrawInfo.type === 'usd'"
+            className="img-icon"
+            name="icon-usdt"
           />
+          <svg-icon
+            v-else
+            className="img-icon"
+            name="icon-kaia"
+          />
+
           <span>{{ withdrawInfo.type }} {{ $t("pool.Withdraw") }}</span>
         </div>
         <van-icon
@@ -572,7 +549,7 @@ const showReminderMsg = ref(false);
           class="btn-main"
           @click="confirmWithdraw"
         >
-          {{ $t("pool.Withdraw") }}
+          {{ $t("common.Withdraw") }}
         </button>
       </div>
     </div>
@@ -598,14 +575,12 @@ const showReminderMsg = ref(false);
 
       <div class="dialog-content no-margin-b">
         <div class="content-item content-item-reminder">
-          <div class="item-top">{{ $t("pool.PupUpsUpdate") }}</div>
-          <div class="item-bottom">
-            {{ $t("pool.PupUpsUpdateTip") }}
-          </div>
+          <div class="item-top">👋 {{ $t("pool.PupUpsUpdate") }}</div>
+          <div class="item-bottom">{{ $t("pool.PupUpsUpdateTip") }}</div>
           <div class="btn-main">{{ $t("pool.Go") }}</div>
         </div>
         <div class="content-item content-item-reminder no-margin-b">
-          <div class="item-top">{{ $t("pool.LuckySavingsGoesToV1Point1") }}</div>
+          <div class="item-top">💻 {{ $t("pool.LuckySavingsGoesToV1Point1") }}</div>
           <div class="item-bottom">
             {{ $t("pool.urlTip") }}
           </div>
@@ -785,6 +760,7 @@ const showReminderMsg = ref(false);
       .img-tickets {
         margin-right: 8px;
         height: 30px;
+        width: 82px;
       }
       .ticket-num {
         font-size: 18px;
