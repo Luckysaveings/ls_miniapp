@@ -54,66 +54,6 @@ const poolInfos = {
     },
   },
 };
-const checkConnection = async () => {
-  const provider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID");
-  try {
-    await provider.getBlockNumber();
-    console.log("Connected to Ethereum");
-  } catch (error) {
-    console.error("Failed to connect to Ethereum");
-  }
-};
-// 生成智能合约实例
-const getContractInstance = async (poolCoinType, poolType) => {
-  const provider = new ethers.providers.JsonRpcProvider(`https://mainnet.infura.io/v3/${poolInfos[poolCoinType][poolType].projectId}`);
-  // 合约地址和 ABI
-  const prizePoolAddress = poolInfos[poolCoinType][poolType].address; // 替换为实际的 Prize Pool 地址
-  const prizePoolABI = poolInfos[poolCoinType][poolType].prizePoolABI;
-  // 创建合约实例
-  const prizePoolContract = new ethers.Contract(prizePoolAddress, prizePoolABI, provider);
-  return prizePoolContract;
-};
-// 获取合约内用户余额
-const getBalance = async (account, poolCoinType, poolType) => {
-  // 创建合约实例
-  const prizePoolContract = await getContractInstance(poolCoinType, poolType);
-  const balance = await prizePoolContract.balanceOf(account);
-  console.log("Balance: ", ethers.utils.formatEther(balance));
-};
-// 查询奖池总存款
-const getPrizePoolTotalSupply = async (poolCoinType, poolType) => {
-  // 创建合约实例
-  const prizePoolContract = await getContractInstance(poolCoinType, poolType);
-  const totalDeposits = await prizePoolContract.totalSupply();
-  console.log("Prize Pool TotalSupply: ", ethers.utils.formatEther(totalDeposits));
-};
-// 查询当前奖励
-const getPrizePoolReward = async (poolCoinType, poolType) => {
-  // 创建合约实例
-  const prizePoolContract = await getContractInstance(poolCoinType, poolType);
-  const reward = await prizePoolContract.getCurrentPrize();
-  console.log("Prize Pool Reward: ", ethers.utils.formatEther(reward));
-};
-// 存款到奖池
-const depositToPrizePool = async (amount, poolCoinType, poolType) => {
-  // 创建合约实例
-  const prizePoolContract = await getContractInstance(poolCoinType, poolType);
-  // 转账
-  const tx = await prizePoolContract.depositTo(globalStore.walletAddress, ethers.utils.parseEther(amount));
-  console.log(`交易已发送，等待确认...`);
-  const receipt = await tx.wait();
-  console.log(`交易完成，交易哈希: ${receipt.transactionHash}`);
-};
-// 从奖池提款
-const withdrawFromPrizePool = async (amount, poolCoinType, poolType) => {
-  // 创建合约实例
-  const prizePoolContract = await getContractInstance(poolCoinType, poolType);
-  // 转账
-  const tx = await prizePoolContract.withdrawFrom(globalStore.walletAddress, ethers.utils.parseEther(amount));
-  console.log(`交易已发送，等待确认...`);
-  const receipt = await tx.wait();
-  console.log(`交易完成，交易哈希: ${receipt.transactionHash}`);
-};
 // 选择池子 1: KAIA Pool 2: USD Pool
 const selectedPool = ref("1");
 const gamePlayDialogRef = ref(null);
@@ -232,11 +172,11 @@ const showReminderMsg = ref(false);
           <svg-icon
             className="img-countdown-box-bg left-bg"
             name="icon-clocker"
-          ></svg-icon>
+          />
           <svg-icon
             className="img-countdown-box-bg right-bg"
             name="icon-gift-r"
-          ></svg-icon>
+          />
           <van-count-down
             :time="time"
             format="HH:mm:ss"

@@ -29,10 +29,10 @@ const getAvailableRewards = () => {
 };
 
 onMounted(() => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MDg4MzUwOCwibmJmIjoxNzQwMjc4NzA4fQ.eoZWS-MME1PC95FiOgkCeVUWKi980N8KSRgTB4812aI";
-  globalStore.setToken(token);
-  console.log("globalStore", globalStore);
+  // const token =
+  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MTU3NzQ5MCwibmJmIjoxNzQwOTcyNjkwfQ.RuWnFrTKD4bcravscO6HyGedG5vvaorlyheS6M0OBuY";
+  // globalStore.setToken(token);
+  // console.log("globalStore", globalStore);
   getAvailableRewards();
   window["fromHome"] = true;
   const loadingElement = document.getElementById("loading");
@@ -145,7 +145,7 @@ const handlePopoverItem = (type: string) => {
         <svg-icon
           name="icon-language"
           size="16px"
-        ></svg-icon>
+        />
 
         <span class="current-language">EN</span>
       </div>
