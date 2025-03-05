@@ -5,6 +5,7 @@ import LuckyTokenABI from "@/assets/abi/LuckyToken.json";
 // import PrizePoolABI from "@/assets/abi/PrizePool.json";
 import PrizeVaultABI from "@/assets/abi/PrizeVault.json";
 import { useGlobalStore } from "@/store/globalStore";
+import { bindWallet } from "@/api/index";
 
 // 获取dapp钱包地址
 export const getDappWallet = async () => {
@@ -21,21 +22,81 @@ export const getDappWallet = async () => {
   }
   globalStore.setSdk(sdk); // 保存sdk实例
   const walletProvider = sdk.getWalletProvider();
+  globalStore.setProvider(walletProvider);
   const accounts = await walletProvider.request({ method: "kaia_requestAccounts" }); // 获取钱包地址, 首次运行用户界面会弹出钱包授权请求
   const accountAddress = accounts[0];
+  globalStore.setAddress(accountAddress);
+  console.log("accounts:", accounts);
+  console.log("accountAddress:", accountAddress);
+  bindWallet({ wallet: accountAddress });
   return accountAddress;
 };
 
-// dapp 钱包进行授权
-export const getDappWalletSignature = async (sdk: any) => {
+// dapp 钱包进行代币授权
+export const approveTokenForDeposit = async (tokenContractAddress: string, depositContractAddress: string, amount: string) => {
   const globalStore = useGlobalStore();
-  const walletProvider = sdk.getWalletProvider();
-  const accounts = await walletProvider.request({ method: "kaia_requestAccounts" }); // 获取钱包地址, 首次运行用户界面会弹出钱包授权请求
-  const accountAddress = accounts[0];
-  const message = "Welcome to Mini Dapp";
-  const signatureWallet = await walletProvider.request({ method: "personal_sign", params: [message, accountAddress] });
-  globalStore.setSignatureWallet(signatureWallet); // 保存确权钱包
-  return signatureWallet;
+  const walletProvider = globalStore.walletProvider;
+  const provider = new ethers.providers.Web3Provider(walletProvider);
+  const amountInUnits = ethers.utils.parseUnits(amount, 18);
+  const luckyTokenContract = new ethers.Contract(tokenContractAddress, LuckyTokenABI.abi, provider.getSigner());
+  const response = {
+    status: 0,
+    tx: undefined,
+  };
+  try {
+    response.tx = await luckyTokenContract.approve(depositContractAddress, amountInUnits);
+    console.log("授权交易已发送，交易哈希:", response.tx.hash);
+    const receipt = await response.tx.wait();
+    console.log("授权交易已确认，区块号:", receipt.blockNumber);
+    response.status = 0;
+  } catch (error) {
+    console.log("授权失败", error);
+    response.status = 1;
+  }
+  return response;
+};
+// dapp钱包进行已授权的代币质押
+export const depositWithDepositContract = async (depositContractAddress: string, amount: string) => {
+  const globalStore = useGlobalStore();
+  const walletProvider = globalStore.walletProvider;
+  const provider = new ethers.providers.Web3Provider(walletProvider);
+  const depositContract = new ethers.Contract(depositContractAddress, PrizeVaultABI.abi, provider.getSigner());
+  const amountInUnits = ethers.utils.parseUnits(amount, 18);
+  const response = {
+    status: 0,
+    tx: undefined,
+  };
+  try {
+    response.tx = await depositContract.deposit(amountInUnits);
+    console.log("质押转账交易已发送，交易哈希:", response.tx.hash);
+    const receipt = await response.tx.wait();
+    console.log("质押转账交易已确认，区块号:", receipt.blockNumber);
+    response.status = 0;
+  } catch (error) {
+    console.log("质押转账失败", error);
+    response.status = 1;
+  }
+  return response;
+}
+
+// 使用dapp sdk查询本位币余额
+export const getBalanceWithDapp = async (address: string) => {
+  const globalStore = useGlobalStore();
+  const walletProvider = globalStore.walletProvider;
+  const balanceKAIA = await walletProvider.request({
+    method: "eth_getBalance",
+    params: [address, "latest"],
+  });
+  return balanceKAIA;
+};
+// 使用dapp sdk查询合约代币余额
+export const getTokenBalanceWithDapp = async (address: string, tokenAddress: string) => {
+  const globalStore = useGlobalStore();
+  const walletProvider = globalStore.walletProvider;
+  const provider = new ethers.providers.Web3Provider(walletProvider);
+  const contract = new ethers.Contract(tokenAddress, LuckyTokenABI.abi, provider);
+  const balance = await contract.balanceOf(address);
+  return balance;
 };
 
 // 使用dapp钱包进行转账

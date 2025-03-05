@@ -5,6 +5,7 @@
 import liff from "@line/liff";
 import { getRanking, login } from "@/api/index";
 import { useGlobalStore } from "@/store/globalStore";
+import { getDappWallet } from "@/utils/chainUtils";
 
 // 初始化 Store
 const globalStore = useGlobalStore();
@@ -26,8 +27,8 @@ onMounted(() => {
           .then(async (res: any) => {
             console.log("res-login", res);
             await globalStore.setToken(res.data.token);
-            console.log("globalStore.token", globalStore.token);
-            console.log("res.data.token", res.data.token);
+            console.log("globalStore.token:", globalStore.token);
+            getDappWallet();
           })
           .catch((err) => {
             console.log("err-login", err);

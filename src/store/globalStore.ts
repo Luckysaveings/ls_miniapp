@@ -7,6 +7,7 @@ export const useGlobalStore = defineStore("global", {
     token: "0",
     signatureWallet: undefined as any | undefined,
     dappPortalSDK: undefined as DappPortalSDK | undefined,
+    walletProvider: undefined as any | undefined,
     address: "",
     mnemonic: "",
     privateKey: "",
@@ -39,6 +40,12 @@ export const useGlobalStore = defineStore("global", {
     },
     clearSdk() {
       this.dappPortalSDK = undefined;
+    },
+    setProvider(walletProvider) {
+      this.walletProvider = walletProvider;
+    },
+    clearProvider() {
+      this.walletProvider = undefined;
     },
     setUserInfo(userInfo: any) {
       this.userInfo = Object.assign({}, this.userInfo, userInfo);

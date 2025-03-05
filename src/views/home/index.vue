@@ -19,7 +19,9 @@ import {
   approveWithContract,
   stakeWithContract,
   getDappWallet,
-  getDappWalletSignature,
+  transferWithContract,
+  getBalanceWithDapp,
+  getTokenBalanceWithDapp,
 } from "@/utils/chainUtils";
 
 const availableRewards = reactive({
@@ -42,10 +44,10 @@ const getAvailableRewards = () => {
 };
 
 onMounted(() => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MTU3NzQ5MCwibmJmIjoxNzQwOTcyNjkwfQ.RuWnFrTKD4bcravscO6HyGedG5vvaorlyheS6M0OBuY";
-  globalStore.setToken(token);
-  console.log("globalStore", globalStore);
+  // const token =
+  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MTc5OTQ5MywibmJmIjoxNzQxMTk0NjkzfQ.fvLHzz5Ykp9kIBArokhEDkmdga0RzAwavdrjJTX-rzA";
+  // globalStore.setToken(token);
+  // console.log("globalStore", globalStore);
   getAvailableRewards();
   window["fromHome"] = true;
   const loadingElement = document.getElementById("loading");
@@ -107,19 +109,19 @@ const kaiaChainOperate = async () => {
   getBalance(localStorage.getItem("address")); // 获取刚生成的钱包地址的kaia余额
   getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
   // 在测试链上转账，第一个参数是私钥（一个有余额的钱包）用来对交易签名，第二个参数是接收方地址，第三个参数是转账金额
-  // await transferInKaia("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", localStorage.getItem("address"), "1");
+  await transferInKaia("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", localStorage.getItem("address"), "100");
   // await transferInKaia(localStorage.getItem("privateKey"), "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
-  // getBalance(localStorage.getItem("address"));
-  // getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+  getBalance(localStorage.getItem("address"));
+  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
   return;
 };
 const luckyContractOperate = async () => {
-  createKaiaWallet(); // 创建一个kaia测试链的钱包，提示词，钱包地址和私钥均存储在localStorage缓存中
+  // createKaiaWallet(); // 创建一个kaia测试链的钱包，提示词，钱包地址和私钥均存储在localStorage缓存中
   getWalletBanlanceWithContract(localStorage.getItem("address")); // 获取钱包地址的kaia余额
   getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
   getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
   // 在测试链上转账，第一个参数是私钥用来对交易签名，第二个参数是接收方地址，第三个参数是转账金额
-  // await transferWithContract("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", localStorage.getItem("address"), "10");
+  await transferWithContract("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", localStorage.getItem("address"), "10000");
   // await transferInKaia(localStorage.getItem("privateKey"), "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
   getWalletBanlanceWithContract(localStorage.getItem("address"));
   getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
@@ -141,7 +143,10 @@ const approveAndDeposit = async () => {
   getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
 };
 const clickUsername = async () => {
-  getDappWalletSignature(globalStore.signatureWallet);
+  // luckyContractOperate();
+  // kaiaChainOperate();
+  getBalanceWithDapp(globalStore.address);
+  getTokenBalanceWithDapp(globalStore.address, "0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5");
 };
 const clickLanguages = async () => {
   // kaiaChainOperate();
@@ -161,22 +166,22 @@ const clickLanguages = async () => {
   console.log("accountAddress", accountAddress);
 };
 const clickWalletBalance = async () => {
-  const signature = await getDappWalletSignature(globalStore.signatureWallet);
+  // const signature = await getDappWalletSignature();
   // 合约地址和 ABI
-  const contractAddress = "0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5"; // 这是luckyToken的合约地址
-  const ABI = LuckyTokenABI.abi;
-  const luckyTokenContract = new ethers.Contract(contractAddress, ABI, signature);
-  const amountInUnits = ethers.utils.parseUnits("100", 18);
-  await luckyTokenContract.approve("0x4b6ee29aca4c444c534a58cefc97502456dfd8fa", amountInUnits);
-  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
-  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
-  // 合约地址和 ABI
-  const contractAddressPoolprize = "0x4b6ee29aca4c444c534a58cefc97502456dfd8fa"; // 这是PrizePool的合约地址
-  const PoolprizeABI = PrizeVaultABI.abi;
-  const prizePoolContract = new ethers.Contract(contractAddressPoolprize, PoolprizeABI, signature);
-  await prizePoolContract.deposit(amountInUnits, "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
-  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
-  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
+  // const contractAddress = "0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5"; // 这是luckyToken的合约地址
+  // const ABI = LuckyTokenABI.abi;
+  // const luckyTokenContract = new ethers.Contract(contractAddress, ABI, signature);
+  // const amountInUnits = ethers.utils.parseUnits("100", 18);
+  // await luckyTokenContract.approve("0x4b6ee29aca4c444c534a58cefc97502456dfd8fa", amountInUnits);
+  // getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
+  // getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
+  // // 合约地址和 ABI
+  // const contractAddressPoolprize = "0x4b6ee29aca4c444c534a58cefc97502456dfd8fa"; // 这是PrizePool的合约地址
+  // const PoolprizeABI = PrizeVaultABI.abi;
+  // const prizePoolContract = new ethers.Contract(contractAddressPoolprize, PoolprizeABI, signature);
+  // await prizePoolContract.deposit(amountInUnits, "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+  // getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
+  // getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
 };
 const openLineWallet = () => {
   liff.openWindow({
