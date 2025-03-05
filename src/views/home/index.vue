@@ -1,13 +1,26 @@
 <script setup lang="ts" name="Home">
 import liff from "@line/liff";
 import DappPortalSDK from "@linenext/dapp-portal-sdk";
+import { ethers } from "ethers";
 // import { WalletType, PaymentProvider } from "@linenext/dapp-portal-sdk";
 // import { Web3Provider as w3 } from "@kaiachain/ethers-ext/v6";
+import LuckyTokenABI from "@/assets/abi/LuckyToken.json";
+import PrizeVaultABI from "@/assets/abi/PrizeVault.json";
 import qs from "qs";
 import { useRouter } from "vue-router";
 import { useClickAway } from "@vant/use";
 import { useGlobalStore } from "@/store/globalStore";
 import { getTaskList, login } from "@/api/index";
+import {
+  createKaiaWallet,
+  getBalance,
+  transferInKaia,
+  getWalletBanlanceWithContract,
+  approveWithContract,
+  stakeWithContract,
+  getDappWallet,
+  getDappWalletSignature,
+} from "@/utils/chainUtils";
 
 const availableRewards = reactive({
   points: 100,
@@ -29,10 +42,10 @@ const getAvailableRewards = () => {
 };
 
 onMounted(() => {
-  // const token =
-  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MTU3NzQ5MCwibmJmIjoxNzQwOTcyNjkwfQ.RuWnFrTKD4bcravscO6HyGedG5vvaorlyheS6M0OBuY";
-  // globalStore.setToken(token);
-  // console.log("globalStore", globalStore);
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MTU3NzQ5MCwibmJmIjoxNzQwOTcyNjkwfQ.RuWnFrTKD4bcravscO6HyGedG5vvaorlyheS6M0OBuY";
+  globalStore.setToken(token);
+  console.log("globalStore", globalStore);
   getAvailableRewards();
   window["fromHome"] = true;
   const loadingElement = document.getElementById("loading");
@@ -89,7 +102,53 @@ const lineLogin = () => {
   console.log(line_auth, paramsString);
   window.location.href = `${line_auth}?${paramsString}`;
 };
-const getWallet = async () => {
+const kaiaChainOperate = async () => {
+  // createKaiaWallet(); // 创建一个kaia测试链的钱包，提示词，钱包地址和私钥均存储在localStorage缓存中
+  getBalance(localStorage.getItem("address")); // 获取刚生成的钱包地址的kaia余额
+  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
+  // 在测试链上转账，第一个参数是私钥（一个有余额的钱包）用来对交易签名，第二个参数是接收方地址，第三个参数是转账金额
+  // await transferInKaia("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", localStorage.getItem("address"), "1");
+  // await transferInKaia(localStorage.getItem("privateKey"), "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
+  // getBalance(localStorage.getItem("address"));
+  // getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+  return;
+};
+const luckyContractOperate = async () => {
+  createKaiaWallet(); // 创建一个kaia测试链的钱包，提示词，钱包地址和私钥均存储在localStorage缓存中
+  getWalletBanlanceWithContract(localStorage.getItem("address")); // 获取钱包地址的kaia余额
+  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
+  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
+  // 在测试链上转账，第一个参数是私钥用来对交易签名，第二个参数是接收方地址，第三个参数是转账金额
+  // await transferWithContract("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", localStorage.getItem("address"), "10");
+  // await transferInKaia(localStorage.getItem("privateKey"), "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
+  getWalletBanlanceWithContract(localStorage.getItem("address"));
+  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
+  return;
+};
+const approveAndDeposit = async () => {
+  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
+  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
+  // return;
+  await approveWithContract(
+    "0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e",
+    "0x4b6ee29aca4c444c534a58cefc97502456dfd8fa",
+    "100"
+  );
+  // return;
+  await stakeWithContract("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
+  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
+  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
+};
+const clickUsername = async () => {
+  getDappWalletSignature(globalStore.signatureWallet);
+};
+const clickLanguages = async () => {
+  // kaiaChainOperate();
+  // luckyContractOperate();
+  // approveAndDeposit();
+  getDappWallet();
+  return;
   const sdk = await DappPortalSDK.init({
     clientId: import.meta.env.VITE_LINE_CLIENT_ID || "",
     chainId: import.meta.env.VITE_PUBLIC_CHAIN_ID,
@@ -100,6 +159,24 @@ const getWallet = async () => {
   const accountAddress = accounts[0];
   globalStore.setWalletAddress(accountAddress);
   console.log("accountAddress", accountAddress);
+};
+const clickWalletBalance = async () => {
+  const signature = await getDappWalletSignature(globalStore.signatureWallet);
+  // 合约地址和 ABI
+  const contractAddress = "0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5"; // 这是luckyToken的合约地址
+  const ABI = LuckyTokenABI.abi;
+  const luckyTokenContract = new ethers.Contract(contractAddress, ABI, signature);
+  const amountInUnits = ethers.utils.parseUnits("100", 18);
+  await luckyTokenContract.approve("0x4b6ee29aca4c444c534a58cefc97502456dfd8fa", amountInUnits);
+  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
+  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
+  // 合约地址和 ABI
+  const contractAddressPoolprize = "0x4b6ee29aca4c444c534a58cefc97502456dfd8fa"; // 这是PrizePool的合约地址
+  const PoolprizeABI = PrizeVaultABI.abi;
+  const prizePoolContract = new ethers.Contract(contractAddressPoolprize, PoolprizeABI, signature);
+  await prizePoolContract.deposit(amountInUnits, "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
+  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
 };
 const openLineWallet = () => {
   liff.openWindow({
@@ -134,13 +211,16 @@ const handlePopoverItem = (type: string) => {
           class="product-img"
           @click="router.push('/profile')"
         />
-        <div class="text-content">
+        <div
+          class="text-content"
+          @click="clickUsername"
+        >
           {{ globalStore.userInfo.nickname }}
         </div>
       </div>
       <div
         class="header-right"
-        @click="getWallet"
+        @click="clickLanguages"
       >
         <svg-icon
           name="icon-language"
@@ -153,7 +233,12 @@ const handlePopoverItem = (type: string) => {
     <div class="content">
       <div class="content-box-yellow">
         <div class="inner-color">
-          <div class="balance-title">{{ $t("home.WalletBalance") }}</div>
+          <div
+            class="balance-title"
+            @click="clickWalletBalance"
+          >
+            {{ $t("home.WalletBalance") }}
+          </div>
           <div class="balance-content">
             <div class="balance-item">
               <svg-icon

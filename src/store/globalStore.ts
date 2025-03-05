@@ -5,7 +5,7 @@ export const useGlobalStore = defineStore("global", {
   // 状态（state）
   state: () => ({
     token: "0",
-    walletAddress: undefined as any | undefined,
+    signatureWallet: undefined as any | undefined,
     dappPortalSDK: undefined as DappPortalSDK | undefined,
     address: "",
     mnemonic: "",
@@ -46,14 +46,14 @@ export const useGlobalStore = defineStore("global", {
     clearUserInfo() {
       this.userInfo = {};
     },
-    // 设置钱包地址
-    setWalletAddress(address: string) {
-      this.walletAddress = address;
+    // 设置确权钱包
+    setSignatureWallet(signatureWallet: string) {
+      this.signatureWallet = signatureWallet;
     },
 
-    // 清除钱包地址
-    clearWalletAddress() {
-      this.walletAddress = "";
+    // 清除确权钱包
+    clearSignatureWallet() {
+      this.signatureWallet = undefined;
     },
     // 设置助记词
     setMnemonic(mnemonic: string) {
