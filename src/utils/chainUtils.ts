@@ -53,6 +53,48 @@ export const approveTokenForDeposit = async (tokenContractAddress: string, depos
   }
   return response;
 };
+// 使用dapp查询质押合约的质押金额
+export const getDpositAmount = async (address: string, type: string) => {
+  const globalStore = useGlobalStore();
+  const walletProvider = globalStore.walletProvider;
+  const provider = new ethers.providers.Web3Provider(walletProvider);
+  let contract: any = undefined;
+  if (type === "USDT") {
+    contract = new ethers.Contract(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, PrizeVaultABI.abi, provider);
+  } else {
+    contract = new ethers.Contract(import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS, KaiaPrizePoolABI.abi, provider);
+  }
+  const balanceWei = await contract.balanceOf(address);
+  const balanceToken = ethers.utils.formatUnits(balanceWei, 18);
+  console.log("质押金额Token:", balanceToken);
+  if (type === "USDT") {
+    globalStore.setUsdtBalance({savings: balanceToken});
+  } else {
+    globalStore.setKaiaBalance({savings: balanceToken});
+  }
+  return balanceToken;
+};
+// 使用dapp查询质押合约的质押金额
+export const getPoolAmount = async (type: string) => {
+  const globalStore = useGlobalStore();
+  const walletProvider = globalStore.walletProvider;
+  const provider = new ethers.providers.Web3Provider(walletProvider);
+  let contract: any = undefined;
+  if (type === "USDT") {
+    contract = new ethers.Contract(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, PrizeVaultABI.abi, provider);
+  } else {
+    contract = new ethers.Contract(import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS, KaiaPrizePoolABI.abi, provider);
+  }
+  const balanceWei = await contract.totalAssets();
+  const balanceToken = ethers.utils.formatUnits(balanceWei, 18);
+  console.log("质押金额Token:", balanceToken);
+  if (type === "USDT") {
+    globalStore.setUsdtBalance({allAmount: balanceToken});
+  } else {
+    globalStore.setKaiaBalance({allAmount: balanceToken});
+  }
+  return balanceToken;
+};
 // dapp钱包进行已授权的代币质押
 export const depositWithDepositContract = async (depositContractAddress: string, walletAddress: string, amount: string) => {
   const globalStore = useGlobalStore();
@@ -76,7 +118,29 @@ export const depositWithDepositContract = async (depositContractAddress: string,
   }
   return response;
 }
-
+// dapp钱包进行提现
+export const withdrawWithDepositContract = async (depositContractAddress: string, walletAddress: string, amount: string) => {
+  const globalStore = useGlobalStore();
+  const walletProvider = globalStore.walletProvider;
+  const provider = new ethers.providers.Web3Provider(walletProvider);
+  const depositContract = new ethers.Contract(depositContractAddress, PrizeVaultABI.abi, provider.getSigner());
+  const amountInUnits = ethers.utils.parseUnits(amount, 18);
+  const response = {
+    status: 0,
+    tx: undefined,
+  };
+  try {
+    response.tx = await depositContract.withdraw(amountInUnits, walletAddress, walletAddress);
+    console.log("质押转账交易已发送，交易哈希:", response.tx.hash);
+    const receipt = await response.tx.wait();
+    console.log("质押转账交易已确认，区块号:", receipt.blockNumber);
+    response.status = 0;
+  } catch (error) {
+    console.log("质押转账失败", error);
+    response.status = 1;
+  }
+  return response;
+}
 // 使用dapp sdk查询本位币余额
 export const getBalanceWithDapp = async (address: string) => {
   const globalStore = useGlobalStore();
@@ -102,7 +166,6 @@ export const getTokenBalanceWithDapp = async (address: string, tokenAddress: str
   console.log("合约代币余额Token:", balanceToken);
   return balanceToken;
 };
-
 // 直接生成kaia链上钱包
 export const createKaiaWallet = async () => {
   // 生成随机助记词
@@ -121,7 +184,6 @@ export const createKaiaWallet = async () => {
   globalStore.setPrivateKey(wallet.privateKey);
   return wallet;
 };
-
 // 直接查询本位币余额
 export const getBalance = async (address: string) => {
   try {
@@ -137,7 +199,6 @@ export const getBalance = async (address: string) => {
     console.error("查询余额失败:", error);
   }
 };
-
 // 从当前钱包地址转账到指定钱包地址，默认本位币转账，使用私钥操作，无需互动确认，不通过dapp钱包
 export const transferInKaia = async (fromPrivateKey: string, to: string, value: string) => {
   const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_CHAIN_URL);
@@ -173,7 +234,6 @@ export const transferInKaia = async (fromPrivateKey: string, to: string, value: 
     console.error("转账失败:", error);
   }
 };
-
 // 生成LuckyToken智能合约实例（非本位币均为合约生成、控制），私钥为空时可执行查询操作，写入操作必须有私钥或其他确权方式，使用私钥操作，无需互动确认，不通过dapp钱包
 const getContractInstanceForLuckyToken = async (privateKey?: string) => {
   const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_CHAIN_URL);
@@ -185,13 +245,12 @@ const getContractInstanceForLuckyToken = async (privateKey?: string) => {
     wallet = provider;
   }
   // 合约地址和 ABI
-  const contractAddress = "0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5"; // 这是luckyToken的合约地址
+  const contractAddress = import.meta.env.VITE_TOKEN_ADDRESS; // 这是luckyToken的合约地址
   const ABI = LuckyTokenABI.abi;
   // 创建合约实例
   const luckyTokenContract = new ethers.Contract(contractAddress, ABI, wallet);
   return luckyTokenContract;
 };
-
 // 查询非本位币链上钱包上的金额，对应合约的币种，不通过dapp钱包
 export const getWalletBanlanceWithContract = async (address: string) => {
   const globalStore = useGlobalStore();
@@ -203,7 +262,6 @@ export const getWalletBanlanceWithContract = async (address: string) => {
   globalStore.setUsdtBalance({balance: ethers.utils.formatUnits(banlanceAmount, 18)});
   return banlanceAmount;
 };
-
 // 进行合约转账，使用私钥操作，无需互动确认，不通过dapp钱包
 export const transferWithContract = async (fromPrivateKey: string, to: string, amount) => {
   const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_CHAIN_URL);
@@ -232,31 +290,19 @@ export const transferWithContract = async (fromPrivateKey: string, to: string, a
   }
   return response;
 };
-
-// 使用dapp查询质押合约的质押金额
-export const getDpositAmount = async (address: string, type: string) => {
-  const globalStore = useGlobalStore();
-  const walletProvider = globalStore.walletProvider;
-  const provider = new ethers.providers.Web3Provider(walletProvider);
-  let contract: any = undefined;
-  if (type === "USDT") {
-    contract = new ethers.Contract(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, PrizeVaultABI.abi, provider);
-  } else {
-    contract = new ethers.Contract(import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS, KaiaPrizePoolABI.abi, provider);
-  }
-  const balanceWei = await contract.balanceOf(address);
-  const balanceToken = ethers.utils.formatUnits(balanceWei, 18);
-  console.log("质押金额Token:", balanceToken);
-  if (type === "USDT") {
-    globalStore.setUsdtBalance({savings: balanceToken});
-  } else {
-    globalStore.setKaiaBalance({savings: balanceToken});
-  }
-  return balanceToken;
-}
-export function formatWalletAddress(value: any, startLength:number = 4, endLength: number = 3) {
+// 钱包地址处理方法
+export function formatWalletAddress(value: any, startLength:number = 6, endLength: number = 4) {
   if (!value) return ''
   const startChar = value.toString().substr(0, startLength)
   const endChar = value.toString().substr(value.toString().length - endLength)
   return `${startChar}...${endChar}`
-}
+};
+// 一个金额处理方法，数字不超过10000时原样显示，数字超过10000除以1000，保留2位小数，单位为k
+export const formatAmount = (amount: number): string => {
+  amount = Math.floor(Number(amount) * 100) / 100;
+  if (amount <= 10000) {
+    return amount.toString();
+  }
+  const formattedAmount = Math.floor(amount / 10) / 100;
+  return `${formattedAmount}K`;
+};

@@ -11,6 +11,7 @@ import { useRouter } from "vue-router";
 import { useClickAway } from "@vant/use";
 import { useGlobalStore } from "@/store/globalStore";
 import { getTaskList, login } from "@/api/index";
+import avatar from "@/assets/user-avatar.svg";
 import {
   createKaiaWallet,
   getBalance,
@@ -24,6 +25,7 @@ import {
   depositWithDepositContract,
   getDpositAmount,
   formatWalletAddress,
+  formatAmount,
 } from "@/utils/chainUtils";
 
 const availableRewards = reactive({
@@ -182,7 +184,7 @@ const handlePopoverItem = (type: string) => {
     <div class="header">
       <div class="header-left">
         <img
-          src="@/assets/user-avatar.svg"
+          :src="globalStore.userInfo.avatar || avatar"
           class="product-img"
           @click="router.push('/profile')"
         />
@@ -194,6 +196,7 @@ const handlePopoverItem = (type: string) => {
         </div>
       </div>
       <div
+        style="visibility: hidden"
         class="header-right"
         @click="clickLanguages"
       >
@@ -220,7 +223,9 @@ const handlePopoverItem = (type: string) => {
                 name="icon-ustd"
                 className="van-img"
               />
-              <span class="balance-item-txt">11.12K</span>
+              <span class="balance-item-txt">{{
+                formatAmount(Number(globalStore.balanceInfo.USDT.balance) + Number(globalStore.balanceInfo.USDT.savings))
+              }}</span>
               <svg-icon
                 name="icon-info"
                 size="16px"
@@ -232,7 +237,9 @@ const handlePopoverItem = (type: string) => {
                 name="icon-kaia"
                 className="van-img"
               />
-              <span class="balance-item-txt">1.20K</span>
+              <span class="balance-item-txt">{{
+                formatAmount(Number(globalStore.balanceInfo.KAIA.balance) + Number(globalStore.balanceInfo.KAIA.savings))
+              }}</span>
               <svg-icon
                 name="icon-info"
                 size="16px"

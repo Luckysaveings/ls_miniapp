@@ -3,15 +3,15 @@
     <!-- Avatar and Name Section -->
     <div class="avatar-section">
       <img
-        src="@/assets/user-avatar.svg"
+        :src="globalStore.userInfo.avatar || avatar"
         class="avatar-img"
       />
-      <h2 class="username">Arthorn</h2>
+      <h2 class="username">{{ globalStore.userInfo.nickname }}</h2>
     </div>
 
     <!-- Profile Information List -->
     <van-cell-group class="info-group">
-      <van-cell
+      <!-- <van-cell
         class="cell-class-custom"
         :border="false"
         title-class="title-class"
@@ -28,7 +28,7 @@
             <span>Account Level</span>
           </div>
         </template>
-      </van-cell>
+      </van-cell> -->
       <van-cell
         :border="false"
         class="cell-class-custom"
@@ -44,7 +44,7 @@
               className="title-icon"
               name="profile-nickname"
             />
-            <span>Nickname</span>
+            <span>{{ globalStore.userInfo.nickname }}</span>
           </div>
         </template>
       </van-cell>
@@ -54,7 +54,7 @@
         title-class="title-class"
         value-class="value-class"
         title="User ID"
-        value="88888888"
+        :value="globalStore.userInfo.userId"
       >
         <template #title>
           <div class="cell-title-wrap">
@@ -79,7 +79,7 @@
         title-class="title-class"
         value-class="value-class"
         title="User ID"
-        value="0xb5a8...1e28"
+        :value="formatWalletAddress(globalStore.address)"
       >
         <template #title>
           <div class="cell-title-wrap">
@@ -104,7 +104,7 @@
         title-class="title-class"
         value-class="value-class"
         title="Email"
-        value="arthorn@gmail.com"
+        :value="globalStore.userInfo.email"
         is-link
         @click="router.push('/email')"
       >
@@ -255,6 +255,12 @@
 
 <script setup>
 import { useRouter } from "vue-router";
+import { useGlobalStore } from "@/store/globalStore";
+import { formatWalletAddress } from "@/utils/chainUtils";
+import avatar from "@/assets/user-avatar.svg";
+
+// 初始化 Store
+const globalStore = useGlobalStore();
 const router = useRouter();
 const showVersion = ref(false);
 const version = ref("1.0.12");

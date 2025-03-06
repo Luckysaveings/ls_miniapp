@@ -13,19 +13,23 @@ export const useGlobalStore = defineStore("global", {
     privateKey: "",
     userInfo: {
       username: "",
-      nickname: "Arthorn111",
+      userId: "",
+      nickname: "Arthorn",
       avatar: "",
       email: "",
       phone: "",
+      promoteCode: "",
     } as any | undefined,
     inviteCode: "",
     balanceInfo: {
       USDT: {
+        allAmount: 0,
         balance: 0,
         savings: 0,
         drawRewards: 0,
       },
       KAIA: {
+        allAmount: 0,
         balance: 0,
         savings: 0,
         drawRewards: 0,
