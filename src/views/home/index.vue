@@ -26,6 +26,7 @@ import {
   getDpositAmount,
   formatWalletAddress,
   formatAmount,
+  calculateTimeDifference,
 } from "@/utils/chainUtils";
 
 const availableRewards = reactive({
@@ -85,7 +86,7 @@ const balanceInfo = reactive({
   },
 });
 
-const time = ref(13600 * 1000);
+const time = ref(calculateTimeDifference(1));
 const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
 };
@@ -130,7 +131,7 @@ const clickUsername = async () => {
   // kaiaChainOperate();
   // luckyContractOperate();
   // approveAndDeposit();
-  getDappWallet();
+  // getDappWallet();
 };
 const clickLanguages = async () => {
   // approveAndDepositWithDapp("10");
@@ -355,7 +356,7 @@ const handlePopoverItem = (type: string) => {
         </div>
       </div>
     </div>
-    <button
+    <!-- <button
       ref="popoverBtnRef"
       class="btn-add"
       @click="handlePopover"
@@ -365,7 +366,7 @@ const handlePopoverItem = (type: string) => {
         size="24"
         color="#fff"
       />
-    </button>
+    </button> -->
     <van-overlay
       :show="showInfo"
       class-name="balance-dialog"

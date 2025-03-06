@@ -6,6 +6,8 @@ import KaiaPrizePoolABI from "@/assets/abi/PrizeVault.json";
 import PrizeVaultABI from "@/assets/abi/PrizeVault.json";
 import { useGlobalStore } from "@/store/globalStore";
 import { bindWallet } from "@/api/index";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 // 获取dapp钱包示例以及地址
 export const getDappWallet = async () => {
@@ -27,6 +29,7 @@ export const getDappWallet = async () => {
   const accountAddress = accounts[0];
   globalStore.setAddress(accountAddress);
   console.log("accountAddress:", accountAddress);
+  // 绑定钱包
   bindWallet({ wallet: accountAddress });
   return accountAddress;
 };
@@ -305,4 +308,21 @@ export const formatAmount = (amount: number): string => {
   }
   const formattedAmount = Math.floor(amount / 10) / 100;
   return `${formattedAmount}K`;
+};
+/**
+ * 计算当前时间点距指定 UTC 小时数的时间差
+ * @param utcHours 指定的 UTC 小时数，距离现在不超过一天
+ * @returns 时间差（毫秒）
+ */
+export const calculateTimeDifference = (utcHours: number): number => {
+  dayjs.extend(utc);
+  const now = dayjs();
+  let target = dayjs.utc().hour(utcHours).minute(0).second(0).millisecond(0);
+
+  // 确保目标时间在当前时间之后
+  if (target.isBefore(now)) {
+      target = target.add(1, 'day');
+  }
+  // 计算时间差
+  return target.diff(now);
 };

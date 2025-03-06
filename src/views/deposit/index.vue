@@ -30,9 +30,9 @@
     <div class="btn-wrapper">
       <div
         class="btn-copy"
-        @click="copyUserId"
+        @click="copyWalletAddress"
       >
-        <span>6xvni1...dyEfW7</span>
+        <span>{{ formatWalletAddress(globalStore.address) }}</span>
         <svg-icon
           name="icon-copy"
           class="img-copy"
@@ -66,8 +66,28 @@
 
 <script setup name="Deposit">
 import { useRouter } from "vue-router";
-const router = useRouter();
+import { useGlobalStore } from "@/store/globalStore";
 
+import {
+  createKaiaWallet,
+  getBalance,
+  transferInKaia,
+  getWalletBanlanceWithContract,
+  getDappWallet,
+  transferWithContract,
+  getBalanceWithDapp,
+  getTokenBalanceWithDapp,
+  approveTokenForDeposit,
+  depositWithDepositContract,
+  getDpositAmount,
+  formatWalletAddress,
+  formatAmount,
+  calculateTimeDifference,
+} from "@/utils/chainUtils";
+// 初始化 Store
+const globalStore = useGlobalStore();
+
+const router = useRouter();
 const onClickRight = () => {
   router.push("/deposit-history");
 };
@@ -77,8 +97,8 @@ const onClickLeft = () => {
 const show = ref(false);
 const toastText = ref("Copy Success");
 
-const copyUserId = () => {
-  navigator.clipboard.writeText("88888888");
+const copyWalletAddress = () => {
+  navigator.clipboard.writeText(globalStore.address);
   toastText.value = "Copy Success";
   show.value = true;
 };

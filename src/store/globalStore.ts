@@ -9,6 +9,7 @@ export const useGlobalStore = defineStore("global", {
     dappPortalSDK: undefined as DappPortalSDK | undefined,
     walletProvider: undefined as any | undefined,
     address: "",
+    addressEwm: "",
     mnemonic: "",
     privateKey: "",
     userInfo: {
@@ -33,6 +34,14 @@ export const useGlobalStore = defineStore("global", {
         balance: 0,
         savings: 0,
         drawRewards: 0,
+      },
+    },
+    prizePoolInfo: {
+      USDT: {
+        timeTolottory: 0,
+      },
+      KAIA: {
+        timeTolottory: 0,
       },
     },
   }),
