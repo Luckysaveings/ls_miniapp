@@ -5,11 +5,9 @@ export const useGlobalStore = defineStore("global", {
   // 状态（state）
   state: () => ({
     token: "0",
-    signatureWallet: undefined as any | undefined,
     dappPortalSDK: undefined as DappPortalSDK | undefined,
     walletProvider: undefined as any | undefined,
     address: "",
-    addressEwm: "",
     mnemonic: "",
     privateKey: "",
     userInfo: {
@@ -38,12 +36,18 @@ export const useGlobalStore = defineStore("global", {
     },
     prizePoolInfo: {
       USDT: {
-        timeTolottory: 0,
+        allAmount: 0,
+        timeTolottory: 1,
+        ticket: 0,
       },
       KAIA: {
-        timeTolottory: 0,
+        allAmount: 0,
+        timeTolottory: 1,
+        ticket: 0,
       },
     },
+    usdtValue: 1,
+    kaiaValue: 0.1192,
   }),
 
   // 计算属性（getters）
@@ -78,15 +82,6 @@ export const useGlobalStore = defineStore("global", {
     clearUserInfo() {
       this.userInfo = {};
     },
-    // 设置确权钱包
-    setSignatureWallet(signatureWallet: string) {
-      this.signatureWallet = signatureWallet;
-    },
-
-    // 清除确权钱包
-    clearSignatureWallet() {
-      this.signatureWallet = undefined;
-    },
     // 设置助记词
     setMnemonic(mnemonic: string) {
       this.mnemonic = mnemonic; // 保存助记词
@@ -108,6 +103,18 @@ export const useGlobalStore = defineStore("global", {
     },
     setKaiaBalance(balanceInfo: any) {
       this.balanceInfo.KAIA = Object.assign({}, this.balanceInfo.KAIA, balanceInfo);
+    },
+    setUSDTPrizePoolInfo(prizePoolInfo: any) {
+      this.prizePoolInfo.USDT = Object.assign({}, this.prizePoolInfo.USDT, prizePoolInfo.USDT);
+    },
+    setKaiaPrizePoolInfo(prizePoolInfo: any) {
+      this.prizePoolInfo.KAIA = Object.assign({}, this.prizePoolInfo.KAIA, prizePoolInfo.KAIA);
+    },
+    setUsdtValue(value: number) {
+      this.usdtValue = value;
+    },
+    setKaiaValue(value: number) {
+      this.kaiaValue = value;
     },
     // 登出（清除 token 和钱包地址）
     logout() {

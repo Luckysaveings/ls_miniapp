@@ -7,6 +7,19 @@ import { ethers } from "ethers";
 import DappPortalSDK from "@linenext/dapp-portal-sdk";
 import { useGlobalStore } from "@/store/globalStore";
 import { getPoolList } from "@/api/index";
+import avatar from "@/assets/user-avatar.svg";
+import {
+  getBalanceWithDapp,
+  getTokenBalanceWithDapp,
+  gasForApproveKaiaForDeposit,
+  gasForApproveTokenForDeposit,
+  gasForDepositWithDepositContract,
+  gasForWithdrawWithDepositContract,
+  approveKaiaForDeposit,
+  approveTokenForDeposit,
+  depositWithDepositContract,
+  withdrawWithDepositContract,
+} from "@/utils/chainUtils";
 
 onMounted(() => {
   console.log("Pool Page Mounted");
@@ -75,9 +88,29 @@ const time = ref(13600 * 1000);
 const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
 };
-
-const lineLogin = () => {};
-
+// 使用dapp sdk进行授权以及质押, selectedPool.value为1: KAIA Pool 2: USD Pool
+const approveAndDepositWithDapp = async (amount: string) => {
+  try {
+    getBalanceWithDapp(globalStore.address);
+    getTokenBalanceWithDapp(globalStore.address, import.meta.env.VITE_TOKEN_ADDRESS);
+    // if (selectedPool.value === "1") {
+    //   await approveKaiaForDeposit(globalStore.address, import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS, amount);
+    // } else {
+    //   await approveTokenForDeposit(import.meta.env.VITE_TOKEN_ADDRESS, import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
+    // }
+    // await depositWithDepositContract(globalStore.address, amount, selectedPool.value);
+    await approveTokenForDeposit(import.meta.env.VITE_TOKEN_ADDRESS, import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
+    await depositWithDepositContract(globalStore.address, amount, "2");
+    getBalanceWithDapp(globalStore.address);
+    getTokenBalanceWithDapp(globalStore.address, import.meta.env.VITE_TOKEN_ADDRESS);
+  } catch (error) {
+    console.log(error);
+  }
+};
+// 使用dapp sdk进行奖池存款提现, selectedPool.value为1: KAIA Pool 2: USD Pool
+const withdrawWithDapp = async (amount: string) => {
+  await withdrawWithDepositContract(globalStore.address, amount, selectedPool.value);
+};
 const showDeposit = ref(false);
 
 const available = ref(1120);
@@ -116,7 +149,7 @@ const showReminderMsg = ref(false);
     <div class="header">
       <div class="header-left">
         <img
-          src="@/assets/user-avatar.svg"
+          :src="globalStore.userInfo.avatar || avatar"
           class="product-img"
           @click="router.push('/profile')"
         />
@@ -125,11 +158,11 @@ const showReminderMsg = ref(false);
         </div>
       </div>
       <div class="header-right">
-        <svg-icon
+        <!-- <svg-icon
           className="img-header-right"
           name="icon-msg-tip"
           @click="showReminderMsg = true"
-        />
+        /> -->
         <svg-icon
           className="img-header-right"
           name="icon-upload"

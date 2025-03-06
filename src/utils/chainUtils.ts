@@ -33,6 +33,77 @@ export const getDappWallet = async () => {
   bindWallet({ wallet: accountAddress });
   return accountAddress;
 };
+// dapp 钱包进行kaia授权的gas消耗预估
+export const gasForApproveKaiaForDeposit = async (address: string, depositContractAddress: string, amount: string) => {
+  const globalStore = useGlobalStore();
+  const walletProvider = globalStore.walletProvider;
+  const provider = new ethers.providers.Web3Provider(walletProvider);
+  const amountInUnits = ethers.utils.parseUnits(amount, 18);
+  // 构建 approve 交易
+  const tx = {
+    from: address,
+    to: depositContractAddress,
+    value: 0, // 本位币 approve 时 value 为 0
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["address", "uint256"],
+      [depositContractAddress, amountInUnits]
+    ),
+  };
+  // 估算 gas 消耗
+  const gasEstimate = await provider.estimateGas(tx);
+  const gasPrice = await provider.getGasPrice();
+  const totalGasCost = gasEstimate.mul(gasPrice);
+  const totalGasCostFormatted = ethers.utils.formatEther(totalGasCost);
+  console.log("预计本位币 approve 交易 gas 费用:", totalGasCostFormatted);
+  return totalGasCostFormatted;
+};
+// dapp 钱包进行kaia授权
+export const approveKaiaForDeposit = async (address: string, depositContractAddress: string, amount: string) => {
+  const globalStore = useGlobalStore();
+  const walletProvider = globalStore.walletProvider;
+  const provider = new ethers.providers.Web3Provider(walletProvider);
+  const signer = provider.getSigner(address);
+  const amountInUnits = ethers.utils.parseUnits(amount, 18);
+  // 构建 approve 交易
+  const tx = {
+    from: address,
+    to: depositContractAddress,
+    value: 0, // 本位币 approve 时 value 为 0
+    data: ethers.utils.defaultAbiCoder.encode(
+      ["address", "uint256"],
+      [depositContractAddress, amountInUnits]
+    ),
+  };
+  const response = {
+    status: 0,
+    tx: undefined,
+  };
+  try {
+    response.tx = await signer.sendTransaction(tx);
+    console.log("Kaia 本位币 approve 交易已发送，交易哈希:", response.tx.hash);
+    const receipt = await response.tx.wait();
+    console.log("Kaia 本位币 approve 交易已确认，区块号:", receipt.blockNumber);
+    response.status = 0;
+  } catch (error) {
+    console.log("Kaia 本位币 approve 失败", error);
+    response.status = 1;
+  }
+  return response;
+};
+// dapp 钱包进行代币授权的gas消耗预估
+export const gasForApproveTokenForDeposit = async (tokenContractAddress: string, depositContractAddress: string, amount: string) => {
+  const globalStore = useGlobalStore();
+  const walletProvider = globalStore.walletProvider;
+  const provider = new ethers.providers.Web3Provider(walletProvider);
+  const amountInUnits = ethers.utils.parseUnits(amount, 18);
+  const luckyTokenContract = new ethers.Contract(tokenContractAddress, LuckyTokenABI.abi, provider.getSigner());
+  const gasEstimate = await luckyTokenContract.estimateGas.approve(depositContractAddress, amountInUnits);
+  const gasPrice = await provider.getGasPrice();
+  const totalGasCost = gasEstimate.mul(gasPrice);
+  const totalGasCostFormatted = ethers.utils.formatEther(totalGasCost);
+  console.log("预计代币 approve 交易 gas 费用:", totalGasCostFormatted);
+  return totalGasCostFormatted;
+};
 // dapp 钱包进行代币授权
 export const approveTokenForDeposit = async (tokenContractAddress: string, depositContractAddress: string, amount: string) => {
   const globalStore = useGlobalStore();
@@ -69,15 +140,18 @@ export const getDpositAmount = async (address: string, type: string) => {
   }
   const balanceWei = await contract.balanceOf(address);
   const balanceToken = ethers.utils.formatUnits(balanceWei, 18);
-  console.log("质押金额Token:", balanceToken);
   if (type === "USDT") {
+    console.log("质押金额USDT:", balanceToken);
     globalStore.setUsdtBalance({savings: balanceToken});
+    globalStore.setUSDTPrizePoolInfo({ticket: balanceToken});
   } else {
+    console.log("质押金额KAIA:", balanceToken);
     globalStore.setKaiaBalance({savings: balanceToken});
+    globalStore.setKaiaPrizePoolInfo({ticket: balanceToken});
   }
   return balanceToken;
 };
-// 使用dapp查询质押合约的质押金额
+// 使用dapp查询质押合约的全部质押金额
 export const getPoolAmount = async (type: string) => {
   const globalStore = useGlobalStore();
   const walletProvider = globalStore.walletProvider;
@@ -90,20 +164,41 @@ export const getPoolAmount = async (type: string) => {
   }
   const balanceWei = await contract.totalAssets();
   const balanceToken = ethers.utils.formatUnits(balanceWei, 18);
-  console.log("质押金额Token:", balanceToken);
   if (type === "USDT") {
+    console.log("全部质押金额USDT:", balanceToken);
     globalStore.setUsdtBalance({allAmount: balanceToken});
+    globalStore.setUSDTPrizePoolInfo({allAmount: balanceToken});
   } else {
+    console.log("全部质押金额KAIA:", balanceToken);
     globalStore.setKaiaBalance({allAmount: balanceToken});
+    globalStore.setKaiaPrizePoolInfo({allAmount: balanceToken});
   }
   return balanceToken;
 };
-// dapp钱包进行已授权的代币质押
-export const depositWithDepositContract = async (depositContractAddress: string, walletAddress: string, amount: string) => {
+// dapp钱包进行已授权的代币质押的gas消耗计算,type 1是KAIA，2是USDT
+export const gasForDepositWithDepositContract = async (walletAddress: string, amount: string, type: string) => {
   const globalStore = useGlobalStore();
   const walletProvider = globalStore.walletProvider;
   const provider = new ethers.providers.Web3Provider(walletProvider);
-  const depositContract = new ethers.Contract(depositContractAddress, PrizeVaultABI.abi, provider.getSigner());
+  const ABI = type === "1" ? KaiaPrizePoolABI.abi : PrizeVaultABI.abi;
+  const depositContractAddress = type === "1" ? import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS : import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS;
+  const depositContract = new ethers.Contract(depositContractAddress, ABI, provider.getSigner());
+  const amountInUnits = ethers.utils.parseUnits(amount, 18);
+  const gasEstimate = await depositContract.estimateGas.deposit(amountInUnits, walletAddress);
+  const gasPrice = await provider.getGasPrice();
+  const totalGasCost = gasEstimate.mul(gasPrice);
+  const totalGasCostFormatted = ethers.utils.formatEther(totalGasCost);
+  console.log("预计本次质押 gas 费用:", totalGasCostFormatted);
+  return totalGasCostFormatted;
+}
+// dapp钱包进行已授权的代币质押,type 1是KAIA，2是USDT
+export const depositWithDepositContract = async (walletAddress: string, amount: string, type: string) => {
+  const globalStore = useGlobalStore();
+  const walletProvider = globalStore.walletProvider;
+  const provider = new ethers.providers.Web3Provider(walletProvider);
+  const ABI = type === "1" ? KaiaPrizePoolABI.abi : PrizeVaultABI.abi;
+  const depositContractAddress = type === "1" ? import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS : import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS;
+  const depositContract = new ethers.Contract(depositContractAddress, ABI, provider.getSigner());
   const amountInUnits = ethers.utils.parseUnits(amount, 18);
   const response = {
     status: 0,
@@ -121,12 +216,30 @@ export const depositWithDepositContract = async (depositContractAddress: string,
   }
   return response;
 }
-// dapp钱包进行提现
-export const withdrawWithDepositContract = async (depositContractAddress: string, walletAddress: string, amount: string) => {
+// dapp钱包进行提现的gas消耗计算,type 1是KAIA，2是USDT
+export const gasForWithdrawWithDepositContract = async (walletAddress: string, amount: string, type: string) => {
   const globalStore = useGlobalStore();
   const walletProvider = globalStore.walletProvider;
   const provider = new ethers.providers.Web3Provider(walletProvider);
-  const depositContract = new ethers.Contract(depositContractAddress, PrizeVaultABI.abi, provider.getSigner());
+  const ABI = type === "1" ? KaiaPrizePoolABI.abi : PrizeVaultABI.abi;
+  const depositContractAddress = type === "1" ? import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS : import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS;
+  const depositContract = new ethers.Contract(depositContractAddress, ABI, provider.getSigner());
+  const amountInUnits = ethers.utils.parseUnits(amount, 18);
+  const gasEstimate = await depositContract.estimateGas.withdraw(amountInUnits, walletAddress, walletAddress);
+  const gasPrice = await provider.getGasPrice();
+  const totalGasCost = gasEstimate.mul(gasPrice);
+  const totalGasCostFormatted = ethers.utils.formatEther(totalGasCost);
+  console.log("预计提现 gas 费用:", totalGasCostFormatted);
+  return totalGasCostFormatted;
+}
+// dapp钱包进行提现
+export const withdrawWithDepositContract = async (walletAddress: string, amount: string, type: string) => {
+  const globalStore = useGlobalStore();
+  const walletProvider = globalStore.walletProvider;
+  const provider = new ethers.providers.Web3Provider(walletProvider);
+  const ABI = type === "1" ? KaiaPrizePoolABI.abi : PrizeVaultABI.abi;
+  const depositContractAddress = type === "1" ? import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS : import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS;
+  const depositContract = new ethers.Contract(depositContractAddress, ABI, provider.getSigner());
   const amountInUnits = ethers.utils.parseUnits(amount, 18);
   const response = {
     status: 0,

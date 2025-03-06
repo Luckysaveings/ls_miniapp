@@ -5,6 +5,11 @@ import { showToast } from "vant";
 import userAvatar from "@/assets/user-avatar.svg";
 import TaskItem from "./components/task-item.vue";
 import { getTaskList, getAchievement } from "@/api/index";
+import { useGlobalStore } from "@/store/globalStore";
+import avatar from "@/assets/user-avatar.svg";
+
+// 初始化 Store
+const globalStore = useGlobalStore();
 const router = useRouter();
 const userInfo = reactive({
   avatar: userAvatar,
@@ -60,13 +65,13 @@ onMounted(() => {
           width="36"
           height="36"
           fit="cover"
-          :src="userInfo.avatar"
+          :src="globalStore.userInfo.avatar || avatar"
           round
           class="product-img"
           @click="router.push('/profile')"
         />
         <div class="text-content">
-          {{ userInfo.nickName }}
+          {{ globalStore.userInfo.nickname }}
         </div>
       </div>
       <div class="header-right">

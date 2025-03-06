@@ -18,7 +18,7 @@
 
     <div class="deposit-content">
       <img
-        src="@/assets/qrcode.svg"
+        :src="globalStore.addressEwm"
         alt="KAIA"
         class="img-qr"
       />
@@ -47,25 +47,15 @@
     </div>
   </div>
 
-  <van-toast
+  <CustomToast
     v-model:show="show"
-    position="top"
-    class-name="custom-toast-wrapper"
-  >
-    <template #message>
-      <div class="toast-message">
-        <svg-icon
-          name="check-circle"
-          size="24px"
-        ></svg-icon>
-        <span class="toast-text">{{ toastText }}</span>
-      </div>
-    </template>
-  </van-toast>
+    :message="toastText"
+  />
 </template>
 
 <script setup name="Deposit">
 import { useRouter } from "vue-router";
+import CustomToast from "@/components/CustomToast.vue";
 import { useGlobalStore } from "@/store/globalStore";
 
 import {
@@ -103,13 +93,6 @@ const copyWalletAddress = () => {
   show.value = true;
 };
 </script>
-
-<style>
-.custom-toast-wrapper {
-  padding: 0;
-  background-color: transparent;
-}
-</style>
 
 <style scoped lang="scss">
 .page-wrap {
@@ -172,23 +155,6 @@ const copyWalletAddress = () => {
     color: #18181b;
     background: transparent;
     border: 2px solid var(--ls-line-12, rgba(24, 24, 27, 0.12));
-  }
-}
-
-.toast-message {
-  padding: 10px 14px;
-  border-radius: 48px;
-  border: 1px solid rgba(24, 24, 27, 0.04);
-  background: #06c756;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  .toast-text {
-    margin-left: 8px;
-    font-size: 16px;
-    font-weight: 500;
-    color: #fff;
   }
 }
 </style>

@@ -1,12 +1,10 @@
 <script setup lang="ts" name="Home">
+import CustomToast from "@/components/CustomToast.vue";
 import liff from "@line/liff";
 import DappPortalSDK from "@linenext/dapp-portal-sdk";
 import { ethers } from "ethers";
 // import { WalletType, PaymentProvider } from "@linenext/dapp-portal-sdk";
 // import { Web3Provider as w3 } from "@kaiachain/ethers-ext/v6";
-import LuckyTokenABI from "@/assets/abi/LuckyToken.json";
-import PrizeVaultABI from "@/assets/abi/PrizeVault.json";
-import qs from "qs";
 import { useRouter } from "vue-router";
 import { useClickAway } from "@vant/use";
 import { useGlobalStore } from "@/store/globalStore";
@@ -27,6 +25,7 @@ import {
   formatWalletAddress,
   formatAmount,
   calculateTimeDifference,
+  getPoolAmount,
 } from "@/utils/chainUtils";
 
 const availableRewards = reactive({
@@ -85,8 +84,30 @@ const balanceInfo = reactive({
     drawRewards: 10,
   },
 });
+const showCopyToast = ref(false);
+const copyToastText = ref("Copy Success");
+const copyAddress = (txt) => {
+  navigator.clipboard.writeText(txt || "");
+  copyToastText.value = "Copy Success";
+  showCopyToast.value = true;
+};
 
-const time = ref(calculateTimeDifference(1));
+const prizePoolInfo = computed(() => {
+  const info = globalStore.balanceInfo;
+  const total = info.USDT.balance * globalStore.usdtValue + info.KAIA.balance * globalStore.kaiaValue || 0;
+  const totalPrizePool = total.toFixed(2);
+  const nextDrawOpenIn = calculateTimeDifference(1);
+  const day = 24 * 60 * 60 * 1000;
+  const p = ((day - nextDrawOpenIn) / day) * 100;
+  let progress = p < 0 ? 0 : p;
+  progress = progress > 100 ? 100 : progress;
+  return {
+    totalPrizePool,
+    nextDrawOpenIn,
+    progress: Math.ceil(progress),
+  };
+});
+
 const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
 };
@@ -132,29 +153,10 @@ const clickUsername = async () => {
   // luckyContractOperate();
   // approveAndDeposit();
   // getDappWallet();
-};
-const clickLanguages = async () => {
-  // approveAndDepositWithDapp("10");
+  getPoolAmount("USDT");
+  getPoolAmount("KAIA");
   getDpositAmount(globalStore.address, "USDT");
   getDpositAmount(globalStore.address, "KAIA");
-};
-const clickWalletBalance = async () => {
-  // const signature = await getDappWalletSignature();
-  // 合约地址和 ABI
-  // const contractAddress = "0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5"; // 这是luckyToken的合约地址
-  // const ABI = LuckyTokenABI.abi;
-  // const luckyTokenContract = new ethers.Contract(contractAddress, ABI, signature);
-  // const amountInUnits = ethers.utils.parseUnits("100", 18);
-  // await luckyTokenContract.approve("0x4b6ee29aca4c444c534a58cefc97502456dfd8fa", amountInUnits);
-  // getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
-  // getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
-  // // 合约地址和 ABI
-  // const contractAddressPoolprize = "0x4b6ee29aca4c444c534a58cefc97502456dfd8fa"; // 这是PrizePool的合约地址
-  // const PoolprizeABI = PrizeVaultABI.abi;
-  // const prizePoolContract = new ethers.Contract(contractAddressPoolprize, PoolprizeABI, signature);
-  // await prizePoolContract.deposit(amountInUnits, "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
-  // getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
-  // getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
 };
 const openLineWallet = () => {
   liff.openWindow({
@@ -199,7 +201,6 @@ const handlePopoverItem = (type: string) => {
       <div
         style="visibility: hidden"
         class="header-right"
-        @click="clickLanguages"
       >
         <svg-icon
           name="icon-language"
@@ -212,10 +213,7 @@ const handlePopoverItem = (type: string) => {
     <div class="content">
       <div class="content-box-yellow">
         <div class="inner-color">
-          <div
-            class="balance-title"
-            @click="clickWalletBalance"
-          >
+          <div class="balance-title">
             {{ $t("home.WalletBalance") }}
           </div>
           <div class="balance-content">
@@ -255,14 +253,14 @@ const handlePopoverItem = (type: string) => {
         <div class="content-box">
           <div class="box-top">
             <div class="box-title">{{ $t("home.totalPrizePool") }}</div>
-            <div class="box-num">$123,876,323</div>
+            <div class="box-num">${{ prizePoolInfo.totalPrizePool }}</div>
           </div>
 
           <div class="box-center">
             <div class="center-label">{{ $t("home.NextDrawOpenIn") }}</div>
             <div class="center-time">
               <van-count-down
-                :time="time"
+                :time="prizePoolInfo.nextDrawOpenIn"
                 format="HH:mm:ss"
               >
                 <template #default="timeData">
@@ -278,7 +276,7 @@ const handlePopoverItem = (type: string) => {
             </div>
           </div>
           <Progress
-            :percentage="55"
+            :percentage="prizePoolInfo.progress"
             bg-color="linear-gradient(90deg, #10D260 0%, #65E01C 100%)"
           />
           <button
@@ -389,6 +387,7 @@ const handlePopoverItem = (type: string) => {
               <svg-icon
                 name="icon-copy"
                 className="img-copy"
+                @click="copyAddress(formatWalletAddress(globalStore.address))"
               />
             </span>
           </div>
@@ -437,6 +436,11 @@ const handlePopoverItem = (type: string) => {
         </div>
       </div>
     </van-overlay>
+
+    <CustomToast
+      v-model:show="showCopyToast"
+      :message="copyToastText"
+    />
   </div>
 </template>
 
