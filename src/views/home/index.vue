@@ -22,6 +22,8 @@ import {
   transferWithContract,
   getBalanceWithDapp,
   getTokenBalanceWithDapp,
+  approveTokenForDeposit,
+  depositWithDepositContract,
 } from "@/utils/chainUtils";
 
 const availableRewards = reactive({
@@ -145,6 +147,10 @@ const approveAndDeposit = async () => {
 const clickUsername = async () => {
   // luckyContractOperate();
   // kaiaChainOperate();
+  getBalanceWithDapp(globalStore.address);
+  getTokenBalanceWithDapp(globalStore.address, "0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5");
+  await approveTokenForDeposit("0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5", "0x4b6ee29aca4c444c534a58cefc97502456dfd8fa", "10");
+  await depositWithDepositContract("0x4b6ee29aca4c444c534a58cefc97502456dfd8fa", globalStore.address, "10");
   getBalanceWithDapp(globalStore.address);
   getTokenBalanceWithDapp(globalStore.address, "0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5");
 };

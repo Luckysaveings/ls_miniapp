@@ -56,7 +56,7 @@ export const approveTokenForDeposit = async (tokenContractAddress: string, depos
   return response;
 };
 // dapp钱包进行已授权的代币质押
-export const depositWithDepositContract = async (depositContractAddress: string, amount: string) => {
+export const depositWithDepositContract = async (depositContractAddress: string, walletAddress: string, amount: string) => {
   const globalStore = useGlobalStore();
   const walletProvider = globalStore.walletProvider;
   const provider = new ethers.providers.Web3Provider(walletProvider);
@@ -67,7 +67,7 @@ export const depositWithDepositContract = async (depositContractAddress: string,
     tx: undefined,
   };
   try {
-    response.tx = await depositContract.deposit(amountInUnits);
+    response.tx = await depositContract.deposit(amountInUnits, walletAddress);
     console.log("质押转账交易已发送，交易哈希:", response.tx.hash);
     const receipt = await response.tx.wait();
     console.log("质押转账交易已确认，区块号:", receipt.blockNumber);
@@ -83,10 +83,12 @@ export const depositWithDepositContract = async (depositContractAddress: string,
 export const getBalanceWithDapp = async (address: string) => {
   const globalStore = useGlobalStore();
   const walletProvider = globalStore.walletProvider;
-  const balanceKAIA = await walletProvider.request({
+  const balanceWei = await walletProvider.request({
     method: "eth_getBalance",
     params: [address, "latest"],
   });
+  const balanceKAIA = ethers.utils.formatEther(balanceWei);
+  console.log("钱包余额Kaia:", balanceKAIA);
   return balanceKAIA;
 };
 // 使用dapp sdk查询合约代币余额
@@ -95,8 +97,10 @@ export const getTokenBalanceWithDapp = async (address: string, tokenAddress: str
   const walletProvider = globalStore.walletProvider;
   const provider = new ethers.providers.Web3Provider(walletProvider);
   const contract = new ethers.Contract(tokenAddress, LuckyTokenABI.abi, provider);
-  const balance = await contract.balanceOf(address);
-  return balance;
+  const balanceWei = await contract.balanceOf(address);
+  const balanceToken = ethers.utils.formatUnits(balanceWei, 18);
+  console.log("合约代币余额Token:", balanceToken);
+  return balanceToken;
 };
 
 // 使用dapp钱包进行转账
