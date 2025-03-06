@@ -19,6 +19,18 @@ export const useGlobalStore = defineStore("global", {
       phone: "",
     } as any | undefined,
     inviteCode: "",
+    balanceInfo: {
+      USDT: {
+        balance: 0,
+        savings: 0,
+        drawRewards: 0,
+      },
+      KAIA: {
+        balance: 0,
+        savings: 0,
+        drawRewards: 0,
+      },
+    },
   }),
 
   // 计算属性（getters）
@@ -78,7 +90,12 @@ export const useGlobalStore = defineStore("global", {
     setInviteCode(inviteCode: string) {
       this.inviteCode = inviteCode;
     },
-
+    setUsdtBalance(balanceInfo: any) {
+      this.balanceInfo.USDT = Object.assign({}, this.balanceInfo.USDT, balanceInfo);
+    },
+    setKaiaBalance(balanceInfo: any) {
+      this.balanceInfo.KAIA = Object.assign({}, this.balanceInfo.KAIA, balanceInfo);
+    },
     // 登出（清除 token 和钱包地址）
     logout() {
       this.clearToken();

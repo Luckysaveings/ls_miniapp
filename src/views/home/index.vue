@@ -16,14 +16,14 @@ import {
   getBalance,
   transferInKaia,
   getWalletBanlanceWithContract,
-  approveWithContract,
-  stakeWithContract,
   getDappWallet,
   transferWithContract,
   getBalanceWithDapp,
   getTokenBalanceWithDapp,
   approveTokenForDeposit,
   depositWithDepositContract,
+  getDpositAmount,
+  formatWalletAddress,
 } from "@/utils/chainUtils";
 
 const availableRewards = reactive({
@@ -44,12 +44,9 @@ const getAvailableRewards = () => {
     availableRewards.badges = totalBadges;
   });
 };
-
+// 初始化 Store
+const globalStore = useGlobalStore();
 onMounted(() => {
-  // const token =
-  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MTc5OTQ5MywibmJmIjoxNzQxMTk0NjkzfQ.fvLHzz5Ykp9kIBArokhEDkmdga0RzAwavdrjJTX-rzA";
-  // globalStore.setToken(token);
-  // console.log("globalStore", globalStore);
   getAvailableRewards();
   window["fromHome"] = true;
   const loadingElement = document.getElementById("loading");
@@ -59,8 +56,7 @@ onMounted(() => {
     }, 600);
   }
 });
-// 初始化 Store
-const globalStore = useGlobalStore();
+
 const router = useRouter();
 const showInfo = ref(false);
 const infoType = ref("");
@@ -91,21 +87,6 @@ const time = ref(13600 * 1000);
 const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
 };
-const lineLogin = () => {
-  console.log("click");
-  const line_auth = "https://access.line.me/oauth2/v2.1/authorize";
-  const auth_params = {
-    response_type: "code",
-    client_id: "2006818858",
-    redirect_uri: window.location.href, // 在LINE Developers Console上注册的回调 URL 的 URL 编码字符串。您可以添加任何查询参数。
-    state: "STATE", // 用于防止跨站点请求伪造的唯一字母数字字符串. 您的网络应用应为每个登录会话生成一个随机值。这不能是 URL 编码的字符串。
-    scope: "profile openid email", // 向用户请求的权限,查询范围可以看官网(https://developers.line.biz/en/docs/line-login/integrate-line-login/#scopes)
-  };
-  // 这里使用了第三方库qs来处理参数
-  const paramsString = qs.stringify(auth_params);
-  console.log(line_auth, paramsString);
-  window.location.href = `${line_auth}?${paramsString}`;
-};
 const kaiaChainOperate = async () => {
   // createKaiaWallet(); // 创建一个kaia测试链的钱包，提示词，钱包地址和私钥均存储在localStorage缓存中
   getBalance(localStorage.getItem("address")); // 获取刚生成的钱包地址的kaia余额
@@ -130,46 +111,29 @@ const luckyContractOperate = async () => {
   getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
   return;
 };
-const approveAndDeposit = async () => {
-  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
-  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
-  // return;
-  await approveWithContract(
-    "0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e",
-    "0x4b6ee29aca4c444c534a58cefc97502456dfd8fa",
-    "100"
-  );
-  // return;
-  await stakeWithContract("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
-  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
-  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
+// 使用dapp sdk进行授权以及质押
+const approveAndDepositWithDapp = async (amount: string) => {
+  try {
+    getBalanceWithDapp(globalStore.address);
+    getTokenBalanceWithDapp(globalStore.address, import.meta.env.VITE_TOKEN_ADDRESS);
+    await approveTokenForDeposit(import.meta.env.VITE_TOKEN_ADDRESS, import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
+    await depositWithDepositContract(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, globalStore.address, amount);
+    getBalanceWithDapp(globalStore.address);
+    getTokenBalanceWithDapp(globalStore.address, import.meta.env.VITE_TOKEN_ADDRESS);
+  } catch (error) {
+    console.log(error);
+  }
 };
 const clickUsername = async () => {
-  // luckyContractOperate();
-  // kaiaChainOperate();
-  getBalanceWithDapp(globalStore.address);
-  getTokenBalanceWithDapp(globalStore.address, "0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5");
-  await approveTokenForDeposit("0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5", "0x4b6ee29aca4c444c534a58cefc97502456dfd8fa", "10");
-  await depositWithDepositContract("0x4b6ee29aca4c444c534a58cefc97502456dfd8fa", globalStore.address, "10");
-  getBalanceWithDapp(globalStore.address);
-  getTokenBalanceWithDapp(globalStore.address, "0xfa2c65ac67e2b7c8a2829d495c3394c91486d6f5");
-};
-const clickLanguages = async () => {
   // kaiaChainOperate();
   // luckyContractOperate();
   // approveAndDeposit();
   getDappWallet();
-  return;
-  const sdk = await DappPortalSDK.init({
-    clientId: import.meta.env.VITE_LINE_CLIENT_ID || "",
-    chainId: import.meta.env.VITE_PUBLIC_CHAIN_ID,
-  });
-  globalStore.setSdk(sdk);
-  const walletProvider = sdk.getWalletProvider();
-  const accounts = await walletProvider.request({ method: "kaia_requestAccounts" });
-  const accountAddress = accounts[0];
-  globalStore.setWalletAddress(accountAddress);
-  console.log("accountAddress", accountAddress);
+};
+const clickLanguages = async () => {
+  // approveAndDepositWithDapp("10");
+  getDpositAmount(globalStore.address, "USDT");
+  getDpositAmount(globalStore.address, "KAIA");
 };
 const clickWalletBalance = async () => {
   // const signature = await getDappWalletSignature();
@@ -413,7 +377,7 @@ const handlePopoverItem = (type: string) => {
           <div class="balance-row">
             <span class="label">{{ $t("common.WalletAddress") }}</span>
             <span class="value">
-              <span>0xb5a8...1e28</span>
+              <span>{{ formatWalletAddress(globalStore.address || "") }}</span>
               <svg-icon
                 name="icon-copy"
                 className="img-copy"
@@ -427,7 +391,7 @@ const handlePopoverItem = (type: string) => {
                 :name="infoIcon"
                 class="van-img"
               />
-              {{ balanceInfo[infoType].balance }}</span
+              {{ globalStore.balanceInfo[infoType].balance }}</span
             >
           </div>
         </div>
@@ -441,7 +405,7 @@ const handlePopoverItem = (type: string) => {
                 class="van-img"
               />
 
-              {{ balanceInfo[infoType].savings }}</span
+              {{ globalStore.balanceInfo[infoType].savings }}</span
             >
           </div>
           <div class="balance-row">
@@ -451,7 +415,7 @@ const handlePopoverItem = (type: string) => {
                 :name="infoIcon"
                 class="van-img"
               />
-              {{ balanceInfo[infoType].drawRewards }}</span
+              {{ globalStore.balanceInfo[infoType].drawRewards }}</span
             >
           </div>
         </div>
