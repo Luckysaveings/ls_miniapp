@@ -50,6 +50,7 @@ export default {
     YourTickets: "Your tickets",
     Deposit: "Deposit",
     USDDeposit: "USD Deposit",
+    KAIADeposit: "KAIA Deposit",
     Max: "Max",
     GasFee: "Gas fee",
     KAIAPool: "KAIA Pool",
@@ -62,6 +63,7 @@ export default {
     PupUpsUpdateTip: "We just updated the Popups mission, in total 2000 Badges!",
     LuckySavingsGoesToV1Point1: "‍LuckySavings goes to V1.1!",
     urlTip: "blablablabalblabalbalba, read more: http://blababalbala",
+    TheAmountExceedsTheAvailableBalance: "The amount exceeds the available balance",
   },
   ranking: {
     Ranking: "Ranking",

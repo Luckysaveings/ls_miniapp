@@ -1,4 +1,5 @@
 <script setup lang="ts" name="Pool">
+import liff from "@line/liff";
 import { useRouter } from "vue-router";
 import GamePlayDialog from "./components/GameplayDialog.vue";
 import PreviousDialog from "./components/PreviousWinners.vue";
@@ -19,6 +20,9 @@ import {
   approveTokenForDeposit,
   depositWithDepositContract,
   withdrawWithDepositContract,
+  calculateTimeDifference,
+  getDpositAmount,
+  getPoolAmount,
 } from "@/utils/chainUtils";
 
 onMounted(() => {
@@ -67,6 +71,38 @@ const poolInfos = {
     },
   },
 };
+const prizePoolInfo = computed(() => {
+  const balanceInfo = globalStore.balanceInfo;
+  const poolInfo = globalStore.prizePoolInfo;
+  const usdtTicket = balanceInfo.USDT.savings;
+  const kaiaTicket = balanceInfo.KAIA.savings;
+  // const total = info.USDT.balance * globalStore.usdtValue + info.KAIA.balance * globalStore.kaiaValue || 0;
+  const totalUsdtPrizePool = Number(poolInfo.USDT.allAmount);
+  const usdtJackpot = totalUsdtPrizePool % 10000;
+  const totalKaiaPrizePool = Number(poolInfo.KAIA.allAmount);
+  const kaiaJackpot = totalKaiaPrizePool % 10000;
+  const nextUsdtDrawOpenIn = calculateTimeDifference(globalStore.prizePoolInfo.USDT.timeTolottory);
+  const nextKaiaDrawOpenIn = calculateTimeDifference(globalStore.prizePoolInfo.KAIA.timeTolottory);
+  const day = 24 * 60 * 60 * 1000;
+  const p = ((day - nextUsdtDrawOpenIn) / day) * 100;
+  const p1 = ((day - nextKaiaDrawOpenIn) / day) * 100;
+  let progress = p < 0 ? 0 : p;
+  let progress1 = p1 < 0 ? 0 : p1;
+  progress = progress > 100 ? 100 : progress;
+  progress1 = progress1 > 100 ? 100 : progress1;
+  return {
+    usdtTicket,
+    kaiaTicket,
+    usdtJackpot,
+    kaiaJackpot,
+    totalUsdtPrizePool,
+    totalKaiaPrizePool,
+    nextUsdtDrawOpenIn,
+    nextKaiaDrawOpenIn,
+    progress: Math.ceil(progress),
+    progress1: Math.ceil(progress1),
+  };
+});
 // 选择池子 1: KAIA Pool 2: USD Pool
 const selectedPool = ref("1");
 const gamePlayDialogRef = ref(null);
@@ -88,26 +124,31 @@ const time = ref(13600 * 1000);
 const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
 };
-// 使用dapp sdk进行授权以及质押, selectedPool.value为1: KAIA Pool 2: USD Pool
+// 使用dapp sdk进行授权以及质押, selectedPool为1: KAIA Pool 2: USD Pool
 const approveAndDepositWithDapp = async (amount: string) => {
   try {
     getBalanceWithDapp(globalStore.address);
     getTokenBalanceWithDapp(globalStore.address, import.meta.env.VITE_TOKEN_ADDRESS);
-    // if (selectedPool.value === "1") {
+    // if (selectedPool === "1") {
     //   await approveKaiaForDeposit(globalStore.address, import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS, amount);
     // } else {
     //   await approveTokenForDeposit(import.meta.env.VITE_TOKEN_ADDRESS, import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
     // }
-    // await depositWithDepositContract(globalStore.address, amount, selectedPool.value);
+    // await depositWithDepositContract(globalStore.address, amount, selectedPool);
     await approveTokenForDeposit(import.meta.env.VITE_TOKEN_ADDRESS, import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
-    await depositWithDepositContract(globalStore.address, amount, "2");
+    const response = await depositWithDepositContract(globalStore.address, amount, "2");
     getBalanceWithDapp(globalStore.address);
     getTokenBalanceWithDapp(globalStore.address, import.meta.env.VITE_TOKEN_ADDRESS);
+    getDpositAmount(globalStore.address, "USDT");
+    getDpositAmount(globalStore.address, "KAIA");
+    getPoolAmount("USDT");
+    getPoolAmount("KAIA");
+    return response;
   } catch (error) {
     console.log(error);
   }
 };
-// 使用dapp sdk进行奖池存款提现, selectedPool.value为1: KAIA Pool 2: USD Pool
+// 使用dapp sdk进行奖池存款提现, selectedPool为1: KAIA Pool 2: USD Pool
 const withdrawWithDapp = async (amount: string) => {
   await withdrawWithDepositContract(globalStore.address, amount, selectedPool.value);
 };
@@ -116,9 +157,17 @@ const showDeposit = ref(false);
 const available = ref(1120);
 const amount = ref(undefined);
 const setMaxAmount = () => {
-  amount.value = available.value;
+  amount.value = selectedPool.value === "1" ? globalStore.balanceInfo.KAIA.balance : globalStore.balanceInfo.USDT.balance;
 };
-
+const switchTab = (type) => {
+  if (type === "1") {
+    // 切换到KAIA Pool
+    available.value = globalStore.balanceInfo.KAIA.balance;
+  } else if (type === "2") {
+    available.value = globalStore.balanceInfo.USDT.balance;
+  }
+  selectedPool.value = type;
+};
 const showWithdraw = ref(false);
 const withdrawInfo = ref({
   type: "USD",
@@ -135,12 +184,47 @@ const showDepositDialog = () => {
 const confirmWithdraw = () => {
   console.log("confirmWithdraw");
   showWithdraw.value = false;
+  amount.value = 0;
 };
-const confirmDeposit = () => {
-  console.log("confirmDeposit");
+const confirmDeposit = async () => {
+  await approveAndDepositWithDapp(amount.value.toString());
   showDeposit.value = false;
+  amount.value = 0;
 };
-
+const inviteLink = ref("");
+// 生成邀请链接
+const generateInviteLink = () => {
+  liff.permanentLink.createUrlBy("https://line.luckysavings.io/home?inviteCode=" + globalStore.userInfo.promoteCode).then((permanentLink) => {
+    console.log("permanentLink:", permanentLink);
+    inviteLink.value = permanentLink;
+    liff
+      .shareTargetPicker(
+        [
+          {
+            type: "text",
+            text: inviteLink.value,
+          },
+        ],
+        {
+          isMultiple: true,
+        }
+      )
+      .then(function (res) {
+        if (res) {
+          // succeeded in sending a message through TargetPicker
+          console.log(`[${res.status}] Message sent!`);
+        } else {
+          // sending message canceled
+          console.log("TargetPicker was closed!");
+        }
+      })
+      .catch(function (error) {
+        // something went wrong before sending a message
+        console.log("something wrong happen");
+      });
+  });
+  return;
+};
 const showReminderMsg = ref(false);
 </script>
 
@@ -166,6 +250,7 @@ const showReminderMsg = ref(false);
         <svg-icon
           className="img-header-right"
           name="icon-upload"
+          @click="generateInviteLink"
         />
       </div>
     </div>
@@ -174,14 +259,14 @@ const showReminderMsg = ref(false);
       <div
         class="token-btn"
         :class="{ daily: selectedPool === '1' }"
-        @click="selectedPool = '1'"
+        @click="switchTab('1')"
       >
         {{ $t("pool.KAIAPool") }}
       </div>
       <div
         class="token-btn"
         :class="{ USDPool: selectedPool === '2' }"
-        @click="selectedPool = '2'"
+        @click="switchTab('2')"
       >
         {{ $t("pool.USDPool") }}
       </div>
@@ -211,7 +296,7 @@ const showReminderMsg = ref(false);
             name="icon-gift-r"
           />
           <van-count-down
-            :time="time"
+            :time="selectedPool === '2' ? prizePoolInfo.nextUsdtDrawOpenIn : prizePoolInfo.nextKaiaDrawOpenIn"
             format="HH:mm:ss"
           >
             <template #default="timeData">
@@ -226,7 +311,7 @@ const showReminderMsg = ref(false);
           </van-count-down>
         </div>
         <Progress
-          :percentage="75"
+          :percentage="prizePoolInfo.progress"
           :bg-color="selectedPool === '2' ? '#06C756' : '#FEE719'"
         />
         <div class="text-grey">{{ $t("pool.CurrentPrizePool") }}</div>
@@ -240,7 +325,7 @@ const showReminderMsg = ref(false);
             name="icon-kaia"
           />
           <span v-show="selectedPool === '2'">$</span>
-          <span>123,876,323</span>
+          <span>{{ selectedPool === "2" ? prizePoolInfo.totalUsdtPrizePool : prizePoolInfo.totalKaiaPrizePool }}</span>
         </div>
         <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
         <div class="ticket-box">
@@ -254,7 +339,7 @@ const showReminderMsg = ref(false);
             class="img-tickets"
             name="img-tickets"
           />
-          <div class="ticket-num">x100</div>
+          <div class="ticket-num">{{ selectedPool === "1" ? prizePoolInfo.kaiaTicket : prizePoolInfo.usdtTicket }}</div>
         </div>
         <van-divider class="divider" />
         <div
@@ -271,7 +356,7 @@ const showReminderMsg = ref(false);
           <van-icon name="arrow" />
         </div>
         <div
-          v-show="selectedPool === '1'"
+          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket > 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket > 0)"
           class="btn-wrap margin-top-16"
         >
           <button
@@ -288,9 +373,9 @@ const showReminderMsg = ref(false);
           </button>
         </div>
         <button
-          v-show="selectedPool === '2'"
+          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket == 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket == 0)"
           class="btn-main margin-top-16"
-          @click="router.push('/pool')"
+          @click="showDepositDialog"
         >
           {{ $t("home.JoinNow") }}
         </button>
@@ -335,7 +420,7 @@ const showReminderMsg = ref(false);
             name="icon-kaia"
           />
           <span v-show="selectedPool === '2'">$</span>
-          <span>6,323</span>
+          <span>{{ selectedPool === "2" ? prizePoolInfo.usdtJackpot : prizePoolInfo.kaiaJackpot }}</span>
           <span class="text-num-sub">/ $10,000</span>
         </div>
         <Progress
@@ -355,7 +440,7 @@ const showReminderMsg = ref(false);
             class="img-tickets"
             name="img-tickets"
           />
-          <div class="ticket-num">x100</div>
+          <div class="ticket-num">{{ selectedPool === "1" ? prizePoolInfo.kaiaTicket : prizePoolInfo.usdtTicket }}</div>
         </div>
         <van-divider class="divider" />
         <div
@@ -373,7 +458,7 @@ const showReminderMsg = ref(false);
         </div>
 
         <div
-          v-show="selectedPool === '1'"
+          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket > 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket > 0)"
           class="btn-wrap margin-top-16"
         >
           <button
@@ -390,9 +475,9 @@ const showReminderMsg = ref(false);
           </button>
         </div>
         <button
-          v-show="selectedPool === '2'"
+          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket == 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket == 0)"
           class="btn-main margin-top-16"
-          @click="router.push('/pool')"
+          @click="showDepositDialog"
         >
           {{ $t("home.JoinNow") }}
         </button>
@@ -415,13 +500,16 @@ const showReminderMsg = ref(false);
             name="icon-ustd"
           />
 
-          <span>{{ $t("pool.USDDeposit") }}</span>
+          <span>{{ selectedPool === "1" ? $t("pool.KAIADeposit") : $t("pool.USDDeposit") }}</span>
         </div>
         <van-icon
           name="cross"
           size="20"
           color="#A1A1AA"
-          @click="showDeposit = false"
+          @click="
+            showDeposit = false;
+            amount = 0;
+          "
         />
       </div>
 
@@ -431,7 +519,7 @@ const showReminderMsg = ref(false);
             <div class="label">{{ $t("pool.Amount") }}</div>
             <div class="available">
               <span>{{ $t("pool.Available") }}</span>
-              <span class="item-value">{{ available }}</span>
+              <span class="item-value">{{ selectedPool === "1" ? globalStore.balanceInfo.KAIA.balance : globalStore.balanceInfo.USDT.balance }}</span>
             </div>
           </div>
           <van-field

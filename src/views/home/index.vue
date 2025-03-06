@@ -94,7 +94,7 @@ const copyAddress = (txt) => {
 
 const prizePoolInfo = computed(() => {
   const info = globalStore.balanceInfo;
-  const total = info.USDT.balance * globalStore.usdtValue + info.KAIA.balance * globalStore.kaiaValue || 0;
+  const total = info.USDT.allAmount * globalStore.usdtValue + info.KAIA.allAmount * globalStore.kaiaValue || 0;
   const totalPrizePool = total.toFixed(2);
   const nextDrawOpenIn = calculateTimeDifference(1);
   const day = 24 * 60 * 60 * 1000;

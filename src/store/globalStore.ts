@@ -54,6 +54,7 @@ export const useGlobalStore = defineStore("global", {
   getters: {
     isLoggedIn: (state) => !!state.token, // 判断用户是否已登录
     hasWallet: (state) => !!state.walletAddress, // 判断是否有钱包地址
+    totalPrizePool: (state) => (state.prizePoolInfo.USDT.allAmount * state.usdtValue || 0 + state.prizePoolInfo.KAIA.allAmount * state.kaiaValue || 0), // 计算总奖池金额
   },
 
   // 方法（actions）
@@ -105,10 +106,10 @@ export const useGlobalStore = defineStore("global", {
       this.balanceInfo.KAIA = Object.assign({}, this.balanceInfo.KAIA, balanceInfo);
     },
     setUSDTPrizePoolInfo(prizePoolInfo: any) {
-      this.prizePoolInfo.USDT = Object.assign({}, this.prizePoolInfo.USDT, prizePoolInfo.USDT);
+      this.prizePoolInfo.USDT = Object.assign({}, this.prizePoolInfo.USDT, prizePoolInfo);
     },
     setKaiaPrizePoolInfo(prizePoolInfo: any) {
-      this.prizePoolInfo.KAIA = Object.assign({}, this.prizePoolInfo.KAIA, prizePoolInfo.KAIA);
+      this.prizePoolInfo.KAIA = Object.assign({}, this.prizePoolInfo.KAIA, prizePoolInfo);
     },
     setUsdtValue(value: number) {
       this.usdtValue = value;
