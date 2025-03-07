@@ -604,7 +604,9 @@ const showReminderMsg = ref(false);
         <div class="content-item dialog-content-item">
           <div class="item-top">{{ $t("pool.YourCurrentSavings") }}</div>
           <div class="item-bottom">
-            <span>{{ withdrawInfo.savings }} {{ withdrawInfo.type }}</span>
+            <span
+              >{{ selectedPool === "1" ? globalStore.balanceInfo.KAIA.savings : globalStore.balanceInfo.USDT.savings }} {{ withdrawInfo.type }}</span
+            >
           </div>
         </div>
         <div class="content-item fee-info">

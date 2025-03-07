@@ -95,3 +95,11 @@ export const getPoolList = (params) => {
     params,
   });
 };
+
+// 获取kaia价格
+export const getKaiaPrice = () => {
+  return http.request({
+    url: "/pool/getKaiaPrice",
+    method: "get",
+  });
+};

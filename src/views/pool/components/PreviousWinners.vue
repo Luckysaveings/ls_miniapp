@@ -44,7 +44,7 @@
         <div
           v-for="(tier, tierNum) in currentData"
           :key="tierNum"
-          :style="{ display: tier.length === 0? 'none' : 'block' }"
+          :style="{ display: tier.length === 0 ? 'none' : 'block' }"
           class="content-item"
         >
           <div class="content-item-title">
@@ -121,6 +121,7 @@ const processWinnerList = (list, type) => {
   data.value[type].push(tempTier1);
   data.value[type].push(tempTier2);
   data.value[type].push(tempTier3);
+  currentData.value = data.value[type];
 };
 /*
  * 显示弹窗
@@ -135,7 +136,7 @@ const showDialog = (type) => {
 };
 const changeType = (type) => {
   selectedType.value = type;
-  currentData.value = data.value[type];
+  // currentData.value = data.value[type];
   getWinnerList(type === "kaia" ? 1 : 2);
 };
 
