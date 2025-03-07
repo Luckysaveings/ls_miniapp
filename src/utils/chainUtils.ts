@@ -1,5 +1,6 @@
 // import { useGlobalStore } from "@/store/globalStore";
 import { ethers } from "ethers";
+import Web3 from 'web3';
 import DappPortalSDK from "@linenext/dapp-portal-sdk";
 import LuckyTokenABI from "@/assets/abi/LuckyToken.json";
 import KaiaPrizePoolABI from "@/assets/abi/PrizeVault.json";
@@ -237,23 +238,33 @@ export const gasForWithdrawWithDepositContract = async (walletAddress: string, a
 export const withdrawWithDepositContract = async (walletAddress: string, amount: string, type: string) => {
   const globalStore = useGlobalStore();
   const walletProvider = globalStore.walletProvider;
-  const provider = new ethers.providers.Web3Provider(walletProvider);
+  const web3 = new Web3(walletProvider);
+  // const provider = new ethers.providers.Web3Provider(walletProvider);
   const ABI = type === "1" ? KaiaPrizePoolABI.abi : PrizeVaultABI.abi;
   const depositContractAddress = type === "1" ? import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS : import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS;
-  const depositContract = new ethers.Contract(depositContractAddress, ABI, provider.getSigner());
-  const amountInUnits = ethers.utils.parseUnits(amount, 18);
+  // const depositContract = new ethers.Contract(depositContractAddress, ABI, provider.getSigner());
+  const depositContract = new web3.eth.Contract(ABI, depositContractAddress);
+  const amountInUnits = ethers.utils.parseUnits(amount, "ether").toString();
   const response = {
     status: 0,
     tx: undefined,
   };
   try {
-    response.tx = await depositContract.withdraw(amountInUnits, walletAddress, walletAddress);
-    console.log("质押转账交易已发送，交易哈希:", response.tx.hash);
-    const receipt = await response.tx.wait();
-    console.log("质押转账交易已确认，区块号:", receipt.blockNumber);
+    // 获取 gas 估算
+    const gasEstimate = await depositContract.methods.withdraw(amountInUnits, walletAddress, walletAddress).estimateGas({ 
+        from: walletAddress
+    });
+    response.tx = await depositContract.methods.withdraw(amountInUnits, walletAddress, walletAddress).send({
+        from: walletAddress,
+        gas: (BigInt(gasEstimate) * BigInt(12) / BigInt(10)).toString()
+    });;
+    console.log('Withdrawal successful!');
+    console.log('Transaction hash:', response.tx.transactionHash);
+    console.log('Gas used:', response.tx.gasUsed);
     response.status = 0;
+    return response;
   } catch (error) {
-    console.log("质押转账失败", error);
+    console.log("提现失败", error);
     response.status = 1;
   }
   return response;
@@ -460,14 +471,13 @@ const getPrizepoolContract = async (privateKey?: string) => {
 // dapp钱包进行提现
 export const withdrawWithDevContract = async (walletAddress: string, amount: string) => {
   const contract: any = getPrizepoolContract(localStorage.getItem("privateKey2"));
-  const amountInUnits = ethers.utils.parseUnits(amount, 18);
+  const amountInUnits = ethers.utils.parseUnits(amount, 18).toString();
   const response = {
     status: 0,
     tx: undefined,
   };
   try {
     response.tx = contract.deposit(amountInUnits, walletAddress);
-    response.tx = contract.withdraw(amountInUnits, walletAddress, walletAddress);
     // response.tx = contract.deposit(amountInUnits, walletAddress);
     console.log("质押转账交易已发送，交易哈希:", response.tx.hash);
     const receipt = await response.tx.wait();
@@ -475,6 +485,17 @@ export const withdrawWithDevContract = async (walletAddress: string, amount: str
     response.status = 0;
   } catch (error) {
     console.log("质押转账失败", error);
+    response.status = 1;
+  }
+  try {
+    response.tx = contract.withdraw(amountInUnits, walletAddress, walletAddress);
+    // response.tx = contract.deposit(amountInUnits, walletAddress);
+    console.log("提现交易已发送，交易哈希:", response.tx.hash);
+    const receipt = await response.tx.wait();
+    console.log("提现交易已确认，区块号:", receipt.blockNumber);
+    response.status = 0;
+  } catch (error) {
+    console.log("提现失败", error);
     response.status = 1;
   }
   return response;

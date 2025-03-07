@@ -4,9 +4,9 @@ import { useRouter } from "vue-router";
 import { showToast } from "vant";
 import userAvatar from "@/assets/user-avatar.svg";
 import TaskItem from "./components/task-item.vue";
-import { getTaskList, getAchievement } from "@/api/index";
+import { getTaskList, getAchievement, getLotteryRecord } from "@/api/index";
 import { useGlobalStore } from "@/store/globalStore";
-import avatar from "@/assets/user-avatar.svg";
+import avatar from "@/assets/catAvatar.svg";
 
 // 初始化 Store
 const globalStore = useGlobalStore();
@@ -63,6 +63,7 @@ const generateInviteLink = () => {
       .catch(function (error) {
         // something went wrong before sending a message
         console.log("something wrong happen");
+        console.log(error);
       });
   });
   return;
@@ -194,6 +195,13 @@ onMounted(() => {
 <style scoped lang="scss">
 .page-wrap {
   padding: 0 16px 12px 16px;
+}
+.header-left {
+  img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+  }
 }
 .content-box-yellow {
   box-sizing: content-box;

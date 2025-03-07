@@ -7,8 +7,8 @@ import Progress from "@/components/Progress.vue";
 import { ethers } from "ethers";
 import DappPortalSDK from "@linenext/dapp-portal-sdk";
 import { useGlobalStore } from "@/store/globalStore";
-import { getPoolList } from "@/api/index";
-import avatar from "@/assets/user-avatar.svg";
+import { getPoolList, getLotteryRecord } from "@/api/index";
+import avatar from "@/assets/catAvatar.svg";
 import {
   getBalanceWithDapp,
   getTokenBalanceWithDapp,
@@ -151,8 +151,8 @@ const approveAndDepositWithDapp = async (amount: string) => {
 };
 // 使用dapp sdk进行奖池存款提现, selectedPool为1: KAIA Pool 2: USD Pool
 const withdrawWithDapp = async (amount: string) => {
-  // await withdrawWithDepositContract(globalStore.address, amount, "2");
-  await withdrawWithDevContract(globalStore.address, amount);
+  await withdrawWithDepositContract(globalStore.address, amount, "2");
+  // await withdrawWithDevContract(globalStore.address, amount);
 };
 const showDeposit = ref(false);
 
@@ -187,7 +187,7 @@ const showDepositDialog = () => {
 };
 const confirmWithdraw = async () => {
   console.log("confirmWithdraw");
-  await getDpositAmount(localStorage.getItem("address2"), "USDT");
+  // await getDpositAmount(localStorage.getItem("address2"), "USDT");
   await withdrawWithDapp("10");
   showWithdraw.value = false;
   amount.value = 0;
@@ -226,6 +226,7 @@ const generateInviteLink = () => {
       })
       .catch(function (error) {
         // something went wrong before sending a message
+        console.log(error);
         console.log("something wrong happen");
       });
   });
@@ -492,7 +493,10 @@ const showReminderMsg = ref(false);
   </div>
   <!-- 弹窗 Daily Pool和10K Jackpot Gameplay -->
   <GamePlayDialog ref="gamePlayDialogRef" />
-  <PreviousDialog ref="previousDialogRef" />
+  <PreviousDialog
+    ref="previousDialogRef"
+    :list="previousWinnerList"
+  />
   <!-- 弹窗 USD Deposit -->
   <van-overlay
     :show="showDeposit"
@@ -660,6 +664,13 @@ const showReminderMsg = ref(false);
 <style scoped lang="scss">
 .page-wrap {
   padding: 0 16px 12px 16px;
+}
+.header-left {
+  img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+  }
 }
 
 .content-box.token-select {

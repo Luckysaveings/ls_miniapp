@@ -35,7 +35,7 @@
         title-class="title-class"
         value-class="value-class"
         title="Nickname"
-        value="Arthorn"
+        :value="globalStore.userInfo.nickname"
         is-link
       >
         <template #title>
@@ -44,11 +44,11 @@
               className="title-icon"
               name="profile-nickname"
             />
-            <span>{{ globalStore.userInfo.nickname }}</span>
+            <span>Nickname</span>
           </div>
         </template>
       </van-cell>
-      <van-cell
+      <!-- <van-cell
         class="cell-class-custom"
         :border="false"
         title-class="title-class"
@@ -72,7 +72,7 @@
             @click="copyUserId"
           />
         </template>
-      </van-cell>
+      </van-cell> -->
       <van-cell
         class="cell-class-custom"
         :border="false"
@@ -257,7 +257,7 @@
 import { useRouter } from "vue-router";
 import { useGlobalStore } from "@/store/globalStore";
 import { formatWalletAddress } from "@/utils/chainUtils";
-import avatar from "@/assets/user-avatar.svg";
+import avatar from "@/assets/catAvatar.svg";
 
 // 初始化 Store
 const globalStore = useGlobalStore();

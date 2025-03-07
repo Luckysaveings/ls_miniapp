@@ -42,7 +42,7 @@
         @click="taskClick(item)"
       />
       <div
-        v-else-if="item.status === 1 && item.isCheck === 1"
+        v-else-if="item.status === 1 && item.isCheck === 0"
         class="task-status-text"
         @click="taskClick(item)"
       >
@@ -54,7 +54,7 @@
         name="icon-refresh"
       /> -->
       <div
-        v-else-if="item.status === 1 && item.isCheck === 0"
+        v-else-if="item.status === 1 && item.isCheck === 1"
         class="refresh"
         @click="taskClick(item)"
       >
@@ -93,9 +93,10 @@ const taskClick = (task: any) => {
   if (task.status === 1) {
     checkTask(task.taskId).then((res) => {
       if (task.isCheck === 0) {
-        task.status === 2;
+        task.status = 2;
       } else {
         console.log(res);
+        task.status = res.data.status;
       }
     });
   } else if (task.status === 2) {

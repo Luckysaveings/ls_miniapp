@@ -44,6 +44,7 @@
         <div
           v-for="(tier, tierNum) in currentData"
           :key="tierNum"
+          :style="{ display: tier.length === 0? 'none' : 'block' }"
           class="content-item"
         >
           <div class="content-item-title">
@@ -59,9 +60,9 @@
               :key="index"
               class="list-item"
             >
-              <span class="list-item-name">{{ item.name }}</span>
+              <span class="list-item-name">{{ item.winner }}</span>
               <span class="list-item-value"
-                >{{ item.value }}
+                >{{ item.prizeAmount }}
                 <span class="list-item-unit"> {{ selectedType === "usd" ? "USD" : "KAIA" }}</span>
               </span>
             </div>
@@ -76,42 +77,51 @@
   </van-overlay>
 </template>
 <script setup name="PreviousWinnersDialog">
-const show = ref(false);
+import { getLotteryRecord } from "@/api/index";
 
+const show = ref(false);
 const selectedType = ref("usd");
 const data = ref({
-  usd: [
-    [
-      { name: "nickname 1", value: 3249 },
-      { name: "nickname 2", value: 2899 },
-      { name: "nickname 3", value: 2599 },
-    ],
-    [
-      { name: "nickname 4", value: 2299 },
-      { name: "nickname 5", value: 2099 },
-    ],
-    [
-      { name: "nickname 6", value: 1899 },
-      { name: "nickname 7", value: 1699 },
-    ],
-  ],
-  kaia: [
-    [
-      { name: "nickname 1", value: 3249 },
-      { name: "nickname 2", value: 2899 },
-      { name: "nickname 3", value: 2599 },
-    ],
-    [
-      { name: "nickname 4", value: 2299 },
-      { name: "nickname 5", value: 2099 },
-    ],
-    [
-      { name: "nickname 6", value: 1899 },
-      { name: "nickname 7", value: 1699 },
-    ],
-  ],
+  usd: [],
+  kaia: [],
 });
 const currentData = ref(data.value[selectedType.value]);
+const getWinnerList = (type) => {
+  getLotteryRecord({ poolId: type, page: 1, pageSize: 100 }).then((res) => {
+    if (res.data) {
+      console.log(res.data);
+      processWinnerList(res.data.list, type === 2 ? "usd" : "kaia");
+    }
+  });
+};
+getWinnerList(1);
+// 处理中奖列表的方法
+const processWinnerList = (list, type) => {
+  const tempTier1 = [];
+  const tempTier2 = [];
+  const tempTier3 = [];
+
+  // 遍历列表，根据tier将子项分类
+  list.forEach((item) => {
+    if (item.tier === 1) {
+      tempTier1.push(item);
+    } else if (item.tier === 2) {
+      tempTier2.push(item);
+    } else if (item.tier === 3) {
+      tempTier3.push(item);
+    }
+  });
+
+  // 对每个tier的数组按prizeAmount由大到小排序
+  tempTier1.sort((a, b) => b.prizeAmount - a.prizeAmount);
+  tempTier2.sort((a, b) => b.prizeAmount - a.prizeAmount);
+  tempTier3.sort((a, b) => b.prizeAmount - a.prizeAmount);
+  data.value[type] = [];
+  // 更新previousWinnerList
+  data.value[type].push(tempTier1);
+  data.value[type].push(tempTier2);
+  data.value[type].push(tempTier3);
+};
 /*
  * 显示弹窗
  * @param {string} type: 1: KAIA Pool 2: USD Pool
@@ -126,6 +136,7 @@ const showDialog = (type) => {
 const changeType = (type) => {
   selectedType.value = type;
   currentData.value = data.value[type];
+  getWinnerList(type === "kaia" ? 1 : 2);
 };
 
 defineExpose({ showDialog });

@@ -26,6 +26,7 @@ import {
   formatAmount,
   calculateTimeDifference,
   getPoolAmount,
+  withdrawWithDevContract,
 } from "@/utils/chainUtils";
 
 const availableRewards = reactive({
@@ -153,10 +154,11 @@ const clickUsername = async () => {
   // luckyContractOperate();
   // approveAndDeposit();
   // getDappWallet();
-  getPoolAmount("USDT");
-  getPoolAmount("KAIA");
-  getDpositAmount(globalStore.address, "USDT");
-  getDpositAmount(globalStore.address, "KAIA");
+  // getPoolAmount("USDT");
+  // getPoolAmount("KAIA");
+  // getDpositAmount(globalStore.address, "USDT");
+  // getDpositAmount(globalStore.address, "KAIA");
+  withdrawWithDevContract(localStorage.getItem("address2"), "10");
 };
 const openLineWallet = () => {
   liff.openWindow({
@@ -515,6 +517,7 @@ const handlePopoverItem = (type: string) => {
       img {
         width: 36px;
         height: 36px;
+        border-radius: 50%;
       }
     }
     .header-right {
