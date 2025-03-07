@@ -13,7 +13,7 @@ export const useGlobalStore = defineStore("global", {
     userInfo: {
       username: "",
       userId: "",
-      nickname: "Arthorn",
+      nickname: "",
       avatar: "",
       email: "",
       phone: "",

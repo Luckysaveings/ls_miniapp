@@ -165,8 +165,10 @@ const switchTab = (type) => {
   if (type === "1") {
     // 切换到KAIA Pool
     available.value = globalStore.balanceInfo.KAIA.balance;
+    withdrawInfo.value.type = "KAIA";
   } else if (type === "2") {
     available.value = globalStore.balanceInfo.USDT.balance;
+    withdrawInfo.value.type = "USDT";
   }
   selectedPool.value = type;
 };

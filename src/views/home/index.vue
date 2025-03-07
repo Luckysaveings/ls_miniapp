@@ -9,7 +9,7 @@ import { useRouter } from "vue-router";
 import { useClickAway } from "@vant/use";
 import { useGlobalStore } from "@/store/globalStore";
 import { getTaskList, login } from "@/api/index";
-import avatar from "@/assets/user-avatar.svg";
+import avatar from "@/assets/catAvatar.svg";
 import {
   createKaiaWallet,
   getBalance,
@@ -94,7 +94,7 @@ const copyAddress = (txt) => {
 
 const prizePoolInfo = computed(() => {
   const info = globalStore.balanceInfo;
-  const total = info.USDT.balance * globalStore.usdtValue + info.KAIA.balance * globalStore.kaiaValue || 0;
+  const total = info.USDT.allAmount * globalStore.usdtValue + info.KAIA.allAmount * globalStore.kaiaValue || 0;
   const totalPrizePool = total.toFixed(2);
   const nextDrawOpenIn = calculateTimeDifference(1);
   const day = 24 * 60 * 60 * 1000;
@@ -511,6 +511,12 @@ const handlePopoverItem = (type: string) => {
   font-size: 14px;
 
   .header {
+    .header-left {
+      img {
+        width: 36px;
+        height: 36px;
+      }
+    }
     .header-right {
       padding: 0px 12px;
       border-radius: 10px;
