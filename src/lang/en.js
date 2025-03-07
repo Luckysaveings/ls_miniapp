@@ -64,6 +64,7 @@ export default {
     LuckySavingsGoesToV1Point1: "‍LuckySavings goes to V1.1!",
     urlTip: "blablablabalblabalbalba, read more: http://blababalbala",
     TheAmountExceedsTheAvailableBalance: "The amount exceeds the available balance",
+    Withdraw: "Withdraw",
   },
   ranking: {
     Ranking: "Ranking",

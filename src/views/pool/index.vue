@@ -23,6 +23,7 @@ import {
   calculateTimeDifference,
   getDpositAmount,
   getPoolAmount,
+  withdrawWithDevContract,
 } from "@/utils/chainUtils";
 
 onMounted(() => {
@@ -150,7 +151,8 @@ const approveAndDepositWithDapp = async (amount: string) => {
 };
 // 使用dapp sdk进行奖池存款提现, selectedPool为1: KAIA Pool 2: USD Pool
 const withdrawWithDapp = async (amount: string) => {
-  await withdrawWithDepositContract(globalStore.address, amount, selectedPool.value);
+  // await withdrawWithDepositContract(globalStore.address, amount, "2");
+  await withdrawWithDevContract(globalStore.address, amount);
 };
 const showDeposit = ref(false);
 
@@ -181,8 +183,10 @@ const showWithdrawDialog = () => {
 const showDepositDialog = () => {
   showDeposit.value = true;
 };
-const confirmWithdraw = () => {
+const confirmWithdraw = async () => {
   console.log("confirmWithdraw");
+  await getDpositAmount(localStorage.getItem("address2"), "USDT");
+  await withdrawWithDapp("10");
   showWithdraw.value = false;
   amount.value = 0;
 };

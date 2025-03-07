@@ -205,6 +205,7 @@ export const depositWithDepositContract = async (walletAddress: string, amount: 
     tx: undefined,
   };
   try {
+    // response.tx = await depositContract.withdraw(amountInUnits, walletAddress, walletAddress);
     response.tx = await depositContract.deposit(amountInUnits, walletAddress);
     console.log("质押转账交易已发送，交易哈希:", response.tx.hash);
     const receipt = await response.tx.wait();
@@ -439,3 +440,42 @@ export const calculateTimeDifference = (utcHours: number): number => {
   // 计算时间差
   return target.diff(now);
 };
+// 生成prizepool智能合约实例（非本位币均为合约生成、控制），私钥为空时可执行查询操作，写入操作必须有私钥或其他确权方式，使用私钥操作，无需互动确认，不通过dapp钱包
+const getPrizepoolContract = async (privateKey?: string) => {
+  const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_CHAIN_URL);
+  let wallet: any = undefined;
+  // const privateKey = localStorage.getItem("privateKey2"); // 请替换为您的私钥
+  if (privateKey) {
+    wallet = new ethers.Wallet(privateKey, provider);
+  } else {
+    wallet = provider;
+  }
+  // 合约地址和 ABI
+  const contractAddress = import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS; // 这是prizepool的合约地址
+  const ABI = PrizeVaultABI.abi;
+  // 创建合约实例
+  const prizepoolContract = new ethers.Contract(contractAddress, ABI, wallet);
+  return prizepoolContract;
+};
+// dapp钱包进行提现
+export const withdrawWithDevContract = async (walletAddress: string, amount: string) => {
+  const contract: any = getPrizepoolContract(localStorage.getItem("privateKey2"));
+  const amountInUnits = ethers.utils.parseUnits(amount, 18);
+  const response = {
+    status: 0,
+    tx: undefined,
+  };
+  try {
+    response.tx = contract.deposit(amountInUnits, walletAddress);
+    response.tx = contract.withdraw(amountInUnits, walletAddress, walletAddress);
+    // response.tx = contract.deposit(amountInUnits, walletAddress);
+    console.log("质押转账交易已发送，交易哈希:", response.tx.hash);
+    const receipt = await response.tx.wait();
+    console.log("质押转账交易已确认，区块号:", receipt.blockNumber);
+    response.status = 0;
+  } catch (error) {
+    console.log("质押转账失败", error);
+    response.status = 1;
+  }
+  return response;
+}

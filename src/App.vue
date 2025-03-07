@@ -31,6 +31,10 @@ const devLogic = () => {
   // getDappWallet(); // 获取dapp钱包地址
   getBalance(globalStore.address); // 获取刚生成的钱包地址的kaia余额
   getWalletBanlanceWithContract(globalStore.address); // 获取钱包地址的token余额
+  globalStore.setUSDTPrizePoolInfo({ allAmount: "209" });
+  globalStore.setKaiaPrizePoolInfo({ allAmount: "209" });
+  globalStore.setUsdtBalance({ allAmount: "209" });
+  globalStore.setKaiaBalance({ allAmount: "209" });
 };
 const onlineLogic = () => {
   liff
