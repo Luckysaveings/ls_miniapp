@@ -70,6 +70,7 @@ class Http {
           // 处理请求错误
           // showFailToast(message);
           const router = useRouter();
+          if (!router) return;
           router.push({
             name: "error",
             query: {
@@ -126,6 +127,7 @@ class Http {
         }
 
         showFailToast(message);
+        if (!router) return;
         // 跳转到错误页面
         router.push({
           name: "error",

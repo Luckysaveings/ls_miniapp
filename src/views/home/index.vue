@@ -1,10 +1,6 @@
 <script setup lang="ts" name="Home">
 import CustomToast from "@/components/CustomToast.vue";
 import liff from "@line/liff";
-import DappPortalSDK from "@linenext/dapp-portal-sdk";
-import { ethers } from "ethers";
-// import { WalletType, PaymentProvider } from "@linenext/dapp-portal-sdk";
-// import { Web3Provider as w3 } from "@kaiachain/ethers-ext/v6";
 import { useRouter } from "vue-router";
 import { useClickAway } from "@vant/use";
 import { useGlobalStore } from "@/store/globalStore";
@@ -12,21 +8,19 @@ import { getTaskList, login } from "@/api/index";
 import avatar from "@/assets/catAvatar.svg";
 import {
   createKaiaWallet,
-  getBalance,
+  getKaiaBalance,
   transferInKaia,
-  getWalletBanlanceWithContract,
-  getDappWallet,
-  transferWithContract,
-  getBalanceWithDapp,
-  getTokenBalanceWithDapp,
   approveTokenForDeposit,
-  depositWithDepositContract,
-  getDpositAmount,
   formatWalletAddress,
   formatAmount,
   calculateTimeDifference,
+  getDpositAmount,
   getPoolAmount,
-  withdrawWithDevContract,
+  getTokenBalance,
+  gasForApproveTokenForDeposit,
+  gasForDepositWithDepositContract,
+  depositWithDepositContract,
+  withdrawWithDepositContract,
 } from "@/utils/chainUtils";
 
 const availableRewards = reactive({
@@ -114,51 +108,51 @@ const formatTime = (value) => {
 };
 const kaiaChainOperate = async () => {
   // createKaiaWallet(); // 创建一个kaia测试链的钱包，提示词，钱包地址和私钥均存储在localStorage缓存中
-  getBalance(localStorage.getItem("address")); // 获取刚生成的钱包地址的kaia余额
-  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
+  getKaiaBalance(localStorage.getItem("address")); // 获取刚生成的钱包地址的kaia余额
+  getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
   // 在测试链上转账，第一个参数是私钥（一个有余额的钱包）用来对交易签名，第二个参数是接收方地址，第三个参数是转账金额
-  await transferInKaia("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", localStorage.getItem("address"), "100");
+  // await transferInKaia("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", localStorage.getItem("address"), "100");
   // await transferInKaia(localStorage.getItem("privateKey"), "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
-  getBalance(localStorage.getItem("address"));
-  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
-  return;
-};
-const luckyContractOperate = async () => {
-  // createKaiaWallet(); // 创建一个kaia测试链的钱包，提示词，钱包地址和私钥均存储在localStorage缓存中
-  getWalletBanlanceWithContract(localStorage.getItem("address")); // 获取钱包地址的kaia余额
-  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的token余额
-  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
-  // 在测试链上转账，第一个参数是私钥用来对交易签名，第二个参数是接收方地址，第三个参数是转账金额
-  await transferWithContract("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", localStorage.getItem("address"), "10000");
-  // await transferInKaia(localStorage.getItem("privateKey"), "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
-  getWalletBanlanceWithContract(localStorage.getItem("address"));
-  getWalletBanlanceWithContract("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
-  getBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
+  getKaiaBalance(localStorage.getItem("address"));
+  getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
   return;
 };
 // 使用dapp sdk进行授权以及质押
 const approveAndDepositWithDapp = async (amount: string) => {
   try {
-    getBalanceWithDapp(globalStore.address);
-    getTokenBalanceWithDapp(globalStore.address, import.meta.env.VITE_TOKEN_ADDRESS);
-    await approveTokenForDeposit(import.meta.env.VITE_TOKEN_ADDRESS, import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
+    getKaiaBalance(globalStore.address);
+    getTokenBalance(globalStore.address);
+    await approveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
     await depositWithDepositContract(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, globalStore.address, amount);
-    getBalanceWithDapp(globalStore.address);
-    getTokenBalanceWithDapp(globalStore.address, import.meta.env.VITE_TOKEN_ADDRESS);
+    getKaiaBalance(globalStore.address);
+    getTokenBalance(globalStore.address);
   } catch (error) {
     console.log(error);
   }
 };
 const clickUsername = async () => {
-  // kaiaChainOperate();
-  // luckyContractOperate();
-  // approveAndDeposit();
-  // getDappWallet();
-  // getPoolAmount("USDT");
-  // getPoolAmount("KAIA");
-  // getDpositAmount(globalStore.address, "USDT");
-  // getDpositAmount(globalStore.address, "KAIA");
-  withdrawWithDevContract(localStorage.getItem("address2"), "10");
+  await getDpositAmount(globalStore.address, "USDT");
+  await getDpositAmount(globalStore.address, "KAIA");
+  await getPoolAmount("USDT");
+  await getPoolAmount("KAIA");
+  await getKaiaBalance(globalStore.address);
+  await getTokenBalance(globalStore.address);
+  await gasForApproveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, "10");
+  await approveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, "10");
+  await gasForDepositWithDepositContract(globalStore.address, "10", "USDT");
+  await depositWithDepositContract(globalStore.address, "10", "USDT");
+  await getDpositAmount(globalStore.address, "USDT");
+  await withdrawWithDepositContract(globalStore.address, "10", "USDT");
+  await getDpositAmount(globalStore.address, "USDT");
+  await getDpositAmount(globalStore.address, "KAIA");
+  await getPoolAmount("USDT");
+  await getPoolAmount("KAIA");
+  await getKaiaBalance(globalStore.address);
+  await getTokenBalance(globalStore.address);
+};
+const clickBalance = async () => {
+  await getKaiaBalance(globalStore.address);
+  await getTokenBalance(globalStore.address);
 };
 const openLineWallet = () => {
   liff.openWindow({
@@ -215,7 +209,10 @@ const handlePopoverItem = (type: string) => {
     <div class="content">
       <div class="content-box-yellow">
         <div class="inner-color">
-          <div class="balance-title">
+          <div
+            class="balance-title"
+            @click="clickBalance"
+          >
             {{ $t("home.WalletBalance") }}
           </div>
           <div class="balance-content">

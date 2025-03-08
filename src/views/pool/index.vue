@@ -4,26 +4,21 @@ import { useRouter } from "vue-router";
 import GamePlayDialog from "./components/GameplayDialog.vue";
 import PreviousDialog from "./components/PreviousWinners.vue";
 import Progress from "@/components/Progress.vue";
-import { ethers } from "ethers";
-import DappPortalSDK from "@linenext/dapp-portal-sdk";
 import { useGlobalStore } from "@/store/globalStore";
 import { getPoolList, getLotteryRecord } from "@/api/index";
 import avatar from "@/assets/catAvatar.svg";
 import {
-  getBalanceWithDapp,
-  getTokenBalanceWithDapp,
-  gasForApproveKaiaForDeposit,
+  getKaiaBalance,
+  getTokenBalance,
   gasForApproveTokenForDeposit,
   gasForDepositWithDepositContract,
   gasForWithdrawWithDepositContract,
-  approveKaiaForDeposit,
   approveTokenForDeposit,
   depositWithDepositContract,
   withdrawWithDepositContract,
   calculateTimeDifference,
   getDpositAmount,
   getPoolAmount,
-  withdrawWithDevContract,
 } from "@/utils/chainUtils";
 
 onMounted(() => {
@@ -36,42 +31,6 @@ onMounted(() => {
 const globalStore = useGlobalStore();
 const router = useRouter();
 
-const poolInfos = {
-  kaia: {
-    daily: {
-      prizePool: 123876323,
-      tickets: 100,
-      address: "0x1234567890",
-      prizePoolABI: "",
-      projectId: "a",
-    },
-    jackpot: {
-      prizePool: 6323,
-      tickets: 100,
-      maxPrizePool: 10000,
-      address: "0x1234567890",
-      prizePoolABI: "",
-      projectId: "b",
-    },
-  },
-  usdt: {
-    daily: {
-      prizePool: 123876323,
-      tickets: 100,
-      address: "0x1234567890",
-      prizePoolABI: "",
-      projectId: "c",
-    },
-    jackpot: {
-      prizePool: 6323,
-      tickets: 100,
-      maxPrizePool: 10000,
-      address: "0x1234567890",
-      prizePoolABI: "",
-      projectId: "d",
-    },
-  },
-};
 const prizePoolInfo = computed(() => {
   const balanceInfo = globalStore.balanceInfo;
   const poolInfo = globalStore.prizePoolInfo;
@@ -121,25 +80,24 @@ const showPreviousWinner = () => {
   });
 };
 
-const time = ref(13600 * 1000);
 const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
 };
 // 使用dapp sdk进行授权以及质押, selectedPool为1: KAIA Pool 2: USD Pool
 const approveAndDepositWithDapp = async (amount: string) => {
   try {
-    getBalanceWithDapp(globalStore.address);
-    getTokenBalanceWithDapp(globalStore.address, import.meta.env.VITE_TOKEN_ADDRESS);
+    getKaiaBalance(globalStore.address);
+    getTokenBalance(globalStore.address);
     // if (selectedPool === "1") {
     //   await approveKaiaForDeposit(globalStore.address, import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS, amount);
     // } else {
-    //   await approveTokenForDeposit(import.meta.env.VITE_TOKEN_ADDRESS, import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
+    //   await approveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
     // }
     // await depositWithDepositContract(globalStore.address, amount, selectedPool);
-    await approveTokenForDeposit(import.meta.env.VITE_TOKEN_ADDRESS, import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
+    await approveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
     const response = await depositWithDepositContract(globalStore.address, amount, "2");
-    getBalanceWithDapp(globalStore.address);
-    getTokenBalanceWithDapp(globalStore.address, import.meta.env.VITE_TOKEN_ADDRESS);
+    getKaiaBalance(globalStore.address);
+    getTokenBalance(globalStore.address);
     getDpositAmount(globalStore.address, "USDT");
     getDpositAmount(globalStore.address, "KAIA");
     getPoolAmount("USDT");
@@ -152,7 +110,6 @@ const approveAndDepositWithDapp = async (amount: string) => {
 // 使用dapp sdk进行奖池存款提现, selectedPool为1: KAIA Pool 2: USD Pool
 const withdrawWithDapp = async (amount: string) => {
   await withdrawWithDepositContract(globalStore.address, amount, "2");
-  // await withdrawWithDevContract(globalStore.address, amount);
 };
 const showDeposit = ref(false);
 
@@ -346,7 +303,10 @@ const showReminderMsg = ref(false);
             class="img-tickets"
             name="img-tickets"
           />
-          <div class="ticket-num">{{ selectedPool === "1" ? prizePoolInfo.kaiaTicket : prizePoolInfo.usdtTicket }}</div>
+          <div class="ticket-num">
+            <span class="ticket-num-unit">x</span>
+            <span> {{ selectedPool === "1" ? prizePoolInfo.kaiaTicket : prizePoolInfo.usdtTicket }}</span>
+          </div>
         </div>
         <van-divider class="divider" />
         <div
@@ -447,7 +407,10 @@ const showReminderMsg = ref(false);
             class="img-tickets"
             name="img-tickets"
           />
-          <div class="ticket-num">{{ selectedPool === "1" ? prizePoolInfo.kaiaTicket : prizePoolInfo.usdtTicket }}</div>
+          <div class="ticket-num">
+            <span class="ticket-num-unit">x</span>
+            <span>{{ selectedPool === "1" ? prizePoolInfo.kaiaTicket : prizePoolInfo.usdtTicket }}</span>
+          </div>
         </div>
         <van-divider class="divider" />
         <div
@@ -493,10 +456,7 @@ const showReminderMsg = ref(false);
   </div>
   <!-- 弹窗 Daily Pool和10K Jackpot Gameplay -->
   <GamePlayDialog ref="gamePlayDialogRef" />
-  <PreviousDialog
-    ref="previousDialogRef"
-    :list="previousWinnerList"
-  />
+  <PreviousDialog ref="previousDialogRef" />
   <!-- 弹窗 USD Deposit -->
   <van-overlay
     :show="showDeposit"
@@ -844,8 +804,12 @@ const showReminderMsg = ref(false);
       }
       .ticket-num {
         font-size: 18px;
+        line-height: 22px;
         font-weight: 700;
         color: #00ba4d;
+        .ticket-num-unit {
+          margin-right: 2px;
+        }
       }
     }
 
