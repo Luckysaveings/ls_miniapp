@@ -410,8 +410,7 @@ export const createKaiaWallet = async () => {
   try {
     // 生成随机账户
     const account = web3.eth.accounts.create();
-    // 将私钥转换为校验格式
-    const privateKey = web3.utils.toChecksumAddress(account.privateKey);
+    const privateKey = account.privateKey;
     console.log("地址:", account.address);
     console.log("私钥:", privateKey);
     // 存储到本地
