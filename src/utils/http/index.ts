@@ -3,7 +3,7 @@ import { useRouter } from "vue-router"; // 添加这行导入
 
 import { ContentTypeEnum } from "@/enums/request-enum";
 import NProgress from "../progress";
-import { showFailToast, showLoadingToast, closeToast } from "vant";
+import { showToast, showFailToast, showLoadingToast, closeToast } from "vant";
 import "vant/es/toast/style";
 import { useGlobalStore } from "@/store/globalStore";
 // 默认 axios 实例请求配置
@@ -11,7 +11,7 @@ const configDefault = {
   headers: {
     "Content-Type": ContentTypeEnum.JSON,
   },
-  timeout: 0,
+  timeout: 10000,
   baseURL: import.meta.env.VITE_BASE_API,
   data: {},
 };
@@ -21,17 +21,25 @@ class Http {
   private static axiosInstance: AxiosInstance;
   // 请求配置
   private static axiosConfigDefault: AxiosRequestConfig;
-
+  // 请求计数器
+  // private static requestCount = 0;
   // 请求拦截
   private httpInterceptorsRequest(): void {
     Http.axiosInstance.interceptors.request.use(
       (config) => {
         NProgress.start();
-        showLoadingToast({
-          message: "",
-          forbidClick: true,
-          duration: 0,
-        });
+        // 如果是第一个请求，显示loading
+        // if (Http.requestCount < 1) {
+        //   NProgress.start();
+        //   showLoadingToast({
+        //     overlayClass: "http-loading-toast",
+        //     overlay: true,
+        //     message: "",
+        //     forbidClick: true,
+        //     duration: 0,
+        //   });
+        // }
+        // Http.requestCount++;
         const globalStore = useGlobalStore();
         // 发送请求前，可在此携带 token
         if (globalStore.token) {
@@ -45,8 +53,22 @@ class Http {
         return config;
       },
       (error: AxiosError) => {
-        closeToast();
-        showFailToast(error.message);
+        // 如果所有请求都结束了，关闭loading
+        // closeToast();
+        NProgress.done();
+        // if (Http.requestCount < 1) {
+        //   closeToast();
+        //   NProgress.done();
+        // }
+
+        showToast({
+          message: error.message,
+          overlay: true,
+          closeOnClick: true,
+          closeOnClickOverlay: true,
+          duration: 3000,
+          className: "custom-toast content-box",
+        });
         return Promise.reject(error);
       }
     );
@@ -56,86 +78,113 @@ class Http {
   private httpInterceptorsResponse(): void {
     Http.axiosInstance.interceptors.response.use(
       (response: AxiosResponse) => {
+        // Http.requestCount--;
+        // 如果所有请求都结束了，关闭loading
+        // if (Http.requestCount < 1) {
+        //   closeToast();
+        //   NProgress.done();
+        // }
         NProgress.done();
-        closeToast();
         // console.log("response interceptors.response", response);
         // 与后端协定的返回字段
-        const { code } = response.data;
+        const { code, msg } = response.data;
         // const { message } = response.data;
         // 判断请求是否成功
         const isSuccess = code === 0;
         if (isSuccess) {
           return response.data;
         } else {
+          let message = "Network Error, Please try again later.";
+          if (code === 7 && msg) {
+            message = msg;
+          }
           // 处理请求错误
-          // showFailToast(message);
-          const router = useRouter();
-          if (!router) return;
-          router.push({
-            name: "error",
-            query: {
-              code: code.toString(),
-            },
+          showToast({
+            message: message,
+            overlay: true,
+            closeOnClick: true,
+            closeOnClickOverlay: true,
+            duration: 3000,
+            className: "custom-toast content-box",
           });
-          return Promise.reject(response.data);
+          // const router = useRouter();
+          // if (!router) return;
+          // router.push({
+          //   name: "error",
+          //   query: {
+          //     code: code.toString(),
+          //   },
+          // });
+          return Promise.reject(response?.data);
         }
       },
       (error: AxiosError) => {
         const router = useRouter();
+        // 如果所有请求都结束了，关闭loading
+        // if (Http.requestCount < 1) {
+        //   closeToast();
+        //   NProgress.done();
+        // }
         NProgress.done();
-        closeToast();
         // 处理 HTTP 网络错误
         let message = "";
         // HTTP 状态码
         const status = error.response?.status;
         switch (status) {
           case 400:
-            message = "请求错误";
+            message = "Bad Request";
             break;
           case 401:
-            message = "未授权，请登录";
+            message = "Unauthorized, please log in";
             break;
           case 403:
-            message = "拒绝访问";
+            message = "Forbidden";
             break;
           case 404:
-            message = `请求地址出错: ${error.response?.config?.url}`;
+            message = `Request URL error: ${error.response?.config?.url}`;
             break;
           case 408:
-            message = "请求超时";
+            message = "Request Timeout";
             break;
           case 500:
-            message = "服务器内部错误";
+            message = "Internal Server Error";
             break;
           case 501:
-            message = "服务未实现";
+            message = "Not Implemented";
             break;
           case 502:
-            message = "网关错误";
+            message = "Bad Gateway";
             break;
           case 503:
-            message = "服务不可用";
+            message = "Service Unavailable";
             break;
           case 504:
-            message = "网关超时";
+            message = "Gateway Timeout";
             break;
           case 505:
-            message = "HTTP版本不受支持";
+            message = "HTTP Version Not Supported";
             break;
           default:
-            message = "网络连接故障";
+            message = "Network Connection Error";
         }
 
-        showFailToast(message);
+        showToast({
+          message: "Network Error, Please try again later.",
+          overlay: true,
+          closeOnClick: true,
+          closeOnClickOverlay: true,
+          duration: 3000,
+          className: "custom-toast content-box",
+        });
         if (!router) return;
         // 跳转到错误页面
-        router.push({
-          name: "error",
-          query: {
-            message: message,
-            status: status?.toString(),
-          },
-        });
+        // router.push({
+        //   name: "error",
+        //   query: {
+        //     message: message,
+        //     status: status?.toString(),
+        //   },
+        // });
         return Promise.reject(error);
       }
     );

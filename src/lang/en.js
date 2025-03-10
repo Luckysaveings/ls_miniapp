@@ -1,3 +1,5 @@
+import { disconnect } from "process";
+
 export default {
   home: {
     title: "Home",
@@ -63,7 +65,7 @@ export default {
     PupUpsUpdateTip: "We just updated the Popups mission, in total 2000 Badges!",
     LuckySavingsGoesToV1Point1: "‍LuckySavings goes to V1.1!",
     urlTip: "blablablabalblabalbalba, read more: http://blababalbala",
-    TheAmountExceedsTheAvailableBalance: "The amount exceeds the available balance",
+    TheAmountExceedsTheAvailableBalance: "The amount exceeds the available balance!",
     Withdraw: "Withdraw",
   },
   ranking: {
@@ -178,4 +180,20 @@ export default {
     EndTime: 'End Time',
     Date: 'Date',
   },
+  profile: {
+    Nickname: "Nickname",
+    Email: "Email",
+    TermsOfUse: "Terms of Use",
+    PrivacyPolicy: "Privacy Policy",
+    Support: "Support",
+    Version: "Version",
+    WalletAddress: "Wallet Address",
+    WalletType: "Wallet Type",
+    Disconnect: "Disconnect",
+  },
+  networkError: {
+    message: 'Oops, Network connection error.',
+    description: 'It seems the network is taking a break! Try restarting your Wi-Fi or switching to mobile data to get back on track.',
+    Reload: 'Reload',
+  }
 };

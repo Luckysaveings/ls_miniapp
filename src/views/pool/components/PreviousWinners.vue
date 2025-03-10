@@ -29,14 +29,14 @@
           <div
             class="type-btn"
             :class="{ active: selectedType === 'kaia' }"
-            @click="changeType('kaia')"
+            @click="changeType(1)"
           >
             KAIA Pool
           </div>
           <div
             class="type-btn"
             :class="{ active: selectedType === 'usd' }"
-            @click="changeType('usd')"
+            @click="changeType(2)"
           >
             USD Pool
           </div>
@@ -78,6 +78,8 @@
 </template>
 <script setup name="PreviousWinnersDialog">
 import { getLotteryRecord } from "@/api/index";
+import { closeToast } from "vant";
+import { showToastBeforeRequest } from "@/utils/index";
 
 const show = ref(false);
 const selectedType = ref("usd");
@@ -85,16 +87,16 @@ const data = ref({
   usd: [],
   kaia: [],
 });
-const currentData = ref(data.value[selectedType.value]);
+const currentData = ref([]);
 const getWinnerList = (type) => {
-  getLotteryRecord({ poolId: type, page: 1, pageSize: 100 }).then((res) => {
+  return getLotteryRecord({ poolId: type, page: 1, pageSize: 100 }).then((res) => {
     if (res.data) {
-      console.log(res.data);
+      console.log("res.data.list: ", res.data.list);
       processWinnerList(res.data.list, type === 2 ? "usd" : "kaia");
     }
   });
 };
-getWinnerList(1);
+// getWinnerList(1);
 // 处理中奖列表的方法
 const processWinnerList = (list, type) => {
   const tempTier1 = [];
@@ -128,16 +130,22 @@ const processWinnerList = (list, type) => {
  * @param {string} type: 1: KAIA Pool 2: USD Pool
  */
 const showDialog = (type) => {
-  selectedType.value = type === "1" ? "kaia" : "usd";
-  currentData.value = data.value[selectedType.value];
-  nextTick(() => {
-    show.value = true;
-  });
+  changeType(type);
+  // selectedType.value = val;
+  // currentData.value = data.value[selectedType.value];
+  // nextTick(() => {
+  //   show.value = true;
+  // });
 };
 const changeType = (type) => {
-  selectedType.value = type;
   // currentData.value = data.value[type];
-  getWinnerList(type === "kaia" ? 1 : 2);
+  showToastBeforeRequest();
+  getWinnerList(type).then(() => {
+    const val = type == 2 ? "usd" : "kaia";
+    selectedType.value = val;
+    show.value = true;
+    closeToast();
+  });
 };
 
 defineExpose({ showDialog });
@@ -147,6 +155,8 @@ defineExpose({ showDialog });
 
 .custom-dialog {
   .dialog-title-left {
+    display: flex;
+    align-items: center;
     .img-icon {
       margin-right: 6px;
     }

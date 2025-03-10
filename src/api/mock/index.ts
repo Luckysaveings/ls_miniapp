@@ -1,4 +1,4 @@
-import { http } from "@/utils/http";
+import { http } from "@/utils/index";
 
 type ListResult = {
   code: number;

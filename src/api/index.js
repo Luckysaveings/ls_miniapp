@@ -1,4 +1,4 @@
-import { http } from "@/utils/http";
+import { http } from "@/utils/index";
 
 // 用户登录
 export const login = (data) => {

@@ -1,12 +1,13 @@
 <script setup lang="ts" name="Rewards">
 import liff from "@line/liff";
 import { useRouter } from "vue-router";
-import { showToast } from "vant";
 import userAvatar from "@/assets/user-avatar.svg";
 import TaskItem from "./components/task-item.vue";
 import { getTaskList, getAchievement, getLotteryRecord } from "@/api/index";
 import { useGlobalStore } from "@/store/globalStore";
 import avatar from "@/assets/catAvatar.svg";
+import { showToast, showFailToast, showLoadingToast, closeToast } from "vant";
+import { showToastBeforeRequest } from "@/utils/index";
 
 // 初始化 Store
 const globalStore = useGlobalStore();
@@ -69,16 +70,30 @@ const generateInviteLink = () => {
   return;
 };
 onMounted(() => {
-  getTaskList().then((res) => {
-    const list = (res.data && res.data.list) || [];
+  // getTaskList().then((res) => {
+  //   const list = (res.data && res.data.list) || [];
+  //   dailyTasks.value = list.filter((item) => item.type === 0);
+  //   popups.value = list.filter((item) => item.type === 1);
+  // });
+  // getAchievement().then((res) => {
+  //   if (res.data) {
+  //     achievements.points = res.data.point || 0;
+  //     achievements.badges = res.data.badge || 0;
+  //   }
+  // });
+  showToastBeforeRequest();
+  Promise.all([getTaskList(), getAchievement()]).then(([taskRes, achieveRes]) => {
+    // 处理任务列表
+    const list = (taskRes.data && taskRes.data.list) || [];
     dailyTasks.value = list.filter((item) => item.type === 0);
     popups.value = list.filter((item) => item.type === 1);
-  });
-  getAchievement().then((res) => {
-    if (res.data) {
-      achievements.points = res.data.point || 0;
-      achievements.badges = res.data.badge || 0;
+
+    // 处理成就数据
+    if (achieveRes.data) {
+      achievements.points = achieveRes.data.point || 0;
+      achievements.badges = achieveRes.data.badge || 0;
     }
+    closeToast();
   });
 });
 </script>

@@ -9,7 +9,7 @@
     />
 
     <van-cell-group
-    class="deposit-item-wrap"
+      class="deposit-item-wrap"
       :border="false"
       v-for="depositItem in historyList"
       :key="depositItem.id"
@@ -92,7 +92,7 @@ onMounted(() => {
   border-radius: 0 !important;
   border-bottom: 1px solid var(--ls-line-12, rgba(24, 24, 27, 0.12));
   padding: 14px 0 !important;
-  
+
   &:last-child {
     border-bottom: none;
   }
@@ -118,7 +118,7 @@ onMounted(() => {
     }
   }
   &:after {
-    border-bottom-width: 0px ;
+    border-bottom-width: 0px;
   }
 }
 .title-class {

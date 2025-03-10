@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrap">
     <van-nav-bar
-      title="{{ $t('email.Email') }}"
+      :title="$t('email.Email')"
       left-arrow
       class="nav-bar-wrap"
       :border="false"
@@ -22,7 +22,7 @@
       <van-field
         v-model="email"
         label="Email"
-        placeholder="{{ $t('email.PleaseEnterEmailAddress') }}"
+        :placeholder="$t('email.PleaseEnterEmailAddress')"
         label-align="top"
         class="email-field"
       />

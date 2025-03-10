@@ -7,6 +7,9 @@ export const useGlobalStore = defineStore("global", {
     token: "0",
     dappPortalSDK: undefined as DappPortalSDK | undefined,
     walletProvider: undefined as any | undefined,
+    supportEmail: "care@luckysavings.io",
+    // 钱包类型
+    walletType: "",
     address: "",
     mnemonic: "",
     privateKey: "",
@@ -54,7 +57,7 @@ export const useGlobalStore = defineStore("global", {
   getters: {
     isLoggedIn: (state) => !!state.token, // 判断用户是否已登录
     hasWallet: (state) => !!state.walletAddress, // 判断是否有钱包地址
-    totalPrizePool: (state) => (state.prizePoolInfo.USDT.allAmount * state.usdtValue || 0 + state.prizePoolInfo.KAIA.allAmount * state.kaiaValue || 0), // 计算总奖池金额
+    totalPrizePool: (state) => state.prizePoolInfo.USDT.allAmount * state.usdtValue || 0 + state.prizePoolInfo.KAIA.allAmount * state.kaiaValue || 0, // 计算总奖池金额
   },
 
   // 方法（actions）

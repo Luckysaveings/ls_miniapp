@@ -60,8 +60,7 @@
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
+          class="icon-tabler-refresh"
           viewBox="0 0 24 24"
           fill="none"
         >
@@ -177,6 +176,10 @@ const taskClick = (task: any) => {
       border-radius: 14px;
       background: var(--LS-Gray-07, #18181b);
       padding: 0 10px;
+    }
+    .icon-tabler-refresh {
+      width: 24px;
+      height: 24px;
     }
     .refresh {
       width: 44px;

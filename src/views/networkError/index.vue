@@ -5,15 +5,13 @@
       name="no-network"
       size="74px"
     />
-    <p class="error-message">Oops, Network connection error.</p>
-    <p class="error-message-tip">
-      It seems the network is taking a break! Try restarting your Wi-Fi or switching to mobile data to get back on track.
-    </p>
+    <p class="error-message">{{ $t("networkError.message") }}</p>
+    <p class="error-message-tip">{{ $t("networkError.description") }}</p>
     <button
       class="btn-main"
       @click="retryConnection"
     >
-      Reload
+      {{ $t("networkError.Reload") }}
     </button>
   </div>
 </template>

@@ -70,7 +70,7 @@ import {
   formatWalletAddress,
   formatAmount,
   calculateTimeDifference,
-} from "@/utils/chainUtils";
+} from "@/utils/index";
 // 初始化 Store
 const globalStore = useGlobalStore();
 

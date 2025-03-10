@@ -34,9 +34,7 @@
         class="cell-class-custom"
         title-class="title-class"
         value-class="value-class"
-        title="Nickname"
         :value="globalStore.userInfo.nickname"
-        is-link
       >
         <template #title>
           <div class="cell-title-wrap">
@@ -44,7 +42,7 @@
               className="title-icon"
               name="profile-nickname"
             />
-            <span>Nickname</span>
+            <span>{{ $t("profile.Nickname") }}</span>
           </div>
         </template>
       </van-cell>
@@ -78,8 +76,9 @@
         :border="false"
         title-class="title-class"
         value-class="value-class"
-        title="User ID"
         :value="formatWalletAddress(globalStore.address)"
+        is-link
+        @click="showWalletAddress = true"
       >
         <template #title>
           <div class="cell-title-wrap">
@@ -87,15 +86,8 @@
               className="title-icon"
               name="profile-userId"
             />
-            <span>{{ $t("common.WalletAddress") }}</span>
+            <span>{{ $t("profile.WalletAddress") }}</span>
           </div>
-        </template>
-        <template #right-icon>
-          <svg-icon
-            className="img-icon icon-copy"
-            name="icon-copy"
-            @click="copyUserId"
-          />
         </template>
       </van-cell>
       <van-cell
@@ -103,10 +95,7 @@
         :border="false"
         title-class="title-class"
         value-class="value-class"
-        title="Email"
         :value="globalStore.userInfo.email"
-        is-link
-        @click="router.push('/email')"
       >
         <template #title>
           <div class="cell-title-wrap">
@@ -114,7 +103,7 @@
               className="title-icon"
               name="profile-email"
             />
-            <span>Email</span>
+            <span>{{ $t("profile.Email") }}</span>
           </div>
         </template>
       </van-cell>
@@ -123,9 +112,11 @@
     <van-cell-group class="settings-group">
       <van-cell
         class="cell-class-custom"
+        title-class="title-class"
+        value-class="value-class"
         :border="false"
-        title="Terms of Use"
         is-link
+        @click="customToastFn('Coming Soon...')"
       >
         <template #title>
           <div class="cell-title-wrap">
@@ -133,7 +124,7 @@
               className="title-icon"
               name="profile-terms"
             />
-            <span>Terms of Use</span>
+            <span>{{ $t("profile.TermsOfUse") }}</span>
           </div>
         </template>
       </van-cell>
@@ -143,8 +134,8 @@
         class="cell-class-custom"
         title-class="title-class"
         value-class="value-class"
-        title="Privacy Policy"
         is-link
+        @click="customToastFn('Coming Soon...')"
       >
         <template #title>
           <div class="cell-title-wrap">
@@ -152,7 +143,7 @@
               className="title-icon"
               name="profile-terms"
             />
-            <span>Privacy Policy</span>
+            <span>{{ $t("profile.PrivacyPolicy") }}</span>
           </div>
         </template>
       </van-cell>
@@ -164,8 +155,8 @@
         class="cell-class-custom"
         title-class="title-class"
         value-class="value-class"
-        value="care@luckysavings.io"
-        @click="copyEmail"
+        :value="globalStore.supportEmail"
+        @click="handleCopy(globalStore.supportEmail)"
       >
         <template #title>
           <div class="cell-title-wrap">
@@ -173,7 +164,7 @@
               className="title-icon"
               name="profile-info"
             />
-            <span>Support</span>
+            <span>{{ $t("profile.Support") }}</span>
           </div>
         </template>
         <template #right-icon>
@@ -198,20 +189,76 @@
               name="profile-info"
               class="title-icon"
             />
-            <span>Version</span>
+            <span>{{ $t("profile.Version") }}</span>
           </div>
         </template>
       </van-cell>
     </van-cell-group>
   </div>
+  <!-- 钱包弹窗 -->
+  <van-overlay
+    :show="showWalletAddress"
+    class-name="wallet-dialog"
+  >
+    <div class="content-box">
+      <div class="dialog-title">
+        <span>{{ $t("profile.WalletAddress") }}</span>
+        <van-icon
+          name="cross"
+          size="20"
+          color="#A1A1AA"
+          @click="hiddenWalletAddress"
+        />
+      </div>
+      <div class="dialog-content">
+        <van-cell-group
+          class="deposit-item-wrap"
+          :border="false"
+        >
+          <van-cell
+            class="cell-custom"
+            :title="$t('common.WalletAddress')"
+            :value="globalStore.address || ''"
+            :border="false"
+          >
+            <template #right-icon>
+              <svg-icon
+                name="icon-copy"
+                class="img-copy"
+                @click="handleCopy(globalStore.address)"
+              />
+            </template>
+          </van-cell>
+          <van-cell
+            class="cell-custom"
+            :title="$t('profile.WalletType')"
+            :border="false"
+          >
+            <template #value>
+              <span class="type">{{ globalStore.walletType || "" }} </span>
+            </template>
+          </van-cell>
+        </van-cell-group>
+      </div>
 
+      <div class="dialog-footer">
+        <button
+          class="btn-main"
+          @click="disconnectFn"
+        >
+          {{ $t("profile.Disconnect") }}
+        </button>
+      </div>
+    </div>
+  </van-overlay>
+  <!-- version弹窗 -->
   <van-overlay
     :show="showVersion"
     class-name="custom-dialog"
   >
     <div class="content-box">
       <div class="dialog-title">
-        <span>Version</span>
+        <span>{{ $t("profile.Version") }}</span>
         <van-icon
           name="cross"
           size="20"
@@ -236,74 +283,58 @@
       </div>
     </div>
   </van-overlay>
-  <van-toast
+  <CustomToast
     v-model:show="show"
-    position="top"
-    class-name="custom-toast-wrapper"
-  >
-    <template #message>
-      <div class="toast-message">
-        <svg-icon
-          name="check-circle"
-          size="24px"
-        />
-        <span class="toast-text">{{ toastText }}</span>
-      </div>
-    </template>
-  </van-toast>
+    :message="toastText"
+  />
 </template>
 
-<script setup>
+<script setup name="Profile">
 import { useRouter } from "vue-router";
 import { useGlobalStore } from "@/store/globalStore";
-import { formatWalletAddress } from "@/utils/chainUtils";
+import { formatWalletAddress } from "@/utils/index";
+import CustomToast from "@/components/CustomToast.vue";
 import avatar from "@/assets/catAvatar.svg";
+import { showToast } from "vant";
 
 // 初始化 Store
 const globalStore = useGlobalStore();
 const router = useRouter();
 const showVersion = ref(false);
-const version = ref("1.0.12");
+const version = ref("1.0.0");
 const hiddenVersion = () => {
   showVersion.value = false;
 };
+const showWalletAddress = ref(false);
+const hiddenWalletAddress = () => {
+  showWalletAddress.value = false;
+};
+const disconnectFn = () => {
+  showWalletAddress.value = false;
+};
 const show = ref(false);
 const toastText = ref("Copy Success");
-const copyEmail = () => {
-  navigator.clipboard.writeText("care@luckysavings.io");
-  toastText.value = "Email copied to clipboard";
+const handleCopy = (val) => {
+  navigator.clipboard.writeText(val);
   show.value = true;
 };
-
-const copyUserId = () => {
-  navigator.clipboard.writeText("88888888");
-  toastText.value = "Copy Success";
-  show.value = true;
-};
-
-const handleLogout = () => {
-  toastText.value = "Logging out...";
-  show.value = true;
-  // Add your logout logic here
+const customToastFn = (msg) => {
+  showToast({
+    message: msg,
+    overlay: true,
+    closeOnClick: true,
+    closeOnClickOverlay: true,
+    duration: 3000,
+    className: "custom-toast content-box",
+  });
 };
 </script>
-
-<style>
-.custom-toast-wrapper {
-  padding: 0;
-  background-color: transparent;
-}
-</style>
 
 <style scoped lang="scss">
 .page-wrap {
   min-height: 100vh;
   background: linear-gradient(180deg, #fff9e1 0%, #fff 100%);
   padding: 32px 24px;
-
-  .settings-group {
-    margin: 24px 0;
-  }
   .avatar-img {
     width: 100px;
     height: 100px;
@@ -430,6 +461,39 @@ const handleLogout = () => {
     width: 18px;
     height: 18px;
     margin-right: 6px;
+  }
+}
+
+.wallet-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .dialog-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 22px;
+    color: #18181b;
+    margin-bottom: 16px;
+  }
+  .content-box {
+    box-sizing: content-box;
+    width: 314px;
+    padding: 20px;
+    margin: 0 10px;
+    border-radius: 24px;
+    border: 3px solid var(--LS-Gray-07, #18181b);
+    background: #fff;
+    box-shadow: 0px 6px 0px 0px #18181b;
+
+    .cell-custom {
+      padding: 10px 0;
+    }
+  }
+  .dialog-footer {
+    margin-top: 16px;
   }
 }
 </style>

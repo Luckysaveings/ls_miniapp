@@ -6,6 +6,7 @@ import { useClickAway } from "@vant/use";
 import { useGlobalStore } from "@/store/globalStore";
 import { getTaskList, login } from "@/api/index";
 import avatar from "@/assets/catAvatar.svg";
+import { closeToast } from "vant";
 import {
   createKaiaWallet,
   getKaiaBalance,
@@ -21,14 +22,15 @@ import {
   gasForDepositWithDepositContract,
   depositWithDepositContract,
   withdrawWithDepositContract,
-} from "@/utils/chainUtils";
+  showToastBeforeRequest,
+} from "@/utils/index";
 
 const availableRewards = reactive({
   points: 100,
   badges: 10,
 });
 const getAvailableRewards = () => {
-  getTaskList().then((res) => {
+  return getTaskList().then((res) => {
     const list = (res.data && res.data.list) || [];
     const unCompletedList = list.filter((item) => item.status !== 3);
     const pointList = unCompletedList.filter((item) => item.rewardType === 0);
@@ -39,12 +41,16 @@ const getAvailableRewards = () => {
 
     availableRewards.points = totalPoints;
     availableRewards.badges = totalBadges;
+    return res;
   });
 };
 // 初始化 Store
 const globalStore = useGlobalStore();
 onMounted(() => {
-  getAvailableRewards();
+  showToastBeforeRequest();
+  getAvailableRewards().then((res) => {
+    closeToast();
+  });
   window["fromHome"] = true;
   const loadingElement = document.getElementById("loading");
   if (loadingElement) {
@@ -131,6 +137,11 @@ const approveAndDepositWithDapp = async (amount: string) => {
   }
 };
 const clickUsername = async () => {
+  // await getKaiaBalance(globalStore.address);
+  // await getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+  // await transferInKaia("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "10");
+  // await getKaiaBalance(globalStore.address);
+  // await getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
   await getDpositAmount(globalStore.address, "USDT");
   await getDpositAmount(globalStore.address, "KAIA");
   await getPoolAmount("USDT");
@@ -181,16 +192,15 @@ const handlePopoverItem = (type: string) => {
 <template>
   <div class="page-wrap">
     <div class="header">
-      <div class="header-left">
+      <div
+        class="header-left"
+        @click="router.push('/profile')"
+      >
         <img
           :src="globalStore.userInfo.avatar || avatar"
           class="product-img"
-          @click="router.push('/profile')"
         />
-        <div
-          class="text-content"
-          @click="clickUsername"
-        >
+        <div class="text-content">
           {{ globalStore.userInfo.nickname }}
         </div>
       </div>
@@ -215,7 +225,7 @@ const handlePopoverItem = (type: string) => {
           >
             {{ $t("home.WalletBalance") }}
           </div>
-          <div class="balance-content">
+          <div class="text-list-wrap">
             <div class="balance-item">
               <svg-icon
                 name="icon-ustd"
@@ -378,8 +388,8 @@ const handlePopoverItem = (type: string) => {
             @click="hiddenInfo"
           />
         </div>
-        <div class="balance-content">
-          <div class="balance-row">
+        <div class="text-list-wrap">
+          <div class="text-list-row">
             <span class="label">{{ $t("common.WalletAddress") }}</span>
             <span class="value">
               <span>{{ formatWalletAddress(globalStore.address || "") }}</span>
@@ -390,7 +400,7 @@ const handlePopoverItem = (type: string) => {
               />
             </span>
           </div>
-          <div class="balance-row">
+          <div class="text-list-row">
             <span class="label">{{ $t("home.Balance") }}</span>
             <span class="value">
               <svg-icon
@@ -402,8 +412,8 @@ const handlePopoverItem = (type: string) => {
           </div>
         </div>
 
-        <div class="balance-content">
-          <div class="balance-row">
+        <div class="text-list-wrap">
+          <div class="text-list-row">
             <span class="label">{{ $t("home.Savings") }}</span>
             <span class="value">
               <svg-icon
@@ -414,7 +424,7 @@ const handlePopoverItem = (type: string) => {
               {{ globalStore.balanceInfo[infoType].savings }}</span
             >
           </div>
-          <div class="balance-row">
+          <div class="text-list-row">
             <span class="label">{{ $t("home.LotteryWinnings") }}</span>
             <span class="value">
               <svg-icon
@@ -468,7 +478,7 @@ const handlePopoverItem = (type: string) => {
       color: #18181b;
       margin-bottom: 16px;
     }
-    .balance-content {
+    .text-list-wrap {
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -477,7 +487,7 @@ const handlePopoverItem = (type: string) => {
       padding: 12px;
       margin: 16px auto;
 
-      .balance-row {
+      .text-list-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -611,7 +621,7 @@ const handlePopoverItem = (type: string) => {
       color: var(--LS-Gray-05, #83838f);
       margin-bottom: 12px;
     }
-    .balance-content {
+    .text-list-wrap {
       display: flex;
       justify-content: flex-start;
       align-items: center;

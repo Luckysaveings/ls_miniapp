@@ -1,6 +1,7 @@
 <script setup lang="ts" name="Ranking">
 import { useRouter } from "vue-router";
 import { getRanking, getMyRanking, getAchievement } from "@/api/index";
+import { showToast, showFailToast, showLoadingToast, closeToast } from "vant";
 
 const router = useRouter();
 const onClickLeft = () => {
@@ -8,9 +9,10 @@ const onClickLeft = () => {
 };
 const selectedType = ref("points");
 const changeType = (t) => {
-  selectedType.value = t;
   const type = t === "points" ? 0 : 1;
-  fetchData(type);
+  fetchData(type).then(() => {
+    selectedType.value = t;
+  });
 };
 const selfRanking = reactive({
   no: 0,
@@ -31,24 +33,27 @@ const tableData = ref([
 
 const fetchData = (type) => {
   // 0-积分point，1-徽章badge
-  getRanking({
-    type,
-  }).then((res) => {
-    const list = (res.data && res.data.list) || [];
-    tableData.value = list;
-  });
-
-  getMyRanking({
-    type,
-  }).then((res) => {
-    selfRanking.no = (res.data && res.data.no) || 0;
-  });
-  getAchievement().then((res) => {
-    if (res.data) {
-      const selfNum = type === 0 ? res.data.point : res.data.badge;
-      selfRanking.selfNum = selfNum || 0;
+  return Promise.allSettled([getRanking({ type }), getMyRanking({ type }), getAchievement()]).then(
+    ([rankingStatus, myRankingStatus, achievementStatus]) => {
+      console.log(rankingStatus, myRankingStatus, achievementStatus);
+      if (rankingStatus.status === "fulfilled") {
+        const rankingRes = rankingStatus.value;
+        const list = (rankingRes.data && rankingRes.data.list) || [];
+        tableData.value = list;
+      }
+      if (myRankingStatus.status === "fulfilled") {
+        const myRankingRes = myRankingStatus.value;
+        selfRanking.no = (myRankingRes.data && myRankingRes.data.no) || 0;
+      }
+      if (achievementStatus.status === "fulfilled") {
+        const achievementRes = achievementStatus.value;
+        if (achievementRes.data) {
+          const selfNum = type === 0 ? achievementRes.data.point : achievementRes.data.badge;
+          selfRanking.selfNum = selfNum || 0;
+        }
+      }
     }
-  });
+  );
 };
 onMounted(() => {
   fetchData(0);

@@ -1,6 +1,7 @@
 <script setup lang="ts" name="Pool">
 import liff from "@line/liff";
 import { useRouter } from "vue-router";
+import { showToast, showLoadingToast, closeToast } from "vant";
 import GamePlayDialog from "./components/GameplayDialog.vue";
 import PreviousDialog from "./components/PreviousWinners.vue";
 import Progress from "@/components/Progress.vue";
@@ -19,12 +20,14 @@ import {
   calculateTimeDifference,
   getDpositAmount,
   getPoolAmount,
-} from "@/utils/chainUtils";
+  showToastBeforeRequest,
+} from "@/utils/index";
 
 onMounted(() => {
-  console.log("Pool Page Mounted");
+  showToastBeforeRequest();
+  // console.log("Pool Page Mounted");
   getPoolList({ page: 10, pageSize: 1 }).then((res) => {
-    console.log(res);
+    closeToast();
   });
 });
 // 初始化 Store
@@ -119,16 +122,30 @@ const setMaxAmount = () => {
   amount.value = selectedPool.value === "1" ? globalStore.balanceInfo.KAIA.balance : globalStore.balanceInfo.USDT.balance;
 };
 const switchTab = (type) => {
-  if (type === "1") {
-    // 切换到KAIA Pool
-    available.value = globalStore.balanceInfo.KAIA.balance;
-    withdrawInfo.value.type = "KAIA";
-  } else if (type === "2") {
-    available.value = globalStore.balanceInfo.USDT.balance;
-    withdrawInfo.value.type = "USDT";
-  }
-  selectedPool.value = type;
+  showLoadingToast({
+    overlayClass: "http-loading-toast",
+    overlay: true,
+    message: "",
+    forbidClick: true,
+    duration: 150,
+    onClose: () => {
+      if (type === "1") {
+        // 切换到KAIA Pool
+        available.value = globalStore.balanceInfo.KAIA.balance;
+        withdrawInfo.value.type = "KAIA";
+      } else if (type === "2") {
+        available.value = globalStore.balanceInfo.USDT.balance;
+        withdrawInfo.value.type = "USDT";
+      }
+      selectedPool.value = type;
+    },
+  });
 };
+const warningTextShow = computed(() => {
+  const a = Number(amount.value);
+  const b = Number(available.value);
+  return a > b;
+});
 const showWithdraw = ref(false);
 const withdrawInfo = ref({
   type: "USD",
@@ -136,7 +153,9 @@ const withdrawInfo = ref({
   gasFee: 1.2,
   desc: `You can check all returns later in the wallet balance under the Home tab.`,
 });
-const showWithdrawDialog = () => {
+const showWithdrawDialog = async () => {
+  const gas = await gasForWithdrawWithDepositContract(globalStore.address, "10", "2");
+  withdrawInfo.value.gasFee = gas;
   showWithdraw.value = true;
 };
 const showDepositDialog = () => {
@@ -150,6 +169,16 @@ const confirmWithdraw = async () => {
   amount.value = 0;
 };
 const confirmDeposit = async () => {
+  if (warningTextShow.value) {
+    return;
+  }
+  if (!amount.value) {
+    showToast({
+      message: "Please enter the amount",
+      duration: 3000,
+    });
+    return;
+  }
   await approveAndDepositWithDapp(amount.value.toString());
   showDeposit.value = false;
   amount.value = 0;
@@ -457,7 +486,7 @@ const showReminderMsg = ref(false);
   <!-- 弹窗 Daily Pool和10K Jackpot Gameplay -->
   <GamePlayDialog ref="gamePlayDialogRef" />
   <PreviousDialog ref="previousDialogRef" />
-  <!-- 弹窗 USD Deposit -->
+  <!-- 弹窗 Deposit -->
   <van-overlay
     :show="showDeposit"
     class-name="custom-dialog"
@@ -468,6 +497,7 @@ const showReminderMsg = ref(false);
           <svg-icon
             class="img-icon"
             name="icon-ustd"
+            size="20px"
           />
 
           <span>{{ selectedPool === "1" ? $t("pool.KAIADeposit") : $t("pool.USDDeposit") }}</span>
@@ -496,6 +526,8 @@ const showReminderMsg = ref(false);
             v-model="amount"
             placeholder="0.00"
             class="custom-field"
+            type="number"
+            inputmode="numeric"
           >
             <template #right-icon>
               <span
@@ -507,16 +539,16 @@ const showReminderMsg = ref(false);
           </van-field>
 
           <div
-            v-show="amount > available"
+            v-show="warningTextShow"
             class="warning-text"
           >
             <span>{{ $t("pool.TheAmountExceedsTheAvailableBalance") }}</span>
           </div>
         </div>
-        <div class="content-item fee-info">
+        <!-- <div class="content-item fee-info">
           <span>{{ $t("pool.GasFee") }}</span>
           <span class="item-value">{{ withdrawInfo.gasFee }} KAIA</span>
-        </div>
+        </div> -->
         <div class="content-item item-desc">
           {{ $t("pool.DailyPoolTip") }}
         </div>
@@ -867,6 +899,8 @@ const showReminderMsg = ref(false);
 }
 .custom-dialog {
   .dialog-title-left {
+    display: flex;
+    align-items: center;
     .img-icon {
       margin-right: 6px;
     }
@@ -875,6 +909,7 @@ const showReminderMsg = ref(false);
     width: 100%;
 
     .warning-text {
+      font-size: 14px;
       margin-top: 6px;
       font-weight: 500;
       color: #f14d00;
