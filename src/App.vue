@@ -3,7 +3,7 @@
 </template>
 <script setup lang="ts" name="App">
 import liff from "@line/liff";
-import { getRanking, login, bindWallet, getKaiaPrice } from "@/api/index";
+import { getTaskList, login, bindWallet, getKaiaPrice } from "@/api/index";
 import { useGlobalStore } from "@/store/globalStore";
 import { createKaiaWallet, getDappWallet, getTokenBalance, getKaiaBalance, getDepositAmount, getPoolAmount } from "@/utils/index";
 import { showToast, showFailToast, showLoadingToast, closeToast } from "vant";
@@ -90,12 +90,33 @@ const onlineLogic = () => {
     });
 };
 const getChainData = () => {
-  getKaiaBalance(globalStore.address);
-  getTokenBalance(globalStore.address)
-  getDepositAmount(globalStore.address, "USDT");
-  getDepositAmount(globalStore.address, "KAIA");
-  getPoolAmount("USDT");
-  getPoolAmount("KAIA");
+  Promise.all([
+    getKaiaBalance(globalStore.address),
+    getTokenBalance(globalStore.address),
+    getDepositAmount(globalStore.address, "USDT"),
+    getDepositAmount(globalStore.address, "KAIA"),
+    getPoolAmount("USDT"),
+    getPoolAmount("KAIA"),
+    getTaskList()
+  ]).then(results => {
+    // 最后一个结果是getTaskList的返回值
+    const res = results[6];
+    const list = (res.data && res.data.list) || [];
+    const unCompletedList = list.filter((item) => item.status !== 3);
+    const pointList = unCompletedList.filter((item) => item.rewardType === 0);
+    const badgeList = unCompletedList.filter((item) => item.rewardType === 1);
+    const totalPoints = pointList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
+    const totalBadges = badgeList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
+    globalStore.setAvailableRewards({
+      points: totalPoints,
+      badges: totalBadges,
+    });
+    closeToast();
+  }).catch(error => {
+    console.error("获取链上数据失败:", error);
+    closeToast();
+    showFailToast("获取数据失败，请稍后重试");
+  });
 };
 </script>
 <style></style>

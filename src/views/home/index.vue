@@ -47,10 +47,10 @@ const getAvailableRewards = () => {
 // 初始化 Store
 const globalStore = useGlobalStore();
 onMounted(() => {
-  showToastBeforeRequest();
-  getAvailableRewards().then((res) => {
-    closeToast();
-  });
+  // showToastBeforeRequest();
+  // getAvailableRewards().then((res) => {
+  //   closeToast();
+  // });
   window["fromHome"] = true;
   const loadingElement = document.getElementById("loading");
   if (loadingElement) {
@@ -340,7 +340,7 @@ const handlePopoverItem = (type: string) => {
                   class="product-img"
                   size="36px"
                 />
-                <span class="img-num">x{{ availableRewards.points }}</span>
+                <span class="img-num">x{{ globalStore.availableRewards.points }}</span>
               </div>
               <div class="main-text">{{ $t("home.Points") }}</div>
             </div>
@@ -352,7 +352,7 @@ const handlePopoverItem = (type: string) => {
                   size="36px"
                 />
 
-                <span class="img-num">x{{ availableRewards.badges }}</span>
+                <span class="img-num">x{{ globalStore.availableRewards.badges }}</span>
               </div>
               <div class="main-text">{{ $t("home.Badges") }}</div>
             </div>

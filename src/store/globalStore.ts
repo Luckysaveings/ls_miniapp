@@ -51,6 +51,10 @@ export const useGlobalStore = defineStore("global", {
     },
     usdtValue: 1,
     kaiaValue: 0.1192,
+    availableRewards: {
+      points: 0,
+      badges: 0,
+    },
   }),
 
   // 计算属性（getters）
@@ -119,6 +123,9 @@ export const useGlobalStore = defineStore("global", {
     },
     setKaiaValue(value: number) {
       this.kaiaValue = value;
+    },
+    setAvailableRewards(availableRewards: any) {
+      this.availableRewards = Object.assign({}, this.availableRewards, availableRewards);
     },
     // 登出（清除 token 和钱包地址）
     logout() {
