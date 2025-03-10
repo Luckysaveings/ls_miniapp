@@ -15,7 +15,7 @@ import {
   formatWalletAddress,
   formatAmount,
   calculateTimeDifference,
-  getDpositAmount,
+  getDepositAmount,
   getPoolAmount,
   getTokenBalance,
   gasForApproveTokenForDeposit,
@@ -142,8 +142,8 @@ const clickUsername = async () => {
   // await transferInKaia("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "10");
   // await getKaiaBalance(globalStore.address);
   // await getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
-  await getDpositAmount(globalStore.address, "USDT");
-  await getDpositAmount(globalStore.address, "KAIA");
+  await getDepositAmount(globalStore.address, "USDT");
+  await getDepositAmount(globalStore.address, "KAIA");
   await getPoolAmount("USDT");
   await getPoolAmount("KAIA");
   await getKaiaBalance(globalStore.address);
@@ -152,10 +152,10 @@ const clickUsername = async () => {
   await approveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, "10");
   await gasForDepositWithDepositContract(globalStore.address, "10", "USDT");
   await depositWithDepositContract(globalStore.address, "10", "USDT");
-  await getDpositAmount(globalStore.address, "USDT");
+  await getDepositAmount(globalStore.address, "USDT");
   await withdrawWithDepositContract(globalStore.address, "10", "USDT");
-  await getDpositAmount(globalStore.address, "USDT");
-  await getDpositAmount(globalStore.address, "KAIA");
+  await getDepositAmount(globalStore.address, "USDT");
+  await getDepositAmount(globalStore.address, "KAIA");
   await getPoolAmount("USDT");
   await getPoolAmount("KAIA");
   await getKaiaBalance(globalStore.address);

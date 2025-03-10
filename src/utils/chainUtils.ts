@@ -127,7 +127,7 @@ export const approveTokenForDeposit = async (depositContractAddress: string, amo
  * @param address 钱包地址
  * @param type 奖池类型，"KAIA": kaia prize pool, "USDT": usdt prize pool, default: "USDT"
  */
-export const getDpositAmount = async (address: string, type: string) => {
+export const getDepositAmount = async (address: string, type: string) => {
   const globalStore = useGlobalStore();
   const web3 = new Web3(import.meta.env.VITE_CHAIN_URL);
   // 使用Web3合约实例

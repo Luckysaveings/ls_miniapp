@@ -66,7 +66,7 @@ import {
   getTokenBalance,
   approveTokenForDeposit,
   depositWithDepositContract,
-  getDpositAmount,
+  getDepositAmount,
   formatWalletAddress,
   formatAmount,
   calculateTimeDifference,

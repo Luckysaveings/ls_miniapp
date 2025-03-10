@@ -5,7 +5,7 @@
 import liff from "@line/liff";
 import { getRanking, login, getKaiaPrice } from "@/api/index";
 import { useGlobalStore } from "@/store/globalStore";
-import { createKaiaWallet, getDappWallet, getTokenBalance, getKaiaBalance, getDpositAmount, getPoolAmount } from "@/utils/index";
+import { createKaiaWallet, getDappWallet, getTokenBalance, getKaiaBalance, getDepositAmount, getPoolAmount } from "@/utils/index";
 import { showToast, showFailToast, showLoadingToast, closeToast } from "vant";
 
 // 初始化 Store
@@ -92,8 +92,8 @@ const onlineLogic = () => {
 const getChainData = () => {
   getKaiaBalance(globalStore.address);
   getTokenBalance(globalStore.address);
-  getDpositAmount(globalStore.address, "USDT");
-  getDpositAmount(globalStore.address, "KAIA");
+  getDepositAmount(globalStore.address, "USDT");
+  getDepositAmount(globalStore.address, "KAIA");
   getPoolAmount("USDT");
   getPoolAmount("KAIA");
 };

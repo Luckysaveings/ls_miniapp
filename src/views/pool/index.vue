@@ -18,7 +18,7 @@ import {
   depositWithDepositContract,
   withdrawWithDepositContract,
   calculateTimeDifference,
-  getDpositAmount,
+  getDepositAmount,
   getPoolAmount,
   showToastBeforeRequest,
 } from "@/utils/index";
@@ -101,8 +101,8 @@ const approveAndDepositWithDapp = async (amount: string) => {
     const response = await depositWithDepositContract(globalStore.address, amount, "2");
     getKaiaBalance(globalStore.address);
     getTokenBalance(globalStore.address);
-    getDpositAmount(globalStore.address, "USDT");
-    getDpositAmount(globalStore.address, "KAIA");
+    getDepositAmount(globalStore.address, "USDT");
+    getDepositAmount(globalStore.address, "KAIA");
     getPoolAmount("USDT");
     getPoolAmount("KAIA");
     return response;
@@ -163,7 +163,7 @@ const showDepositDialog = () => {
 };
 const confirmWithdraw = async () => {
   console.log("confirmWithdraw");
-  // await getDpositAmount(localStorage.getItem("address2"), "USDT");
+  // await getDepositAmount(localStorage.getItem("address2"), "USDT");
   await withdrawWithDapp("10");
   showWithdraw.value = false;
   amount.value = 0;
