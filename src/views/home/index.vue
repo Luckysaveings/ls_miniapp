@@ -136,12 +136,48 @@ const approveAndDepositWithDapp = async (amount: string) => {
     console.log(error);
   }
 };
-const clickUsername = async () => {
-  // await getKaiaBalance(globalStore.address);
-  // await getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
-  // await transferInKaia("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "10");
-  // await getKaiaBalance(globalStore.address);
-  // await getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+const kaiaTransferTest = async () => {
+  if (import.meta.env.VITE_ENV === "PROD") {
+    // 测试线上环境liff账号往开发环境账号转账
+    Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9")])
+      .then(async ([kaia1, kaia2]) => {
+       console.log("kaia1", kaia1);
+       console.log("kaia2", kaia2);
+       await transferInKaia("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "10");
+       Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9")])
+        .then(([kaia1, kaia2]) => {
+        console.log("kaia1", kaia1);
+        console.log("kaia2", kaia2);
+        });
+      });
+    // await getKaiaBalance(globalStore.address);
+    // await getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+    // await transferInKaia("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "10");
+    // await getKaiaBalance(globalStore.address);
+    // await getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+  } else {
+    // 开发环境账号往liff账号转账
+    Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6")])
+      .then(async ([kaia1, kaia2]) => {
+       console.log("kaia1", kaia1);
+       console.log("kaia2", kaia2);
+       await transferInKaia("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6", "10");
+       Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6")])
+        .then(([kaia1, kaia2]) => {
+        console.log("kaia1", kaia1);
+        console.log("kaia2", kaia2);
+        });
+      });
+    // await getKaiaBalance(globalStore.address);
+    // await getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6");
+    // await transferInKaia("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6", "10");
+    // await getKaiaBalance(globalStore.address);
+    // await getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6");
+  }
+}
+const clickBalance = async () => {
+  // kaiaTransferTest();
+
   await getDepositAmount(globalStore.address, "USDT");
   await getDepositAmount(globalStore.address, "KAIA");
   await getPoolAmount("USDT");
@@ -158,10 +194,6 @@ const clickUsername = async () => {
   await getDepositAmount(globalStore.address, "KAIA");
   await getPoolAmount("USDT");
   await getPoolAmount("KAIA");
-  await getKaiaBalance(globalStore.address);
-  await getTokenBalance(globalStore.address);
-};
-const clickBalance = async () => {
   await getKaiaBalance(globalStore.address);
   await getTokenBalance(globalStore.address);
 };

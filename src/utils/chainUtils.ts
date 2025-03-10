@@ -71,30 +71,32 @@ const getContractInstanceWithWeb3 = (contractType: string = "1") => {
  * @param depositContractAddress 授权的地址
  * @param amount 授权的金额
  */
-export const gasForApproveTokenForDeposit = async (depositContractAddress: string, amount: string) => {
+export const gasForApproveTokenForDeposit = (depositContractAddress: string, amount: string) => {
   const globalStore = useGlobalStore();
   const web3 = new Web3(import.meta.env.VITE_CHAIN_URL);
   const luckyTokenContract = getContractInstanceWithWeb3("1");
   const amountInUnits = web3.utils.toWei(amount, 'ether');
-  // const gasEstimate = await luckyTokenContract.estimateGas.approve(depositContractAddress, amountInUnits);
-  const gasEstimate = await luckyTokenContract.methods.approve(
+  
+  return luckyTokenContract.methods.approve(
     depositContractAddress, 
     amountInUnits
   ).estimateGas({
     from: globalStore.address,
+  }).then(gasEstimate => {
+    return web3.eth.getGasPrice().then(gasPrice => {
+      const totalGasCost = BigInt(gasEstimate) * BigInt(gasPrice);
+      const totalGasCostFormatted = web3.utils.fromWei(totalGasCost.toString(), 'ether');
+      console.log("预计代币 approve 交易 gas 费用:", totalGasCostFormatted);
+      return totalGasCostFormatted;
+    });
   });
-  const gasPrice = await web3.eth.getGasPrice();
-  const totalGasCost = BigInt(gasEstimate) * BigInt(gasPrice);
-  const totalGasCostFormatted = web3.utils.fromWei(totalGasCost.toString(), 'ether');
-  console.log("预计代币 approve 交易 gas 费用:", totalGasCostFormatted);
-  return totalGasCostFormatted;
 };
 /**
  * @description 钱包进行代币授权
  * @param depositContractAddress 授权的地址
  * @param amount 授权的金额
  */
-export const approveTokenForDeposit = async (depositContractAddress: string, amount: string) => {
+export const approveTokenForDeposit = (depositContractAddress: string, amount: string) => {
   const globalStore = useGlobalStore();
   const web3 = new Web3(import.meta.env.VITE_CHAIN_URL);
   const luckyTokenContract = getContractInstanceWithWeb3("1");
@@ -103,93 +105,105 @@ export const approveTokenForDeposit = async (depositContractAddress: string, amo
     status: 0,
     tx: undefined,
   };
-  try {
-    // 发送approve交易
-    response.tx = await luckyTokenContract.methods.approve(
+  
+  return web3.eth.getGasPrice().then(gasPrice => {
+    return luckyTokenContract.methods.approve(
       depositContractAddress,
       amountInUnits
     ).send({
       from: globalStore.address,
       gas: '500000', // 设置合理gas limit
-      gasPrice: await web3.eth.getGasPrice()
+      gasPrice: gasPrice
     });
+  }).then(tx => {
+    response.tx = tx;
     console.log("授权交易已发送，交易哈希:", response.tx.transactionHash);
-    const receipt = await web3.eth.getTransactionReceipt(response.tx.transactionHash);
+    return web3.eth.getTransactionReceipt(response.tx.transactionHash);
+  }).then(receipt => {
     console.log(`授权交易已确认，区块高度:`, receipt.blockNumber);
-  } catch (error) {
+    return response;
+  }).catch(error => {
     console.log("授权失败", error);
     response.status = 1;
-  }
-  return response;
+    return response;
+  });
 };
 /**
  * @description: 查询合约质押存款余额，合约地址和ABI根据合约类型自动获取
  * @param address 钱包地址
  * @param type 奖池类型，"KAIA": kaia prize pool, "USDT": usdt prize pool, default: "USDT"
  */
-export const getDepositAmount = async (address: string, type: string) => {
+export const getDepositAmount = (address: string, type: string) => {
   const globalStore = useGlobalStore();
   const web3 = new Web3(import.meta.env.VITE_CHAIN_URL);
   // 使用Web3合约实例
   const contract = getContractInstanceWithWeb3(type === "USDT"? "3" : "2");
-  const balanceWei = await contract.methods.balanceOf(address).call();
-  const balanceToken = web3.utils.fromWei(balanceWei, 'ether');
-  if (type === "USDT") {
-    console.log("质押金额USDT:", balanceToken);
-    globalStore.setUsdtBalance({savings: balanceToken});
-    globalStore.setUSDTPrizePoolInfo({ticket: balanceToken});
-  } else {
-    console.log("质押金额KAIA:", balanceToken);
-    globalStore.setKaiaBalance({savings: balanceToken});
-    globalStore.setKaiaPrizePoolInfo({ticket: balanceToken});
-  }
-  return balanceToken;
+  
+  return contract.methods.balanceOf(address).call().then(balanceWei => {
+    const balanceToken = web3.utils.fromWei(balanceWei, 'ether');
+    if (type === "USDT") {
+      console.log("质押金额USDT:", balanceToken);
+      globalStore.setUsdtBalance({savings: balanceToken});
+      globalStore.setUSDTPrizePoolInfo({ticket: balanceToken});
+    } else {
+      console.log("质押金额KAIA:", balanceToken);
+      globalStore.setKaiaBalance({savings: balanceToken});
+      globalStore.setKaiaPrizePoolInfo({ticket: balanceToken});
+    }
+    return balanceToken;
+  });
 };
 /**
  * @description: 查询合约代币余额，合约地址和ABI根据合约类型自动获取
  * @param type 奖池类型，"KAIA": kaia prize pool, "USDT": usdt prize pool, default: "USDT"
  * @returns 
  */
-export const getPoolAmount = async (type: string = "USDT") => {
+export const getPoolAmount = (type: string = "USDT") => {
   const globalStore = useGlobalStore();
   const web3 = new Web3(import.meta.env.VITE_CHAIN_URL);
   // 使用Web3合约实例
   const contract = getContractInstanceWithWeb3(type === "USDT"? "3" : "2");
-  const balanceWei = await contract.methods.totalAssets().call();
-  const balanceToken = web3.utils.fromWei(balanceWei, 'ether');
-  if (type === "USDT") {
-    console.log("全部质押金额USDT:", balanceToken);
-    globalStore.setUsdtBalance({allAmount: balanceToken});
-    globalStore.setUSDTPrizePoolInfo({allAmount: balanceToken});
-  } else {
-    console.log("全部质押金额KAIA:", balanceToken);
-    globalStore.setKaiaBalance({allAmount: balanceToken});
-    globalStore.setKaiaPrizePoolInfo({allAmount: balanceToken});
-  }
-  return balanceToken;
+  return contract.methods.totalAssets().call()
+    .then(balanceWei => {
+      const balanceToken = web3.utils.fromWei(balanceWei, 'ether');
+      if (type === "USDT") {
+        console.log("全部质押金额USDT:", balanceToken);
+        globalStore.setUsdtBalance({allAmount: balanceToken});
+        globalStore.setUSDTPrizePoolInfo({allAmount: balanceToken});
+      } else {
+        console.log("全部质押金额KAIA:", balanceToken);
+        globalStore.setKaiaBalance({allAmount: balanceToken});
+        globalStore.setKaiaPrizePoolInfo({allAmount: balanceToken});
+      }
+      return balanceToken;
+    })
+    .catch(error => {
+      console.error("查询奖池总额失败:", error);
+      throw error;
+    });
 };
 /**
  * @description: 查询合约代币余额
  * @param address 钱包地址
  * @returns
  */
-export const getTokenBalance = async (address: string) => {
+export const getTokenBalance = (address: string) => {
   const globalStore = useGlobalStore();
   const web3 = new Web3(import.meta.env.VITE_CHAIN_URL);
   // 使用Web3合约实例
   const contract = getContractInstanceWithWeb3("1");
-  try {
-    // 调用合约方法获取余额
-    const balanceWei = await contract.methods.balanceOf(address).call();
-    const balanceToken = web3.utils.fromWei(balanceWei, 'ether');
-    // 更新全局存储
-    globalStore.setUsdtBalance({ balance: balanceToken });
-    console.log("合约代币余额Token:", balanceToken);
-    return balanceToken;
-  } catch (error) {
-    console.error("查询代币余额失败:", error);
-    throw error;
-  }
+  return contract.methods.balanceOf(address).call()
+    .then(balanceWei => {
+      const balanceToken = web3.utils.fromWei(balanceWei, 'ether');
+      // 更新全局存储
+      globalStore.setUsdtBalance({ balance: balanceToken });
+      console.log("合约代币余额Token:", balanceToken);
+      return balanceToken;
+    })
+    .catch(error => {
+      console.error("查询代币余额失败:", error);
+      throw error;
+    });
 };
 /**
  * @description: 查询钱包kaia余额
@@ -198,9 +212,13 @@ export const getTokenBalance = async (address: string) => {
  */
 export const getKaiaBalance = async (address: string) => {
   if (import.meta.env.VITE_ENV === "PROD") {
-    return getBalanceWithDapp(address);
+    return getBalanceWithDapp(address).then((res) => {
+      return res;
+    });
   } else {
-    return getBalance(address);
+    return getBalance(address).then((res) => {
+      return res;
+    });
   }
 };
 /**
@@ -208,39 +226,38 @@ export const getKaiaBalance = async (address: string) => {
  * @param address 
  * @returns 
  */
-const getBalanceWithDapp = async (address: string) => {
+const getBalanceWithDapp = (address: string) => {
   const globalStore = useGlobalStore();
   const web3 = new Web3(globalStore.walletProvider);
-  try {
-    const balanceWei = await web3.eth.getBalance(address);
+  
+  return web3.eth.getBalance(address).then(balanceWei => {
     const balanceKAIA = web3.utils.fromWei(balanceWei, 'ether');
-    
     globalStore.setKaiaBalance({ balance: balanceKAIA });
     console.log("钱包余额Kaia:", balanceKAIA);
     return balanceKAIA;
-  } catch (error) {
+  }).catch(error => {
     console.error("DApp查询余额失败:", error);
     throw error;
-  }
+  });
 };
 /**
  * @description: 本地直接查询钱包kaia余额
  * @param address 
  * @returns 
  */
-const getBalance = async (address: string) => {
+const getBalance = (address: string) => {
   const web3 = new Web3(import.meta.env.VITE_CHAIN_URL);
   const globalStore = useGlobalStore();
-  try {
-    const balanceWei = await web3.eth.getBalance(address);
+  
+  return web3.eth.getBalance(address).then(balanceWei => {
     const balanceKAIA = web3.utils.fromWei(balanceWei, 'ether');
     console.log(`余额为: ${balanceKAIA} KAIA`);
     globalStore.setKaiaBalance({ balance: balanceKAIA });
     return balanceKAIA;
-  } catch (error) {
+  }).catch(error => {
     console.error("本地查询余额失败:", error);
     throw error;
-  }
+  });
 };
 /**
  * @description 对已授权的代币进行质押的gas消耗计算,type 1是KAIA，2是USDT
@@ -248,24 +265,25 @@ const getBalance = async (address: string) => {
  * @param amount 
  * @param type 1是KAIA，2是USDT
  */
-export const gasForDepositWithDepositContract = async (walletAddress: string, amount: string, type: string) => {
+export const gasForDepositWithDepositContract = (walletAddress: string, amount: string, type: string) => {
   const web3 = new Web3(import.meta.env.VITE_CHAIN_URL);
   const contract = getContractInstanceWithWeb3(type === "1" ? "2" : "3");
-  try {
-    const amountInWei = web3.utils.toWei(amount, 'ether');
-    const gasEstimate = await contract.methods.deposit(amountInWei, walletAddress).estimateGas({
-      from: walletAddress
+  const amountInWei = web3.utils.toWei(amount, 'ether');
+  
+  return contract.methods.deposit(amountInWei, walletAddress).estimateGas({
+    from: walletAddress
+  }).then(gasEstimate => {
+    return web3.eth.getGasPrice().then(gasPrice => {
+      const totalGasCost = BigInt(gasEstimate) * BigInt(gasPrice);
+      const totalGasCostFormatted = web3.utils.fromWei(totalGasCost.toString(), 'ether');
+      console.log("预计本次质押 gas 费用:", totalGasCostFormatted);
+      return totalGasCostFormatted;
     });
-    const gasPrice = await web3.eth.getGasPrice();
-    const totalGasCost = BigInt(gasEstimate) * BigInt(gasPrice);
-    const totalGasCostFormatted = web3.utils.fromWei(totalGasCost.toString(), 'ether');
-    console.log("预计本次质押 gas 费用:", totalGasCostFormatted);
-    return totalGasCostFormatted;
-  } catch (error) {
+  }).catch(error => {
     console.error("质押Gas估算失败:", error);
     throw error;
-  }
-}
+  });
+};
 /**
  * @description 对已授权的代币进行质押,type 1是KAIA，2是USDT
  * @param walletAddress 
@@ -307,29 +325,25 @@ export const depositWithDepositContract = async (walletAddress: string, amount: 
  * @param amount 
  * @param type 1是KAIA，2是USDT
  */
-export const gasForWithdrawWithDepositContract = async (walletAddress: string, amount: string, type: string) => {
+export const gasForWithdrawWithDepositContract = (walletAddress: string, amount: string, type: string) => {
   const web3 = new Web3(import.meta.env.VITE_CHAIN_URL);
   const depositContract = getContractInstanceWithWeb3(type === "1"? "2": "3");
   const amountInWei = web3.utils.toWei(amount, 'ether');
-  const response = {
-    status: 0,
-    tx: undefined,
-  };
   let totalGasCostFormatted: any = undefined;
-  try {
-    // 获取 gas 估算
-    const gasEstimate = await depositContract.methods.withdraw(amountInWei, walletAddress, walletAddress).estimateGas({ 
-        from: walletAddress
+  
+  return depositContract.methods.withdraw(amountInWei, walletAddress, walletAddress).estimateGas({ 
+    from: walletAddress
+  }).then(gasEstimate => {
+    return web3.eth.getGasPrice().then(gasPrice => {
+      const totalGasCost = BigInt(gasEstimate) * BigInt(gasPrice);
+      totalGasCostFormatted = web3.utils.fromWei(totalGasCost.toString(), 'ether');
+      console.log("预计本次质押 gas 费用:", totalGasCostFormatted);
+      return totalGasCostFormatted;
     });
-    const gasPrice = await web3.eth.getGasPrice();
-    const totalGasCost = BigInt(gasEstimate) * BigInt(gasPrice);
-    totalGasCostFormatted = web3.utils.fromWei(totalGasCost.toString(), 'ether');
-    console.log("预计本次质押 gas 费用:", totalGasCostFormatted);
-  } catch (error) {
+  }).catch(error => {
     console.error("质押Gas估算失败:", error);
     throw error;
-  }
-  return totalGasCostFormatted;
+  });
 };
 /**
  * @description 存款提现,type 1是KAIA，2是USDT

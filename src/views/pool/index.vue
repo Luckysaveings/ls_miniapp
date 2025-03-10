@@ -6,7 +6,7 @@ import GamePlayDialog from "./components/GameplayDialog.vue";
 import PreviousDialog from "./components/PreviousWinners.vue";
 import Progress from "@/components/Progress.vue";
 import { useGlobalStore } from "@/store/globalStore";
-import { getPoolList, getLotteryRecord } from "@/api/index";
+import { getPoolList, addTxRecord } from "@/api/index";
 import avatar from "@/assets/catAvatar.svg";
 import {
   getKaiaBalance,
@@ -88,31 +88,54 @@ const formatTime = (value) => {
 };
 // 使用dapp sdk进行授权以及质押, selectedPool为1: KAIA Pool 2: USD Pool
 const approveAndDepositWithDapp = async (amount: string) => {
+  showToastBeforeRequest();
   try {
-    getKaiaBalance(globalStore.address);
-    getTokenBalance(globalStore.address);
-    // if (selectedPool === "1") {
-    //   await approveKaiaForDeposit(globalStore.address, import.meta.env.VITE_KAIA_PRIZE_POOL_ADDRESS, amount);
-    // } else {
-    //   await approveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
-    // }
-    // await depositWithDepositContract(globalStore.address, amount, selectedPool);
     await approveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
     const response = await depositWithDepositContract(globalStore.address, amount, "2");
+    addTxRecord({
+      wallet: globalStore.address,
+      tx: response.tx.transactionHash,
+      txType: 2,
+      asset: selectedPool.value === "2" ? "USDT" : "KAIA",
+      amount: Number(amount),
+    }).then((res) => {
+      closeToast();
+    });
     getKaiaBalance(globalStore.address);
     getTokenBalance(globalStore.address);
     getDepositAmount(globalStore.address, "USDT");
     getDepositAmount(globalStore.address, "KAIA");
     getPoolAmount("USDT");
     getPoolAmount("KAIA");
-    return response;
   } catch (error) {
     console.log(error);
+    closeToast();
   }
 };
 // 使用dapp sdk进行奖池存款提现, selectedPool为1: KAIA Pool 2: USD Pool
 const withdrawWithDapp = async (amount: string) => {
-  await withdrawWithDepositContract(globalStore.address, amount, "2");
+  showToastBeforeRequest();
+  try {
+    const response = await withdrawWithDepositContract(globalStore.address, amount, "2");
+    addTxRecord({
+      wallet: globalStore.address,
+      tx: response.tx.transactionHash,
+      txType: 3,
+      asset: selectedPool.value === "2" ? "USDT" : "KAIA",
+      amount: Number(amount),
+    }).then((res) => {
+      closeToast();
+    });
+    getKaiaBalance(globalStore.address);
+    getTokenBalance(globalStore.address);
+    getDepositAmount(globalStore.address, "USDT");
+    getDepositAmount(globalStore.address, "KAIA");
+    getPoolAmount("USDT");
+    getPoolAmount("KAIA");
+  } catch (error) {
+    console.log(error);
+    closeToast();
+  }
 };
 const showDeposit = ref(false);
 
@@ -164,7 +187,7 @@ const showDepositDialog = () => {
 const confirmWithdraw = async () => {
   console.log("confirmWithdraw");
   // await getDepositAmount(localStorage.getItem("address2"), "USDT");
-  await withdrawWithDapp("10");
+  await withdrawWithDapp(selectedPool.value === "1" ? globalStore.balanceInfo.KAIA.savings : globalStore.balanceInfo.USDT.savings);
   showWithdraw.value = false;
   amount.value = 0;
 };
