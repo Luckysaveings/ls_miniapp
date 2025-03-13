@@ -71,7 +71,7 @@
           />
         </template>
       </van-cell> -->
-      <van-cell
+      <!-- <van-cell
         class="cell-class-custom"
         :border="false"
         title-class="title-class"
@@ -89,7 +89,7 @@
             <span>{{ $t("profile.WalletAddress") }}</span>
           </div>
         </template>
-      </van-cell>
+      </van-cell> -->
       <van-cell
         class="cell-class-custom"
         :border="false"
