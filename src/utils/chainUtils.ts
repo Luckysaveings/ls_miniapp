@@ -1,6 +1,7 @@
 // import { useGlobalStore } from "@/store/globalStore";
 import Web3 from 'web3';
 import DappPortalSDK from "@linenext/dapp-portal-sdk";
+import { closeToast } from "vant";
 import LuckyTokenABI from "@/assets/abi/LuckyToken.json";
 import KaiaPrizePoolABI from "@/assets/abi/PrizeVault.json";
 import PrizeVaultABI from "@/assets/abi/PrizeVault.json";
@@ -16,6 +17,7 @@ export const getDappWallet = async () => {
   if (globalStore.dappPortalSDK) {
     sdk = globalStore.dappPortalSDK;
   } else {
+    closeToast();
     // 初始化SDK
     sdk = await DappPortalSDK.init({
       clientId: import.meta.env.VITE_CLIENT_ID,
@@ -27,7 +29,12 @@ export const getDappWallet = async () => {
   globalStore.setProvider(walletProvider);
   const accounts = await walletProvider.request({ method: "kaia_requestAccounts" }); // 获取钱包地址, 首次运行用户界面会弹出钱包授权请求
   const accountAddress = accounts[0];
+  // const signature = await walletProvider.request({method: 'personal_sign', params: ["", accountAddress]});
   globalStore.setAddress(accountAddress);
+  const walletType = walletProvider.getWalletType();
+  if (walletType) {
+    globalStore.setWalletType(walletType);
+  }
   console.log("accountAddress:", accountAddress);
   // 绑定钱包
   bindWallet({ wallet: accountAddress });

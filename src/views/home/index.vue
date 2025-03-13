@@ -9,6 +9,7 @@ import avatar from "@/assets/catAvatar.svg";
 import { closeToast } from "vant";
 import {
   createKaiaWallet,
+  getDappWallet,
   getKaiaBalance,
   transferInKaia,
   approveTokenForDeposit,
@@ -219,6 +220,55 @@ const handlePopoverItem = (type: string) => {
   // popoverShow.value = false;
   router.push(`/${type}`);
 };
+const joinNowFn = () => {
+  if (globalStore.address) {
+    router.push('/pool');
+  } else {
+    getDappWallet();
+  }
+};
+const walletColor = ref({
+  type: "1",
+  background: "#18181B",
+  color: "#fff",
+  iconFill: "#fff",
+  text: "Connect wallet",
+});
+const clickWallet = () => {
+  if (walletColor.value.type === "1") {
+    walletColor.value = Object.assign(walletColor.value, {
+      type: "2",
+      background: undefined,
+      color: "#18181B",
+      iconFill: "#18181B",
+      text: "0xb5a8...1e28",
+    });
+  } else if (walletColor.value.type === "2") {
+    walletColor.value = Object.assign(walletColor.value, {
+      type: "3",
+      background: "#18181B",
+      color: "#fff",
+      iconFill: "#fff",
+      text: "Connect",
+    });
+  } else if (walletColor.value.type === "3"){
+    walletColor.value = Object.assign(walletColor.value, {
+      type: "4",
+      background: undefined,
+      color: "#18181B",
+      iconFill: "#18181B",
+      text: "",
+    });
+  } else {
+    walletColor.value = Object.assign(walletColor.value, {
+      type: "1",
+      background: "#18181B",
+      color: "#fff",
+      iconFill: "#fff",
+      text: "Connect wallet",
+    });
+  }
+};
 </script>
 
 <template>
@@ -237,15 +287,22 @@ const handlePopoverItem = (type: string) => {
         </div>
       </div>
       <div
-        style="visibility: hidden"
         class="header-right"
-      >
-        <svg-icon
-          name="icon-language"
-          size="16px"
-        />
-
-        <span class="current-language">EN</span>
+      > 
+        <div class="top-right-wallet" @click="clickWallet" :style="{backgroundColor: walletColor.background, color: walletColor.color}">
+          <svg class="svg-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3142 2.54497C13.6926 2.47417 14.0819 2.48709 14.4548 2.58286C14.8306 2.67936 15.1804 2.8576 15.4793 3.10486C15.7782 3.35212 16.0189 3.66232 16.1842 4.01331C16.3494 4.36429 16.4352 4.74743 16.4353 5.13537V5.13564V5.47138C17.5285 5.76463 18.3334 6.76239 18.3334 7.94813V14.8712C18.3334 16.2873 17.1854 17.4353 15.7693 17.4353H4.23079C2.81468 17.4353 1.66669 16.2873 1.66669 14.8712V8.52506V7.94813V6.75848V6.75823C1.6664 6.14459 1.8802 5.55005 2.27125 5.07712C2.66242 4.60405 3.20641 4.28231 3.80941 4.1674C3.81466 4.1664 3.81993 4.16544 3.8252 4.16454L13.3142 2.54497ZM14.7686 5.13591V5.38403H6.58641L13.6018 4.18666C13.607 4.18576 13.6123 4.18481 13.6176 4.18381C13.7577 4.1571 13.902 4.16165 14.0402 4.19714C14.1784 4.23263 14.3071 4.29818 14.417 4.38912C14.527 4.48006 14.6155 4.59415 14.6763 4.72323C14.737 4.85224 14.7685 4.99305 14.7686 5.13564V5.13591ZM3.33335 14.8712L3.33335 8.52506V7.94721C3.33385 7.452 3.73546 7.0507 4.23079 7.0507H15.7693C16.2649 7.0507 16.6667 7.45249 16.6667 7.94813V14.8712C16.6667 15.3669 16.2649 15.7686 15.7693 15.7686H4.23079C3.73515 15.7686 3.33335 15.3669 3.33335 14.8712ZM13.2639 12.2893C13.4695 12.4267 13.7111 12.5 13.9584 12.5C14.2899 12.5 14.6078 12.3683 14.8422 12.1339C15.0767 11.8995 15.2084 11.5815 15.2084 11.25C15.2084 11.0028 15.135 10.7611 14.9977 10.5555C14.8603 10.35 14.6651 10.1898 14.4367 10.0952C14.2083 10.0005 13.957 9.97579 13.7145 10.024C13.472 10.0723 13.2493 10.1913 13.0745 10.3661C12.8997 10.5409 12.7806 10.7637 12.7324 11.0061C12.6841 11.2486 12.7089 11.4999 12.8035 11.7284C12.8981 11.9568 13.0583 12.152 13.2639 12.2893Z"
+            :fill="walletColor.iconFill"/>
+          </svg>
+          <span class="current-wallet-status" >{{walletColor.text}}</span>
+        </div>
+        <div class="top-right-language">
+          <svg-icon
+            name="icon-language"
+            size="16px"
+          />
+          <span class="current-language">EN</span>
+        </div>
       </div>
     </div>
     <div class="content">
@@ -322,7 +379,7 @@ const handlePopoverItem = (type: string) => {
           />
           <button
             class="btn-main"
-            @click="router.push('/pool')"
+            @click="joinNowFn"
           >
             {{ $t("home.JoinNow") }}
           </button>
@@ -560,9 +617,24 @@ const handlePopoverItem = (type: string) => {
       }
     }
     .header-right {
+      display: flex;
+      gap: 8px;
+      justify-content: space-around;
+    }
+    .top-right-wallet, .top-right-language {
       padding: 0px 12px;
       border-radius: 10px;
       border: 2px solid var(--ls-line-12, rgba(24, 24, 27, 0.12));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 32px;
+    }
+    .current-wallet-status {
+      margin-left: 4px;
+    }
+    .svg-icon {
+      display: inline-block;
     }
   }
 }

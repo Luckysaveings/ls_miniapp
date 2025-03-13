@@ -35,7 +35,6 @@ const fetchData = (type) => {
   // 0-积分point，1-徽章badge
   return Promise.allSettled([getRanking({ type }), getMyRanking({ type }), getAchievement()]).then(
     ([rankingStatus, myRankingStatus, achievementStatus]) => {
-      console.log(rankingStatus, myRankingStatus, achievementStatus);
       if (rankingStatus.status === "fulfilled") {
         const rankingRes = rankingStatus.value;
         const list = (rankingRes.data && rankingRes.data.list) || [];

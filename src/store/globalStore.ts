@@ -98,6 +98,9 @@ export const useGlobalStore = defineStore("global", {
     setAddress(address: string) {
       this.address = address; // 保存钱包地址
     },
+    clearAddress() {
+      this.address = ""; // 保存钱包地址
+    },
     // 设置私钥
     setPrivateKey(privateKey: string) {
       this.privateKey = privateKey; // 保存私钥
@@ -123,6 +126,9 @@ export const useGlobalStore = defineStore("global", {
     },
     setKaiaValue(value: number) {
       this.kaiaValue = value;
+    },
+    setWalletType(value: string) {
+      this.walletType = value;
     },
     setAvailableRewards(availableRewards: any) {
       this.availableRewards = Object.assign({}, this.availableRewards, availableRewards);

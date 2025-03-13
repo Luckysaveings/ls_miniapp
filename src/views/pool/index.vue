@@ -9,6 +9,7 @@ import { useGlobalStore } from "@/store/globalStore";
 import { getPoolList, addTxRecord } from "@/api/index";
 import avatar from "@/assets/catAvatar.svg";
 import {
+  getDappWallet,
   getKaiaBalance,
   getTokenBalance,
   gasForApproveTokenForDeposit,
@@ -177,11 +178,19 @@ const withdrawInfo = ref({
   desc: `You can check all returns later in the wallet balance under the Home tab.`,
 });
 const showWithdrawDialog = async () => {
+  if (!globalStore.address) {
+    getDappWallet();
+    return;
+  }
   const gas = await gasForWithdrawWithDepositContract(globalStore.address, "10", "2");
   withdrawInfo.value.gasFee = gas;
   showWithdraw.value = true;
 };
 const showDepositDialog = () => {
+  if (!globalStore.address) {
+    getDappWallet();
+    return;
+  }
   showDeposit.value = true;
 };
 const confirmWithdraw = async () => {

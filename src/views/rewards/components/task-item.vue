@@ -88,13 +88,11 @@ const props = defineProps<{
   item: any;
 }>();
 const taskClick = (task: any) => {
-  console.log(task);
   if (task.status === 1) {
     checkTask(task.taskId).then((res) => {
       if (task.isCheck === 0) {
         task.status = 2;
       } else {
-        console.log(res);
         task.status = res.data.status;
       }
     });

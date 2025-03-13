@@ -218,7 +218,7 @@
           <van-cell
             class="cell-custom"
             :title="$t('common.WalletAddress')"
-            :value="globalStore.address || ''"
+            :value="formatWalletAddress(globalStore.address || '')"
             :border="false"
           >
             <template #right-icon>
@@ -231,11 +231,13 @@
           </van-cell>
           <van-cell
             class="cell-custom"
-            :title="$t('profile.WalletType')"
             :border="false"
+            :value="globalStore.walletType"
           >
-            <template #value>
-              <span class="type">{{ globalStore.walletType || "" }} </span>
+            <template #title>
+              <div class="cell-title-wrap">
+                <span>{{ $t('profile.WalletType') }}</span>
+              </div>
             </template>
           </van-cell>
         </van-cell-group>
@@ -309,8 +311,11 @@ const showWalletAddress = ref(false);
 const hiddenWalletAddress = () => {
   showWalletAddress.value = false;
 };
-const disconnectFn = () => {
+const disconnectFn = async () => {
   showWalletAddress.value = false;
+  await globalStore.walletProvider.disconnectWallet();
+  globalStore.clearAddress();
+  // localStorage.removeItem("walletProvider");
 };
 const show = ref(false);
 const toastText = ref("Copy Success");

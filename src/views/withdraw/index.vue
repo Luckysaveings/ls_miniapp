@@ -258,7 +258,6 @@ const showInfoStatus = ref(false);
 const infoStatus = ref("");
 const qrRef = ref(null);
 const handleQrRes = (res) => {
-  console.log("res", res);
   showToast({ message: `Scan Success: ${res}` });
   // qrRef.value.stopQrCode();
 };

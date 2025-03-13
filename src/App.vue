@@ -5,7 +5,7 @@
 import liff from "@line/liff";
 import { getTaskList, login, bindWallet, getKaiaPrice } from "@/api/index";
 import { useGlobalStore } from "@/store/globalStore";
-import { createKaiaWallet, getDappWallet, getTokenBalance, getKaiaBalance, getDepositAmount, getPoolAmount } from "@/utils/index";
+import { createKaiaWallet, getDappWallet, getTokenBalance, getKaiaBalance, getDepositAmount, getPoolAmount, showToastBeforeRequest } from "@/utils/index";
 import { showToast, showFailToast, showLoadingToast, closeToast } from "vant";
 
 // 初始化 Store
@@ -17,9 +17,6 @@ onMounted(() => {
     message: "",
     forbidClick: true,
     duration: 0,
-  });
-  getKaiaPrice().then((res) => {
-    globalStore.setKaiaValue(res.data.kaiaPrice);
   });
   if (import.meta.env.VITE_ENV === "PROD") {
     onlineLogic();
@@ -77,6 +74,7 @@ const onlineLogic = () => {
             });
             console.log("globalStore.token:", globalStore.token);
             await getDappWallet();
+            showToastBeforeRequest();
             getChainData();
           })
           .catch((err) => {
@@ -90,6 +88,9 @@ const onlineLogic = () => {
     });
 };
 const getChainData = () => {
+  getKaiaPrice().then((res) => {
+    globalStore.setKaiaValue(res.data.kaiaPrice);
+  });
   Promise.all([
     getKaiaBalance(globalStore.address),
     getTokenBalance(globalStore.address),
