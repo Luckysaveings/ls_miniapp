@@ -35,6 +35,7 @@ onMounted(() => {
       promoteCode: "azxcvbs",
     });
     // globalStore.setAddress("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6"); // line sdk 生成的钱包地址
+    localStorage.setItem("address", "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
     globalStore.setAddress("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 测试链钱包地址
     globalStore.setPrivateKey("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e"); // 测试链钱包私钥
     bindWallet({ wallet: "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9" });
@@ -74,7 +75,6 @@ const onlineLogic = () => {
             });
             console.log("globalStore.token:", globalStore.token);
             await getDappWallet();
-            showToastBeforeRequest();
             getChainData();
           })
           .catch((err) => {

@@ -17,6 +17,7 @@ export default {
     Savings: "Savings",
     LotteryWinnings: "Lottery Winnings",
     JoinNow: "Join Now",
+    WalletDetails: "Wallet Details",
   },
   deposit: {
     Deposit: "Deposit",
@@ -67,6 +68,7 @@ export default {
     urlTip: "blablablabalblabalbalba, read more: http://blababalbala",
     TheAmountExceedsTheAvailableBalance: "The amount exceeds the available balance!",
     Withdraw: "Withdraw",
+    WalletDetails: "Wallet Details",
   },
   ranking: {
     Ranking: "Ranking",

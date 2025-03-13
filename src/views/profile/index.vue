@@ -195,64 +195,7 @@
       </van-cell>
     </van-cell-group>
   </div>
-  <!-- 钱包弹窗 -->
-  <van-overlay
-    :show="showWalletAddress"
-    class-name="wallet-dialog"
-  >
-    <div class="content-box">
-      <div class="dialog-title">
-        <span>{{ $t("profile.WalletAddress") }}</span>
-        <van-icon
-          name="cross"
-          size="20"
-          color="#A1A1AA"
-          @click="hiddenWalletAddress"
-        />
-      </div>
-      <div class="dialog-content">
-        <van-cell-group
-          class="deposit-item-wrap"
-          :border="false"
-        >
-          <van-cell
-            class="cell-custom"
-            :title="$t('common.WalletAddress')"
-            :value="formatWalletAddress(globalStore.address || '')"
-            :border="false"
-          >
-            <template #right-icon>
-              <svg-icon
-                name="icon-copy"
-                class="img-copy"
-                @click="handleCopy(globalStore.address)"
-              />
-            </template>
-          </van-cell>
-          <van-cell
-            class="cell-custom"
-            :border="false"
-            :value="globalStore.walletType"
-          >
-            <template #title>
-              <div class="cell-title-wrap">
-                <span>{{ $t('profile.WalletType') }}</span>
-              </div>
-            </template>
-          </van-cell>
-        </van-cell-group>
-      </div>
 
-      <div class="dialog-footer">
-        <button
-          class="btn-main"
-          @click="disconnectFn"
-        >
-          {{ $t("profile.Disconnect") }}
-        </button>
-      </div>
-    </div>
-  </van-overlay>
   <!-- version弹窗 -->
   <van-overlay
     :show="showVersion"
@@ -306,16 +249,6 @@ const showVersion = ref(false);
 const version = ref("1.0.0");
 const hiddenVersion = () => {
   showVersion.value = false;
-};
-const showWalletAddress = ref(false);
-const hiddenWalletAddress = () => {
-  showWalletAddress.value = false;
-};
-const disconnectFn = async () => {
-  showWalletAddress.value = false;
-  await globalStore.walletProvider.disconnectWallet();
-  globalStore.clearAddress();
-  // localStorage.removeItem("walletProvider");
 };
 const show = ref(false);
 const toastText = ref("Copy Success");
@@ -469,36 +402,4 @@ const customToastFn = (msg) => {
   }
 }
 
-.wallet-dialog {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  .dialog-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 22px;
-    color: #18181b;
-    margin-bottom: 16px;
-  }
-  .content-box {
-    box-sizing: content-box;
-    width: 314px;
-    padding: 20px;
-    margin: 0 10px;
-    border-radius: 24px;
-    border: 3px solid var(--LS-Gray-07, #18181b);
-    background: #fff;
-    box-shadow: 0px 6px 0px 0px #18181b;
-
-    .cell-custom {
-      padding: 10px 0;
-    }
-  }
-  .dialog-footer {
-    margin-top: 16px;
-  }
-}
 </style>

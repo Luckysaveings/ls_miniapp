@@ -178,19 +178,13 @@ const withdrawInfo = ref({
   desc: `You can check all returns later in the wallet balance under the Home tab.`,
 });
 const showWithdrawDialog = async () => {
-  if (!globalStore.address) {
-    getDappWallet();
-    return;
-  }
+  await getDappWallet();
   const gas = await gasForWithdrawWithDepositContract(globalStore.address, "10", "2");
   withdrawInfo.value.gasFee = gas;
   showWithdraw.value = true;
 };
-const showDepositDialog = () => {
-  if (!globalStore.address) {
-    getDappWallet();
-    return;
-  }
+const showDepositDialog = async () => {
+  await getDappWallet();
   showDeposit.value = true;
 };
 const confirmWithdraw = async () => {

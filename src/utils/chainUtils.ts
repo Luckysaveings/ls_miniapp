@@ -7,6 +7,8 @@ import KaiaPrizePoolABI from "@/assets/abi/PrizeVault.json";
 import PrizeVaultABI from "@/assets/abi/PrizeVault.json";
 import { useGlobalStore } from "@/store/globalStore";
 import { bindWallet } from "@/api/index";
+import {   showToastBeforeRequest,
+} from "@/utils/common";
 
 /**
  * @dewscription 获取dapp钱包示例以及地址
@@ -16,18 +18,23 @@ export const getDappWallet = async () => {
   let sdk: any = undefined;
   if (globalStore.dappPortalSDK) {
     sdk = globalStore.dappPortalSDK;
-  } else {
-    closeToast();
-    // 初始化SDK
-    sdk = await DappPortalSDK.init({
-      clientId: import.meta.env.VITE_CLIENT_ID,
-      chainId: import.meta.env.VITE_PUBLIC_CHAIN_ID,
-    });
+    return;
   }
+  // 初始化SDK
+  sdk = await DappPortalSDK.init({
+    clientId: import.meta.env.VITE_CLIENT_ID,
+    chainId: import.meta.env.VITE_PUBLIC_CHAIN_ID,
+  });
   globalStore.setSdk(sdk); // 保存sdk实例
   const walletProvider = sdk.getWalletProvider();
   globalStore.setProvider(walletProvider);
+  if (localStorage.getItem("address")) {
+    globalStore.setAddress(localStorage.getItem("address")!);
+    return;
+  }
+  closeToast();
   const accounts = await walletProvider.request({ method: "kaia_requestAccounts" }); // 获取钱包地址, 首次运行用户界面会弹出钱包授权请求
+  showToastBeforeRequest();
   const accountAddress = accounts[0];
   // const signature = await walletProvider.request({method: 'personal_sign', params: ["", accountAddress]});
   globalStore.setAddress(accountAddress);
@@ -35,6 +42,7 @@ export const getDappWallet = async () => {
   if (walletType) {
     globalStore.setWalletType(walletType);
   }
+  localStorage.setItem("address", accountAddress);
   console.log("accountAddress:", accountAddress);
   // 绑定钱包
   bindWallet({ wallet: accountAddress });
@@ -488,5 +496,44 @@ export const transferInKaia = async (address: string, amount: string) => {
       params: [txParams]
     });
     console.log("DApp交易哈希:", response.tx);
+  }
+};
+
+// 从当前钱包转账token到制定钱包地址
+/**
+ * @description 从当前钱包转账token到制定钱包地址
+ * @param address 目标钱包地址
+ * @param amount 转账金额
+ * @returns
+ */
+export const transferInLuckytoken = async (address: string, amount: string) => {
+  const web3 = new Web3(import.meta.env.VITE_CHAIN_URL);
+  const globalStore = useGlobalStore();
+  const amountInWei = web3.utils.toWei(amount, 'ether');
+  // 使用Web3合约实例
+  const contract = getContractInstanceWithWeb3("1");
+  const response = { status: 0, tx: undefined };
+  
+  try {
+    // 获取 gas 估算
+    const gasEstimate = await contract.methods.transfer(address, amountInWei).estimateGas({
+      from: globalStore.address
+    });
+    const gasPrice = await web3.eth.getGasPrice();
+    console.log('预计转账总gas费用:', web3.utils.fromWei((BigInt(gasEstimate) * BigInt(gasPrice)).toString(), 'ether'), 'KAIA');
+    
+    response.tx = await contract.methods.transfer(address, amountInWei).send({
+      from: globalStore.address,
+      gas: (BigInt(gasEstimate) * BigInt(12) / BigInt(10)).toString()
+    });
+    
+    console.log("转账交易已发送，交易哈希:", response.tx.transactionHash);
+    const receipt = await web3.eth.getTransactionReceipt(response.tx.transactionHash);
+    console.log("交易已确认，区块高度:", receipt.blockNumber);
+    return response;
+  } catch (error) {
+    console.error("代币转账失败:", error);
+    response.status = 1;
+    return response;
   }
 };

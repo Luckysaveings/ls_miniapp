@@ -12,6 +12,7 @@ import {
   getDappWallet,
   getKaiaBalance,
   transferInKaia,
+  transferInLuckytoken,
   approveTokenForDeposit,
   formatWalletAddress,
   formatAmount,
@@ -74,18 +75,6 @@ const hiddenInfo = () => {
   showInfo.value = false;
 };
 
-const balanceInfo = reactive({
-  USDT: {
-    balance: 1000,
-    savings: 10000,
-    drawRewards: 10,
-  },
-  KAIA: {
-    balance: 1000,
-    savings: 10000,
-    drawRewards: 10,
-  },
-});
 const showCopyToast = ref(false);
 const copyToastText = ref("Copy Success");
 const copyAddress = (txt) => {
@@ -112,30 +101,6 @@ const prizePoolInfo = computed(() => {
 
 const formatTime = (value) => {
   return value < 10 ? `0${value}` : value;
-};
-const kaiaChainOperate = async () => {
-  // createKaiaWallet(); // 创建一个kaia测试链的钱包，提示词，钱包地址和私钥均存储在localStorage缓存中
-  getKaiaBalance(localStorage.getItem("address")); // 获取刚生成的钱包地址的kaia余额
-  getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9"); // 获取钱包地址的kaia余额
-  // 在测试链上转账，第一个参数是私钥（一个有余额的钱包）用来对交易签名，第二个参数是接收方地址，第三个参数是转账金额
-  // await transferInKaia("0xf9267a9f70dc239b1efecb595dcccaf74a8cecfb4d92f05f2c5d918aeac4f92e", localStorage.getItem("address"), "100");
-  // await transferInKaia(localStorage.getItem("privateKey"), "0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
-  getKaiaBalance(localStorage.getItem("address"));
-  getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
-  return;
-};
-// 使用dapp sdk进行授权以及质押
-const approveAndDepositWithDapp = async (amount: string) => {
-  try {
-    getKaiaBalance(globalStore.address);
-    getTokenBalance(globalStore.address);
-    await approveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, amount);
-    await depositWithDepositContract(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, globalStore.address, amount);
-    getKaiaBalance(globalStore.address);
-    getTokenBalance(globalStore.address);
-  } catch (error) {
-    console.log(error);
-  }
 };
 const kaiaTransferTest = async () => {
   if (import.meta.env.VITE_ENV === "PROD") {
@@ -176,9 +141,24 @@ const kaiaTransferTest = async () => {
     // await getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6");
   }
 }
-const clickBalance = async () => {
-  // kaiaTransferTest();
-
+const tokenTransferTest = async () => {
+  if (import.meta.env.VITE_ENV === "PROD") {
+    // 测试线上环境liff账号往开发环境账号转账
+    await getTokenBalance(globalStore.address);
+    await getTokenBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+    await transferInLuckytoken("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
+    await getTokenBalance(globalStore.address);
+    await getTokenBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+  } else {
+    // 开发环境账号往liff账号转账
+    await getTokenBalance(globalStore.address);
+    await getTokenBalance("0x7d714d6f3023f06a71ad40e157944a3b8b203662");
+    await transferInLuckytoken("0x7d714d6f3023f06a71ad40e157944a3b8b203662", "100");
+    await getTokenBalance(globalStore.address);
+    await getTokenBalance("0x7d714d6f3023f06a71ad40e157944a3b8b203662");
+  }
+}
+const depositAndWithdrawTest = async () => {
   await getDepositAmount(globalStore.address, "USDT");
   await getDepositAmount(globalStore.address, "KAIA");
   await getPoolAmount("USDT");
@@ -197,6 +177,12 @@ const clickBalance = async () => {
   await getPoolAmount("KAIA");
   await getKaiaBalance(globalStore.address);
   await getTokenBalance(globalStore.address);
+}
+const clickBalance = async () => {
+  // kaiaTransferTest();
+  // tokenTransferTest
+  // depositAndWithdrawTest();
+
 };
 const openLineWallet = () => {
   liff.openWindow({
@@ -221,53 +207,32 @@ const handlePopoverItem = (type: string) => {
   router.push(`/${type}`);
 };
 const joinNowFn = () => {
-  if (globalStore.address) {
-    router.push('/pool');
-  } else {
-    getDappWallet();
-  }
+  router.push('/pool');
 };
+const showWalletAddress = ref(false);
 const walletColor = ref({
-  type: "1",
-  background: "#18181B",
-  color: "#fff",
-  iconFill: "#fff",
-  text: "Connect wallet",
+  background: undefined,
+  color: "#18181B",
+  iconFill: "#18181B",
+  text: "",
 });
 const clickWallet = () => {
-  if (walletColor.value.type === "1") {
-    walletColor.value = Object.assign(walletColor.value, {
-      type: "2",
-      background: undefined,
-      color: "#18181B",
-      iconFill: "#18181B",
-      text: "0xb5a8...1e28",
-    });
-  } else if (walletColor.value.type === "2") {
-    walletColor.value = Object.assign(walletColor.value, {
-      type: "3",
-      background: "#18181B",
-      color: "#fff",
-      iconFill: "#fff",
-      text: "Connect",
-    });
-  } else if (walletColor.value.type === "3"){
-    walletColor.value = Object.assign(walletColor.value, {
-      type: "4",
-      background: undefined,
-      color: "#18181B",
-      iconFill: "#18181B",
-      text: "",
-    });
-  } else {
-    walletColor.value = Object.assign(walletColor.value, {
-      type: "1",
-      background: "#18181B",
-      color: "#fff",
-      iconFill: "#fff",
-      text: "Connect wallet",
-    });
-  }
+  showWalletAddress.value =!showWalletAddress.value;
+};
+const disconnectFn = async () => {
+  showWalletAddress.value = false;
+  await globalStore.walletProvider.disconnectWallet();
+  globalStore.clearConnect();
+  localStorage.removeItem("address");
+  await getDappWallet();
+  showToastBeforeRequest();
+  getKaiaBalance(globalStore.address);
+  getTokenBalance(globalStore.address);
+  getDepositAmount(globalStore.address, "USDT");
+  getDepositAmount(globalStore.address, "KAIA");
+  getPoolAmount("USDT");
+  getPoolAmount("KAIA");
+  closeToast();
 };
 </script>
 
@@ -294,9 +259,8 @@ const clickWallet = () => {
             <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3142 2.54497C13.6926 2.47417 14.0819 2.48709 14.4548 2.58286C14.8306 2.67936 15.1804 2.8576 15.4793 3.10486C15.7782 3.35212 16.0189 3.66232 16.1842 4.01331C16.3494 4.36429 16.4352 4.74743 16.4353 5.13537V5.13564V5.47138C17.5285 5.76463 18.3334 6.76239 18.3334 7.94813V14.8712C18.3334 16.2873 17.1854 17.4353 15.7693 17.4353H4.23079C2.81468 17.4353 1.66669 16.2873 1.66669 14.8712V8.52506V7.94813V6.75848V6.75823C1.6664 6.14459 1.8802 5.55005 2.27125 5.07712C2.66242 4.60405 3.20641 4.28231 3.80941 4.1674C3.81466 4.1664 3.81993 4.16544 3.8252 4.16454L13.3142 2.54497ZM14.7686 5.13591V5.38403H6.58641L13.6018 4.18666C13.607 4.18576 13.6123 4.18481 13.6176 4.18381C13.7577 4.1571 13.902 4.16165 14.0402 4.19714C14.1784 4.23263 14.3071 4.29818 14.417 4.38912C14.527 4.48006 14.6155 4.59415 14.6763 4.72323C14.737 4.85224 14.7685 4.99305 14.7686 5.13564V5.13591ZM3.33335 14.8712L3.33335 8.52506V7.94721C3.33385 7.452 3.73546 7.0507 4.23079 7.0507H15.7693C16.2649 7.0507 16.6667 7.45249 16.6667 7.94813V14.8712C16.6667 15.3669 16.2649 15.7686 15.7693 15.7686H4.23079C3.73515 15.7686 3.33335 15.3669 3.33335 14.8712ZM13.2639 12.2893C13.4695 12.4267 13.7111 12.5 13.9584 12.5C14.2899 12.5 14.6078 12.3683 14.8422 12.1339C15.0767 11.8995 15.2084 11.5815 15.2084 11.25C15.2084 11.0028 15.135 10.7611 14.9977 10.5555C14.8603 10.35 14.6651 10.1898 14.4367 10.0952C14.2083 10.0005 13.957 9.97579 13.7145 10.024C13.472 10.0723 13.2493 10.1913 13.0745 10.3661C12.8997 10.5409 12.7806 10.7637 12.7324 11.0061C12.6841 11.2486 12.7089 11.4999 12.8035 11.7284C12.8981 11.9568 13.0583 12.152 13.2639 12.2893Z"
             :fill="walletColor.iconFill"/>
           </svg>
-          <span class="current-wallet-status" >{{walletColor.text}}</span>
         </div>
-        <div class="top-right-language">
+        <div class="top-right-language" style="display: none;">
           <svg-icon
             name="icon-language"
             size="16px"
@@ -534,7 +498,61 @@ const clickWallet = () => {
         </div>
       </div>
     </van-overlay>
+      <!-- 钱包弹窗 -->
+    <van-overlay
+      :show="showWalletAddress"
+      class-name="wallet-dialog"
+    >
+      <div class="content-box">
+        <div class="dialog-title">
+          <span>{{ $t("home.WalletDetails") }}</span>
+          <van-icon
+            name="cross"
+            size="20"
+            color="#A1A1AA"
+            @click="clickWallet"
+          />
+        </div>
+        <div class="dialog-content">
+          <!-- <van-cell-group
+            class="deposit-item-wrap"
+            :border="false"
+          >
+            <van-cell
+              class="cell-custom"
+              :title="$t('common.WalletAddress')"
+              :value="formatWalletAddress(globalStore.address || '')"
+              :border="false"
+            >
+              <template #right-icon>
+                <svg-icon
+                  name="icon-copy"
+                  class="img-copy"
+                  @click="handleCopy(globalStore.address)"
+                />
+              </template>
+            </van-cell>
+          </van-cell-group> -->
+          <div class="content-title">{{ $t('common.WalletAddress') }}</div>
+          <div class="content-text">{{ globalStore.address }}</div>
+        </div>
 
+        <div class="dialog-footer">
+          <button
+            class="btn-sub"
+            @click="clickWallet"
+          >
+            {{ $t("common.cancel") }}
+          </button>
+          <button
+            class="btn-main"
+            @click="disconnectFn"
+          >
+            {{ $t("profile.Disconnect") }}
+          </button>
+        </div>
+      </div>
+    </van-overlay>
     <CustomToast
       v-model:show="showCopyToast"
       :message="copyToastText"
@@ -836,6 +854,66 @@ const clickWallet = () => {
   }
   .main-text {
     color: var(--LS-Gray-05, #83838f);
+  }
+}
+.wallet-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .dialog-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 22px;
+    color: #18181b;
+    margin-bottom: 16px;
+  }
+  .content-box {
+    box-sizing: content-box;
+    width: 314px;
+    padding: 20px;
+    margin: 0 10px;
+    border-radius: 24px;
+    border: 3px solid var(--LS-Gray-07, #18181b);
+    background: #fff;
+    box-shadow: 0px 6px 0px 0px #18181b;
+
+    .cell-custom {
+      padding: 10px 0;
+    }
+  }
+  .dialog-content {
+    text-align: center;
+    margin: 16px 0;
+    padding: 12px;
+    border-radius: 12px;
+    background: #F4F4F5;
+    .content-title {
+      color: #83838F;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+    .content-text {
+      color: #000;
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 26px;
+      word-wrap: break-word;
+      margin-top: 6px;
+    }
+  }
+  .dialog-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .btn-sub, .btn-main {
+      width: calc(50% - 8px);
+    }
   }
 }
 </style>

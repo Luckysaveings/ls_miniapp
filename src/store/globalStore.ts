@@ -133,6 +133,25 @@ export const useGlobalStore = defineStore("global", {
     setAvailableRewards(availableRewards: any) {
       this.availableRewards = Object.assign({}, this.availableRewards, availableRewards);
     },
+    clearConnect() {
+      this.address = ""; // 保存钱包地址
+      this.dappPortalSDK = undefined;
+      this.walletProvider = undefined;
+      this.balanceInfo = {
+        USDT: {
+          allAmount: 0,
+          balance: 0,
+          savings: 0,
+          drawRewards: 0,
+        },
+        KAIA: {
+          allAmount: 0,
+          balance: 0,
+          savings: 0,
+          drawRewards: 0,
+        },
+      };
+    },
     // 登出（清除 token 和钱包地址）
     logout() {
       this.clearToken();
