@@ -3,9 +3,11 @@ import { useRouter } from "vue-router"; // 添加这行导入
 
 import { ContentTypeEnum } from "@/enums/request-enum";
 import NProgress from "../progress";
-import { showToast, showFailToast, showLoadingToast, closeToast } from "vant";
+import { showToast } from "vant";
 import "vant/es/toast/style";
 import { useGlobalStore } from "@/store/globalStore";
+import { useCustomI18n } from "@/lang/i18n-utils";
+const { i18nTFn } = useCustomI18n();
 // 默认 axios 实例请求配置
 const configDefault = {
   headers: {
@@ -94,7 +96,7 @@ class Http {
         if (isSuccess) {
           return response.data;
         } else {
-          let message = "Network Error, Please try again later.";
+          let message = i18nTFn("common.NetworkErrorMsg");
           if (code === 7 && msg) {
             message = msg;
           }
@@ -127,49 +129,8 @@ class Http {
         // }
         NProgress.done();
         // 处理 HTTP 网络错误
-        let message = "";
-        // HTTP 状态码
-        const status = error.response?.status;
-        switch (status) {
-          case 400:
-            message = "Bad Request";
-            break;
-          case 401:
-            message = "Unauthorized, please log in";
-            break;
-          case 403:
-            message = "Forbidden";
-            break;
-          case 404:
-            message = `Request URL error: ${error.response?.config?.url}`;
-            break;
-          case 408:
-            message = "Request Timeout";
-            break;
-          case 500:
-            message = "Internal Server Error";
-            break;
-          case 501:
-            message = "Not Implemented";
-            break;
-          case 502:
-            message = "Bad Gateway";
-            break;
-          case 503:
-            message = "Service Unavailable";
-            break;
-          case 504:
-            message = "Gateway Timeout";
-            break;
-          case 505:
-            message = "HTTP Version Not Supported";
-            break;
-          default:
-            message = "Network Connection Error";
-        }
-
         showToast({
-          message: "Network Error, Please try again later.",
+          message: i18nTFn("common.NetworkErrorMsg"),
           overlay: true,
           closeOnClick: true,
           closeOnClickOverlay: true,
@@ -178,13 +139,6 @@ class Http {
         });
         if (!router) return;
         // 跳转到错误页面
-        // router.push({
-        //   name: "error",
-        //   query: {
-        //     message: message,
-        //     status: status?.toString(),
-        //   },
-        // });
         return Promise.reject(error);
       }
     );

@@ -103,7 +103,7 @@
               className="title-icon"
               name="profile-email"
             />
-            <span>{{ $t("profile.Email") }}</span>
+            <span>{{ $t("common.Email") }}</span>
           </div>
         </template>
       </van-cell>
@@ -223,7 +223,7 @@
           class="app-name"
         />
         <div class="version-text">
-          <span>Version: {{ version }}</span>
+          <span>{{ $t("profile.Version") }}: {{ version }}</span>
         </div>
       </div>
     </div>
@@ -241,6 +241,8 @@ import { formatWalletAddress } from "@/utils/index";
 import CustomToast from "@/components/CustomToast.vue";
 import avatar from "@/assets/catAvatar.svg";
 import { showToast } from "vant";
+import { useCustomI18n } from "@/lang/i18n-utils";
+const { i18nTFn } = useCustomI18n();
 
 // 初始化 Store
 const globalStore = useGlobalStore();
@@ -251,7 +253,7 @@ const hiddenVersion = () => {
   showVersion.value = false;
 };
 const show = ref(false);
-const toastText = ref("Copy Success");
+const toastText = ref(i18nTFn("common.CopySuccess"));
 const handleCopy = (val) => {
   navigator.clipboard.writeText(val);
   show.value = true;
@@ -401,5 +403,4 @@ const customToastFn = (msg) => {
     margin-right: 6px;
   }
 }
-
 </style>

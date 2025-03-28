@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrap">
     <van-nav-bar
-      :title="$t('deposit.Deposit')"
+      :title="$t('common.Deposit')"
       left-arrow
       class="nav-bar-wrap"
       :border="false"
@@ -23,7 +23,10 @@
         class="img-qr"
       />
       <div class="deposit-title">{{ $t("deposit.YourKAIAAddress") }}</div>
-      <div class="deposit-desc">{{ $t("deposit.addressTip") }} <span class="bold">KAIA</span>.</div>
+      <div class="deposit-desc">
+        {{ $t("deposit.addressTip") }} <span class="bold"> {{ $t("common.KAIA") }}</span
+        >.
+      </div>
     </div>
 
     <!--  Button -->
@@ -58,19 +61,9 @@ import { useRouter } from "vue-router";
 import CustomToast from "@/components/CustomToast.vue";
 import { useGlobalStore } from "@/store/globalStore";
 
-import {
-  createKaiaWallet,
-  getBalance,
-  transferInKaia,
-  getBalanceWithDapp,
-  getTokenBalance,
-  approveTokenForDeposit,
-  depositWithDepositContract,
-  getDepositAmount,
-  formatWalletAddress,
-  formatAmount,
-  calculateTimeDifference,
-} from "@/utils/index";
+import { formatWalletAddress } from "@/utils/index";
+import { useCustomI18n } from "@/lang/i18n-utils";
+const { i18nTFn } = useCustomI18n();
 // 初始化 Store
 const globalStore = useGlobalStore();
 
@@ -82,11 +75,11 @@ const onClickLeft = () => {
   router.back();
 };
 const show = ref(false);
-const toastText = ref("Copy Success");
+const toastText = ref(i18nTFn("common.CopySuccess"));
 
 const copyWalletAddress = () => {
   navigator.clipboard.writeText(globalStore.address);
-  toastText.value = "Copy Success";
+  toastText.value = i18nTFn("common.CopySuccess");
   show.value = true;
 };
 </script>

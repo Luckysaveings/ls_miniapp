@@ -1,3 +1,126 @@
+<template>
+  <div class="page-wrap">
+    <div class="header">
+      <div class="header-left">
+        <van-image
+          width="36"
+          height="36"
+          fit="cover"
+          :src="globalStore.userInfo.avatar || avatar"
+          round
+          class="product-img"
+          @click="router.push('/profile')"
+        />
+        <div class="text-content">
+          {{ globalStore.userInfo.nickname }}
+        </div>
+      </div>
+      <div class="header-right">
+        <svg-icon
+          className="img-header-right"
+          name="icon-jiangbei-2"
+          @click="router.push('/ranking')"
+        />
+        <svg-icon
+          className="img-header-right"
+          name="icon-upload"
+          @click="generateInviteLink"
+        />
+        <div class="top-right-language">
+          <svg-icon
+            name="icon-language"
+            size="16px"
+          />
+          <div class="language-switcher">
+            <van-dropdown-menu>
+              <van-dropdown-item
+                v-model="currentLang"
+                :options="languageOptions"
+                @change="handleLanguageChange"
+              />
+            </van-dropdown-menu>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="module-item">
+      <div class="module-title">
+        <span>{{ $t("rewards.YourAchievements") }}</span>
+        <svg-icon
+          className="img-icon"
+          name="icon-info"
+          @click="customToast($t('rewards.msgTip1'))"
+        />
+      </div>
+      <div class="content-box-yellow achievement-box">
+        <div class="inner-color">
+          <div class="achievement-item">
+            <svg-icon
+              className="img-icon"
+              name="img-points"
+            />
+            <div class="achievement-text">
+              <span>x{{ achievements.points }}</span>
+            </div>
+          </div>
+          <div class="achievement-item">
+            <svg-icon
+              className="img-icon"
+              name="img-badges"
+            />
+            <div class="achievement-text right-text">
+              <span>x{{ achievements.badges }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="module-item">
+      <div class="module-title">
+        <span>{{ $t("rewards.DailyTasks") }}</span>
+        <svg-icon
+          className="img-icon"
+          name="icon-info"
+          @click="customToast($t('rewards.msgTip2'))"
+        />
+      </div>
+      <TaskItem
+        v-for="(item, index) in dailyTasks"
+        v-show="showAllDailyTasks || index < 2"
+        :key="`${item.taskId}-${item.rewardAmount}`"
+        :item="item"
+      />
+      <div
+        v-if="dailyTasks.length > 2 && !showAllDailyTasks"
+        class="more-tasks"
+        @click="showAllDailyTasks = true"
+      >
+        <span>{{ $t("rewards.MoreTasks") }}</span>
+        <van-icon
+          name="arrow-down"
+          size="16px"
+          color="#83838F"
+        />
+      </div>
+    </div>
+    <div class="module-item">
+      <div class="module-title">
+        <span>{{ $t("rewards.Popups") }}</span>
+        <svg-icon
+          className="img-icon"
+          name="icon-info"
+          @click="customToast($t('rewards.msgTip3'))"
+        />
+      </div>
+      <TaskItem
+        v-for="item in popups"
+        :key="`${item.taskId}-${item.rewardAmount}`"
+        :item="item"
+      />
+    </div>
+  </div>
+</template>
 <script setup lang="ts" name="Rewards">
 import liff from "@line/liff";
 import { useRouter } from "vue-router";
@@ -8,14 +131,28 @@ import { useGlobalStore } from "@/store/globalStore";
 import avatar from "@/assets/catAvatar.svg";
 import { showToast, showFailToast, showLoadingToast, closeToast } from "vant";
 import { showToastBeforeRequest } from "@/utils/index";
+import { useCustomI18n, switchLanguage } from "@/lang/i18n-utils";
+import { useI18n } from "vue-i18n";
+
+const { i18nTFn } = useCustomI18n();
+const { locale } = useI18n();
+const currentLang = ref(locale.value);
+const languageOptions = [
+  { text: "EN", value: "en_US" },
+  { text: "ZH", value: "zh_CN" },
+  { text: "JP", value: "ja_JP" },
+  { text: "TH", value: "th_TH" },
+  { text: "KR", value: "ko_KR" },
+];
+// 处理语言切换
+const handleLanguageChange = (value) => {
+  switchLanguage(value);
+  currentLang.value = value;
+};
 
 // 初始化 Store
 const globalStore = useGlobalStore();
 const router = useRouter();
-const userInfo = reactive({
-  avatar: userAvatar,
-  nickName: "Arthorn",
-});
 const inviteLink = ref("");
 const showAllDailyTasks = ref(false);
 const showAllPopups = ref(false);
@@ -98,115 +235,6 @@ onMounted(() => {
 });
 </script>
 
-<template>
-  <div class="page-wrap">
-    <div class="header">
-      <div class="header-left">
-        <van-image
-          width="36"
-          height="36"
-          fit="cover"
-          :src="globalStore.userInfo.avatar || avatar"
-          round
-          class="product-img"
-          @click="router.push('/profile')"
-        />
-        <div class="text-content">
-          {{ globalStore.userInfo.nickname }}
-        </div>
-      </div>
-      <div class="header-right">
-        <svg-icon
-          className="img-header-right"
-          name="icon-jiangbei-2"
-          @click="router.push('/ranking')"
-        />
-        <svg-icon
-          className="img-header-right"
-          name="icon-upload"
-          @click="generateInviteLink"
-        />
-      </div>
-    </div>
-
-    <div class="module-item">
-      <div class="module-title">
-        <span>{{ $t("rewards.YourAchievements") }}</span>
-        <svg-icon
-          className="img-icon"
-          name="icon-info"
-          @click="customToast('Points and badges will become redeemable after launchpad open.')"
-        />
-      </div>
-      <div class="content-box-yellow achievement-box">
-        <div class="inner-color">
-          <div class="achievement-item">
-            <svg-icon
-              className="img-icon"
-              name="img-points"
-            />
-            <div class="achievement-text">
-              <span>x{{ achievements.points }}</span>
-            </div>
-          </div>
-          <div class="achievement-item">
-            <svg-icon
-              className="img-icon"
-              name="img-badges"
-            />
-            <div class="achievement-text right-text">
-              <span>x{{ achievements.badges }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="module-item">
-      <div class="module-title">
-        <span>{{ $t("rewards.DailyTasks") }}</span>
-        <svg-icon
-          className="img-icon"
-          name="icon-info"
-          @click="customToast('Will refresh daily at 00:00 (UTC+0).')"
-        />
-      </div>
-      <TaskItem
-        v-for="(item, index) in dailyTasks"
-        v-show="showAllDailyTasks || index < 2"
-        :key="`${item.taskId}-${item.rewardAmount}`"
-        :item="item"
-      />
-      <div
-        v-if="dailyTasks.length > 2 && !showAllDailyTasks"
-        class="more-tasks"
-        @click="showAllDailyTasks = true"
-      >
-        <span>{{ $t("rewards.MoreTasks") }}</span>
-        <van-icon
-          name="arrow-down"
-          size="16px"
-          color="#83838F"
-        />
-      </div>
-    </div>
-    <div class="module-item">
-      <div class="module-title">
-        <span>{{ $t("rewards.Popups") }}</span>
-        <svg-icon
-          className="img-icon"
-          name="icon-info"
-          @click="customToast('One-time tasks cannot be completed repeatedly, and tasks will be updated from time to time.')"
-        />
-      </div>
-      <TaskItem
-        v-for="(item, index) in popups"
-        :key="`${item.taskId}-${item.rewardAmount}`"
-        :item="item"
-      />
-    </div>
-  </div>
-</template>
-
 <style scoped lang="scss">
 .page-wrap {
   padding: 0 16px 12px 16px;
@@ -216,6 +244,19 @@ onMounted(() => {
     width: 36px;
     height: 36px;
     border-radius: 50%;
+  }
+}
+.top-right-language {
+  padding: 0px 12px;
+  border-radius: 10px;
+  border: 2px solid var(--ls-line-12, rgba(24, 24, 27, 0.12));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 32px;
+  .current-language {
+    margin-top: 3px;
+    line-height: 1;
   }
 }
 .content-box-yellow {

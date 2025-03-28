@@ -3,9 +3,16 @@ import Cookies from "js-cookie";
 import { Locale } from "vant";
 // 引入英文语言包
 import enUS from "vant/es/locale/lang/en-US";
-import zhCN from "vant/es/locale/lang/zh-CN";
+import zhTW from "vant/es/locale/lang/zh-TW";
+import jaJP from "vant/es/locale/lang/ja-JP";
+import thTH from "vant/es/locale/lang/th-TH";
+import koKR from "vant/es/locale/lang/ko-KR";
+
 import enLocale from "./en";
 import zhLocale from "./zh";
+import jpLocale from "./jp";
+import krLocale from "./kr";
+import thaiLocale from "./thai";
 
 const messages = {
   en_US: {
@@ -13,8 +20,20 @@ const messages = {
     ...enLocale,
   },
   zh_CN: {
-    ...zhCN,
+    ...zhTW,
     ...zhLocale,
+  },
+  ja_JP: {
+    ...jaJP,
+    ...jpLocale,
+  },
+  th_TH: {
+    ...thTH,
+    ...thaiLocale,
+  },
+  ko_KR: {
+    ...koKR,
+    ...krLocale,
   },
 };
 

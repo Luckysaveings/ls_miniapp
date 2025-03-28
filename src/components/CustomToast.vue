@@ -17,7 +17,7 @@
   </van-toast>
 </template>
 
-<script setup>
+<script setup name="CustomToast">
 const props = defineProps({
   modelValue: {
     type: Boolean,

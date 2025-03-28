@@ -26,8 +26,8 @@
             :class="{ active: selectedToken === 'USDT' }"
             @click="selectedToken = 'USDT'"
           >
-            <svg-icon name="icon-ustd" />
-            USDT
+            <svg-icon name="icon-usdt" />
+            {{ $t("common.USDT") }}
           </div>
           <div
             class="token-btn"
@@ -35,7 +35,7 @@
             @click="selectedToken = 'KAIA'"
           >
             <svg-icon name="icon-kaia" />
-            KAIA
+            {{ $t("common.KAIA") }}
           </div>
         </div>
       </div>
@@ -45,7 +45,7 @@
         <div class="label">{{ $t("withdraw.WithdrawAddress") }}</div>
         <van-field
           v-model="address"
-          :placeholder="$t('withdraw.Address')"
+          :placeholder="$t('common.Address')"
           class="custom-field"
           clearable
         />
@@ -54,10 +54,10 @@
       <!-- 金额输入 -->
       <div class="content-item">
         <div class="title-wrap">
-          <div class="label">{{ $t("withdraw.Amount") }}</div>
+          <div class="label">{{ $t("common.Amount") }}</div>
           <div class="available">
-            <span>{{ $t("withdraw.Available") }}</span>
-            <span class="item-value">{{ available }} USDT</span>
+            <span>{{ $t("common.Available") }}</span>
+            <span class="item-value">{{ available }} {{ $t("common.USDT") }}</span>
           </div>
         </div>
         <van-field
@@ -69,7 +69,7 @@
             <span
               class="max-btn"
               @click="setMaxAmount"
-              >{{ $t("withdraw.Max") }}</span
+              >{{ $t("common.Max") }}</span
             >
           </template>
         </van-field>
@@ -77,8 +77,8 @@
 
       <!-- Gas Fee -->
       <div class="content-item fee-info">
-        <span>{{ $t("withdraw.GasFee") }}</span>
-        <span class="item-value">1.2 KAIA</span>
+        <span>{{ $t("common.GasFee") }}</span>
+        <span class="item-value">1.2 {{ $t("common.KAIA") }}</span>
       </div>
       <van-divider />
 
@@ -153,7 +153,7 @@
         <div class="dialog-content-item">
           <div class="item-label">{{ $t("withdraw.YouAreSending") }}</div>
           <div class="item-value top">
-            <span>{{ amount }} USDT</span>
+            <span>{{ amount }} {{ $t("common.USDT") }}</span>
           </div>
         </div>
         <div class="dialog-content-item">
@@ -251,6 +251,8 @@ import { showToast } from "vant";
 import iconEmpty from "@/assets/icon-empty.svg";
 import { useRouter } from "vue-router";
 import QRCodeScanner from "@/components/QRCodeScanner/index.vue";
+import { useCustomI18n } from "@/lang/i18n-utils";
+const { i18nTFn } = useCustomI18n();
 
 const router = useRouter();
 const showInfo = ref(false);
@@ -258,7 +260,7 @@ const showInfoStatus = ref(false);
 const infoStatus = ref("");
 const qrRef = ref(null);
 const handleQrRes = (res) => {
-  showToast({ message: `Scan Success: ${res}` });
+  showToast({ message: `${i18nTFn("common.ScanSuccess")}: ${res}` });
   // qrRef.value.stopQrCode();
 };
 const onClickRight = () => {
@@ -286,7 +288,7 @@ const isValid = computed(() => {
 });
 
 const show = ref(false);
-const toastText = ref("Copy Success");
+const toastText = ref(i18nTFn("common.CopySuccess"));
 
 const withdrawList = ref([
   { address: "6xvni1...dyEfW7", time: "Used 1 days ago ", id: 1 },

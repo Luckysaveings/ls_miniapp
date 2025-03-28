@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" name="Layout">
 // import { computed } from "vue";
 import { useRoute } from "vue-router";
 

@@ -1,241 +1,3 @@
-<script setup lang="ts" name="Home">
-import CustomToast from "@/components/CustomToast.vue";
-import liff from "@line/liff";
-import { useRouter } from "vue-router";
-import { useClickAway } from "@vant/use";
-import { useGlobalStore } from "@/store/globalStore";
-import { getTaskList, login } from "@/api/index";
-import avatar from "@/assets/catAvatar.svg";
-import { closeToast } from "vant";
-import {
-  createKaiaWallet,
-  getDappWallet,
-  getKaiaBalance,
-  transferInKaia,
-  transferInLuckytoken,
-  approveTokenForDeposit,
-  formatWalletAddress,
-  formatAmount,
-  calculateTimeDifference,
-  getDepositAmount,
-  getPoolAmount,
-  getTokenBalance,
-  gasForApproveTokenForDeposit,
-  gasForDepositWithDepositContract,
-  depositWithDepositContract,
-  withdrawWithDepositContract,
-  showToastBeforeRequest,
-} from "@/utils/index";
-
-const availableRewards = reactive({
-  points: 100,
-  badges: 10,
-});
-const getAvailableRewards = () => {
-  return getTaskList().then((res) => {
-    const list = (res.data && res.data.list) || [];
-    const unCompletedList = list.filter((item) => item.status !== 3);
-    const pointList = unCompletedList.filter((item) => item.rewardType === 0);
-    const badgeList = unCompletedList.filter((item) => item.rewardType === 1);
-
-    const totalPoints = pointList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
-    const totalBadges = badgeList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
-
-    availableRewards.points = totalPoints;
-    availableRewards.badges = totalBadges;
-    return res;
-  });
-};
-// 初始化 Store
-const globalStore = useGlobalStore();
-onMounted(() => {
-  // showToastBeforeRequest();
-  // getAvailableRewards().then((res) => {
-  //   closeToast();
-  // });
-  window["fromHome"] = true;
-  const loadingElement = document.getElementById("loading");
-  if (loadingElement) {
-    window.setTimeout(() => {
-      loadingElement.remove();
-    }, 600);
-  }
-});
-
-const router = useRouter();
-const showInfo = ref(false);
-const infoType = ref("");
-const infoIcon = ref("");
-const showBalanceInfo = (type: string) => {
-  showInfo.value = true;
-  infoType.value = type;
-  infoIcon.value = type === "USDT" ? "icon-ustd" : "icon-kaia";
-};
-const hiddenInfo = () => {
-  showInfo.value = false;
-};
-
-const showCopyToast = ref(false);
-const copyToastText = ref("Copy Success");
-const copyAddress = (txt) => {
-  navigator.clipboard.writeText(txt || "");
-  copyToastText.value = "Copy Success";
-  showCopyToast.value = true;
-};
-
-const prizePoolInfo = computed(() => {
-  const info = globalStore.balanceInfo;
-  const total = info.USDT.allAmount * globalStore.usdtValue + info.KAIA.allAmount * globalStore.kaiaValue || 0;
-  const totalPrizePool = total.toFixed(2);
-  const nextDrawOpenIn = calculateTimeDifference(1);
-  const day = 24 * 60 * 60 * 1000;
-  const p = ((day - nextDrawOpenIn) / day) * 100;
-  let progress = p < 0 ? 0 : p;
-  progress = progress > 100 ? 100 : progress;
-  return {
-    totalPrizePool,
-    nextDrawOpenIn,
-    progress: Math.ceil(progress),
-  };
-});
-
-const formatTime = (value) => {
-  return value < 10 ? `0${value}` : value;
-};
-const kaiaTransferTest = async () => {
-  if (import.meta.env.VITE_ENV === "PROD") {
-    // 测试线上环境liff账号往开发环境账号转账
-    Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9")])
-      .then(async ([kaia1, kaia2]) => {
-       console.log("kaia1", kaia1);
-       console.log("kaia2", kaia2);
-       await transferInKaia("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "10");
-       Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9")])
-        .then(([kaia1, kaia2]) => {
-        console.log("kaia1", kaia1);
-        console.log("kaia2", kaia2);
-        });
-      });
-    // await getKaiaBalance(globalStore.address);
-    // await getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
-    // await transferInKaia("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "10");
-    // await getKaiaBalance(globalStore.address);
-    // await getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
-  } else {
-    // 开发环境账号往liff账号转账
-    Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6")])
-      .then(async ([kaia1, kaia2]) => {
-       console.log("kaia1", kaia1);
-       console.log("kaia2", kaia2);
-       await transferInKaia("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6", "10");
-       Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6")])
-        .then(([kaia1, kaia2]) => {
-        console.log("kaia1", kaia1);
-        console.log("kaia2", kaia2);
-        });
-      });
-    // await getKaiaBalance(globalStore.address);
-    // await getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6");
-    // await transferInKaia("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6", "10");
-    // await getKaiaBalance(globalStore.address);
-    // await getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6");
-  }
-}
-const tokenTransferTest = async () => {
-  if (import.meta.env.VITE_ENV === "PROD") {
-    // 测试线上环境liff账号往开发环境账号转账
-    await getTokenBalance(globalStore.address);
-    await getTokenBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
-    await transferInLuckytoken("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
-    await getTokenBalance(globalStore.address);
-    await getTokenBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
-  } else {
-    // 开发环境账号往liff账号转账
-    await getTokenBalance(globalStore.address);
-    await getTokenBalance("0x7d714d6f3023f06a71ad40e157944a3b8b203662");
-    await transferInLuckytoken("0x7d714d6f3023f06a71ad40e157944a3b8b203662", "100");
-    await getTokenBalance(globalStore.address);
-    await getTokenBalance("0x7d714d6f3023f06a71ad40e157944a3b8b203662");
-  }
-}
-const depositAndWithdrawTest = async () => {
-  await getDepositAmount(globalStore.address, "USDT");
-  await getDepositAmount(globalStore.address, "KAIA");
-  await getPoolAmount("USDT");
-  await getPoolAmount("KAIA");
-  await getKaiaBalance(globalStore.address);
-  await getTokenBalance(globalStore.address);
-  await gasForApproveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, "10");
-  await approveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, "10");
-  await gasForDepositWithDepositContract(globalStore.address, "10", "USDT");
-  await depositWithDepositContract(globalStore.address, "10", "USDT");
-  await getDepositAmount(globalStore.address, "USDT");
-  await withdrawWithDepositContract(globalStore.address, "10", "USDT");
-  await getDepositAmount(globalStore.address, "USDT");
-  await getDepositAmount(globalStore.address, "KAIA");
-  await getPoolAmount("USDT");
-  await getPoolAmount("KAIA");
-  await getKaiaBalance(globalStore.address);
-  await getTokenBalance(globalStore.address);
-}
-const clickBalance = async () => {
-  // kaiaTransferTest();
-  // tokenTransferTest
-  // depositAndWithdrawTest();
-
-};
-const openLineWallet = () => {
-  liff.openWindow({
-    url: "https://blockchain-wallet.line.me", // LINE Blockchain Wallet 的 URL
-    external: true, // 在外部浏览器中打开
-  });
-};
-const popoverShow = ref(false);
-const popoverRef = ref();
-const popoverBtnRef = ref();
-const handlePopover = () => {
-  popoverShow.value = !popoverShow.value;
-};
-useClickAway([popoverRef, popoverBtnRef], () => {
-  if (popoverShow.value === true) {
-    popoverShow.value = false;
-  }
-});
-const handlePopoverItem = (type: string) => {
-  console.log("handlePopoverItem", type);
-  // popoverShow.value = false;
-  router.push(`/${type}`);
-};
-const joinNowFn = () => {
-  router.push('/pool');
-};
-const showWalletAddress = ref(false);
-const walletColor = ref({
-  background: undefined,
-  color: "#18181B",
-  iconFill: "#18181B",
-  text: "",
-});
-const clickWallet = () => {
-  showWalletAddress.value =!showWalletAddress.value;
-};
-const disconnectFn = async () => {
-  showWalletAddress.value = false;
-  await globalStore.walletProvider.disconnectWallet();
-  globalStore.clearConnect();
-  localStorage.removeItem("address");
-  await getDappWallet();
-  showToastBeforeRequest();
-  getKaiaBalance(globalStore.address);
-  getTokenBalance(globalStore.address);
-  getDepositAmount(globalStore.address, "USDT");
-  getDepositAmount(globalStore.address, "KAIA");
-  getPoolAmount("USDT");
-  getPoolAmount("KAIA");
-  closeToast();
-};
-</script>
-
 <template>
   <div class="page-wrap">
     <div class="header">
@@ -251,21 +13,42 @@ const disconnectFn = async () => {
           {{ globalStore.userInfo.nickname }}
         </div>
       </div>
-      <div
-        class="header-right"
-      > 
-        <div class="top-right-wallet" @click="clickWallet" :style="{backgroundColor: walletColor.background, color: walletColor.color}">
-          <svg class="svg-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3142 2.54497C13.6926 2.47417 14.0819 2.48709 14.4548 2.58286C14.8306 2.67936 15.1804 2.8576 15.4793 3.10486C15.7782 3.35212 16.0189 3.66232 16.1842 4.01331C16.3494 4.36429 16.4352 4.74743 16.4353 5.13537V5.13564V5.47138C17.5285 5.76463 18.3334 6.76239 18.3334 7.94813V14.8712C18.3334 16.2873 17.1854 17.4353 15.7693 17.4353H4.23079C2.81468 17.4353 1.66669 16.2873 1.66669 14.8712V8.52506V7.94813V6.75848V6.75823C1.6664 6.14459 1.8802 5.55005 2.27125 5.07712C2.66242 4.60405 3.20641 4.28231 3.80941 4.1674C3.81466 4.1664 3.81993 4.16544 3.8252 4.16454L13.3142 2.54497ZM14.7686 5.13591V5.38403H6.58641L13.6018 4.18666C13.607 4.18576 13.6123 4.18481 13.6176 4.18381C13.7577 4.1571 13.902 4.16165 14.0402 4.19714C14.1784 4.23263 14.3071 4.29818 14.417 4.38912C14.527 4.48006 14.6155 4.59415 14.6763 4.72323C14.737 4.85224 14.7685 4.99305 14.7686 5.13564V5.13591ZM3.33335 14.8712L3.33335 8.52506V7.94721C3.33385 7.452 3.73546 7.0507 4.23079 7.0507H15.7693C16.2649 7.0507 16.6667 7.45249 16.6667 7.94813V14.8712C16.6667 15.3669 16.2649 15.7686 15.7693 15.7686H4.23079C3.73515 15.7686 3.33335 15.3669 3.33335 14.8712ZM13.2639 12.2893C13.4695 12.4267 13.7111 12.5 13.9584 12.5C14.2899 12.5 14.6078 12.3683 14.8422 12.1339C15.0767 11.8995 15.2084 11.5815 15.2084 11.25C15.2084 11.0028 15.135 10.7611 14.9977 10.5555C14.8603 10.35 14.6651 10.1898 14.4367 10.0952C14.2083 10.0005 13.957 9.97579 13.7145 10.024C13.472 10.0723 13.2493 10.1913 13.0745 10.3661C12.8997 10.5409 12.7806 10.7637 12.7324 11.0061C12.6841 11.2486 12.7089 11.4999 12.8035 11.7284C12.8981 11.9568 13.0583 12.152 13.2639 12.2893Z"
-            :fill="walletColor.iconFill"/>
+      <div class="header-right">
+        <div
+          class="top-right-wallet"
+          :style="{ backgroundColor: walletColor.background, color: walletColor.color }"
+          @click="clickWallet"
+        >
+          <svg
+            class="svg-icon"
+            width="16"
+            height="16"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M13.3142 2.54497C13.6926 2.47417 14.0819 2.48709 14.4548 2.58286C14.8306 2.67936 15.1804 2.8576 15.4793 3.10486C15.7782 3.35212 16.0189 3.66232 16.1842 4.01331C16.3494 4.36429 16.4352 4.74743 16.4353 5.13537V5.13564V5.47138C17.5285 5.76463 18.3334 6.76239 18.3334 7.94813V14.8712C18.3334 16.2873 17.1854 17.4353 15.7693 17.4353H4.23079C2.81468 17.4353 1.66669 16.2873 1.66669 14.8712V8.52506V7.94813V6.75848V6.75823C1.6664 6.14459 1.8802 5.55005 2.27125 5.07712C2.66242 4.60405 3.20641 4.28231 3.80941 4.1674C3.81466 4.1664 3.81993 4.16544 3.8252 4.16454L13.3142 2.54497ZM14.7686 5.13591V5.38403H6.58641L13.6018 4.18666C13.607 4.18576 13.6123 4.18481 13.6176 4.18381C13.7577 4.1571 13.902 4.16165 14.0402 4.19714C14.1784 4.23263 14.3071 4.29818 14.417 4.38912C14.527 4.48006 14.6155 4.59415 14.6763 4.72323C14.737 4.85224 14.7685 4.99305 14.7686 5.13564V5.13591ZM3.33335 14.8712L3.33335 8.52506V7.94721C3.33385 7.452 3.73546 7.0507 4.23079 7.0507H15.7693C16.2649 7.0507 16.6667 7.45249 16.6667 7.94813V14.8712C16.6667 15.3669 16.2649 15.7686 15.7693 15.7686H4.23079C3.73515 15.7686 3.33335 15.3669 3.33335 14.8712ZM13.2639 12.2893C13.4695 12.4267 13.7111 12.5 13.9584 12.5C14.2899 12.5 14.6078 12.3683 14.8422 12.1339C15.0767 11.8995 15.2084 11.5815 15.2084 11.25C15.2084 11.0028 15.135 10.7611 14.9977 10.5555C14.8603 10.35 14.6651 10.1898 14.4367 10.0952C14.2083 10.0005 13.957 9.97579 13.7145 10.024C13.472 10.0723 13.2493 10.1913 13.0745 10.3661C12.8997 10.5409 12.7806 10.7637 12.7324 11.0061C12.6841 11.2486 12.7089 11.4999 12.8035 11.7284C12.8981 11.9568 13.0583 12.152 13.2639 12.2893Z"
+              :fill="walletColor.iconFill"
+            />
           </svg>
         </div>
-        <div class="top-right-language" style="display: none;">
+        <div class="top-right-language">
           <svg-icon
             name="icon-language"
             size="16px"
           />
-          <span class="current-language">EN</span>
+          <div class="language-switcher">
+            <van-dropdown-menu>
+              <van-dropdown-item
+                v-model="currentLang"
+                :options="languageOptions"
+                @change="handleLanguageChange"
+              />
+            </van-dropdown-menu>
+          </div>
         </div>
       </div>
     </div>
@@ -281,7 +64,7 @@ const disconnectFn = async () => {
           <div class="text-list-wrap">
             <div class="balance-item">
               <svg-icon
-                name="icon-ustd"
+                name="icon-usdt"
                 className="van-img"
               />
               <span class="balance-item-txt">{{
@@ -363,7 +146,7 @@ const disconnectFn = async () => {
                 />
                 <span class="img-num">x{{ globalStore.availableRewards.points }}</span>
               </div>
-              <div class="main-text">{{ $t("home.Points") }}</div>
+              <div class="main-text">{{ $t("common.Points") }}</div>
             </div>
             <div class="box-top">
               <div class="img-num-wrap">
@@ -375,7 +158,7 @@ const disconnectFn = async () => {
 
                 <span class="img-num">x{{ globalStore.availableRewards.badges }}</span>
               </div>
-              <div class="main-text">{{ $t("home.Badges") }}</div>
+              <div class="main-text">{{ $t("common.Badges") }}</div>
             </div>
           </div>
 
@@ -402,7 +185,7 @@ const disconnectFn = async () => {
             name="img-deposit"
             class="popover-img"
           />
-          <span class="popover-text">{{ $t("home.Deposit") }}</span>
+          <span class="popover-text">{{ $t("common.Deposit") }}</span>
         </div>
         <div
           class="popover-item"
@@ -433,7 +216,7 @@ const disconnectFn = async () => {
     >
       <div class="content-box">
         <div class="balance-title">
-          <span>{{ infoType }} {{ $t("home.Balance") }}</span>
+          <span>{{ infoType }} {{ $t("common.Balance") }}</span>
           <van-icon
             name="cross"
             size="20"
@@ -454,7 +237,7 @@ const disconnectFn = async () => {
             </span>
           </div>
           <div class="text-list-row">
-            <span class="label">{{ $t("home.Balance") }}</span>
+            <span class="label">{{ $t("common.Balance") }}</span>
             <span class="value">
               <svg-icon
                 :name="infoIcon"
@@ -498,7 +281,7 @@ const disconnectFn = async () => {
         </div>
       </div>
     </van-overlay>
-      <!-- 钱包弹窗 -->
+    <!-- 钱包弹窗 -->
     <van-overlay
       :show="showWalletAddress"
       class-name="wallet-dialog"
@@ -533,7 +316,7 @@ const disconnectFn = async () => {
               </template>
             </van-cell>
           </van-cell-group> -->
-          <div class="content-title">{{ $t('common.WalletAddress') }}</div>
+          <div class="content-title">{{ $t("common.WalletAddress") }}</div>
           <div class="content-text">{{ globalStore.address }}</div>
         </div>
 
@@ -559,7 +342,253 @@ const disconnectFn = async () => {
     />
   </div>
 </template>
+<script setup lang="ts" name="Home">
+import CustomToast from "@/components/CustomToast.vue";
+import liff from "@line/liff";
+import { useRouter } from "vue-router";
+import { useClickAway } from "@vant/use";
+import { useGlobalStore } from "@/store/globalStore";
+import { getTaskList, login } from "@/api/index";
+import avatar from "@/assets/catAvatar.svg";
+import { closeToast } from "vant";
+import {
+  createKaiaWallet,
+  getDappWallet,
+  getKaiaBalance,
+  transferInKaia,
+  transferInLuckytoken,
+  approveTokenForDeposit,
+  formatWalletAddress,
+  formatAmount,
+  calculateTimeDifference,
+  getDepositAmount,
+  getPoolAmount,
+  getTokenBalance,
+  gasForApproveTokenForDeposit,
+  gasForDepositWithDepositContract,
+  depositWithDepositContract,
+  withdrawWithDepositContract,
+  showToastBeforeRequest,
+} from "@/utils/index";
+import { useCustomI18n, switchLanguage } from "@/lang/i18n-utils";
+import { useI18n } from "vue-i18n";
 
+const { i18nTFn } = useCustomI18n();
+const { locale } = useI18n();
+const currentLang = ref(locale.value);
+const languageOptions = [
+  { text: "EN", value: "en_US" },
+  { text: "ZH", value: "zh_CN" },
+  { text: "JP", value: "ja_JP" },
+  { text: "TH", value: "th_TH" },
+  { text: "KR", value: "ko_KR" },
+];
+// 处理语言切换
+const handleLanguageChange = (value) => {
+  switchLanguage(value);
+  currentLang.value = value;
+};
+
+const availableRewards = reactive({
+  points: 100,
+  badges: 10,
+});
+const getAvailableRewards = () => {
+  return getTaskList().then((res) => {
+    const list = (res.data && res.data.list) || [];
+    const unCompletedList = list.filter((item) => item.status !== 3);
+    const pointList = unCompletedList.filter((item) => item.rewardType === 0);
+    const badgeList = unCompletedList.filter((item) => item.rewardType === 1);
+
+    const totalPoints = pointList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
+    const totalBadges = badgeList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
+
+    availableRewards.points = totalPoints;
+    availableRewards.badges = totalBadges;
+    return res;
+  });
+};
+// 初始化 Store
+const globalStore = useGlobalStore();
+onMounted(() => {
+  currentLang.value = locale.value;
+  window["fromHome"] = true;
+  const loadingElement = document.getElementById("loading");
+  if (loadingElement) {
+    window.setTimeout(() => {
+      loadingElement.remove();
+    }, 600);
+  }
+});
+const router = useRouter();
+const showInfo = ref(false);
+const infoType = ref("");
+const infoIcon = ref("");
+const showBalanceInfo = (type: string) => {
+  showInfo.value = true;
+  infoType.value = type;
+  infoIcon.value = type === "USDT" ? "icon-usdt" : "icon-kaia";
+};
+const hiddenInfo = () => {
+  showInfo.value = false;
+};
+
+const showCopyToast = ref(false);
+const copyToastText = ref(i18nTFn("common.CopySuccess"));
+const copyAddress = (txt) => {
+  navigator.clipboard.writeText(txt || "");
+  copyToastText.value = i18nTFn("common.CopySuccess");
+  showCopyToast.value = true;
+};
+
+const prizePoolInfo = computed(() => {
+  const info = globalStore.balanceInfo;
+  const total = info.USDT.allAmount * globalStore.usdtValue + info.KAIA.allAmount * globalStore.kaiaValue || 0;
+  const totalPrizePool = total.toFixed(2);
+  const nextDrawOpenIn = calculateTimeDifference(1);
+  const day = 24 * 60 * 60 * 1000;
+  const p = ((day - nextDrawOpenIn) / day) * 100;
+  let progress = p < 0 ? 0 : p;
+  progress = progress > 100 ? 100 : progress;
+  return {
+    totalPrizePool,
+    nextDrawOpenIn,
+    progress: Math.ceil(progress),
+  };
+});
+
+const formatTime = (value) => {
+  return value < 10 ? `0${value}` : value;
+};
+const kaiaTransferTest = async () => {
+  if (import.meta.env.VITE_ENV === "PROD") {
+    // 测试线上环境liff账号往开发环境账号转账
+    Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9")]).then(async ([kaia1, kaia2]) => {
+      console.log("kaia1", kaia1);
+      console.log("kaia2", kaia2);
+      await transferInKaia("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "10");
+      Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9")]).then(([kaia1, kaia2]) => {
+        console.log("kaia1", kaia1);
+        console.log("kaia2", kaia2);
+      });
+    });
+    // await getKaiaBalance(globalStore.address);
+    // await getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+    // await transferInKaia("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "10");
+    // await getKaiaBalance(globalStore.address);
+    // await getKaiaBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+  } else {
+    // 开发环境账号往liff账号转账
+    Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6")]).then(async ([kaia1, kaia2]) => {
+      console.log("kaia1", kaia1);
+      console.log("kaia2", kaia2);
+      await transferInKaia("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6", "10");
+      Promise.all([getKaiaBalance(globalStore.address), getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6")]).then(([kaia1, kaia2]) => {
+        console.log("kaia1", kaia1);
+        console.log("kaia2", kaia2);
+      });
+    });
+    // await getKaiaBalance(globalStore.address);
+    // await getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6");
+    // await transferInKaia("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6", "10");
+    // await getKaiaBalance(globalStore.address);
+    // await getKaiaBalance("0x841504DF55111CE4DF6d3ce28A6A90dEe71640b6");
+  }
+};
+const tokenTransferTest = async () => {
+  if (import.meta.env.VITE_ENV === "PROD") {
+    // 测试线上环境liff账号往开发环境账号转账
+    await getTokenBalance(globalStore.address);
+    await getTokenBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+    await transferInLuckytoken("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9", "100");
+    await getTokenBalance(globalStore.address);
+    await getTokenBalance("0xB8A2Db016c733D46121c4f2CDD223E8dab93e5B9");
+  } else {
+    // 开发环境账号往liff账号转账
+    await getTokenBalance(globalStore.address);
+    await getTokenBalance("0x7d714d6f3023f06a71ad40e157944a3b8b203662");
+    await transferInLuckytoken("0x7d714d6f3023f06a71ad40e157944a3b8b203662", "100");
+    await getTokenBalance(globalStore.address);
+    await getTokenBalance("0x7d714d6f3023f06a71ad40e157944a3b8b203662");
+  }
+};
+const depositAndWithdrawTest = async () => {
+  await getDepositAmount(globalStore.address, "USDT");
+  await getDepositAmount(globalStore.address, "KAIA");
+  await getPoolAmount("USDT");
+  await getPoolAmount("KAIA");
+  await getKaiaBalance(globalStore.address);
+  await getTokenBalance(globalStore.address);
+  await gasForApproveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, "10");
+  await approveTokenForDeposit(import.meta.env.VITE_TOKEN_PRIZE_POOL_ADDRESS, "10");
+  await gasForDepositWithDepositContract(globalStore.address, "10", "USDT");
+  await depositWithDepositContract(globalStore.address, "10", "USDT");
+  await getDepositAmount(globalStore.address, "USDT");
+  await withdrawWithDepositContract(globalStore.address, "10", "USDT");
+  await getDepositAmount(globalStore.address, "USDT");
+  await getDepositAmount(globalStore.address, "KAIA");
+  await getPoolAmount("USDT");
+  await getPoolAmount("KAIA");
+  await getKaiaBalance(globalStore.address);
+  await getTokenBalance(globalStore.address);
+};
+const clickBalance = async () => {
+  switchLanguage("zh_CN");
+  // kaiaTransferTest();
+  // tokenTransferTest
+  // depositAndWithdrawTest();
+};
+const openLineWallet = () => {
+  liff.openWindow({
+    url: "https://blockchain-wallet.line.me", // LINE Blockchain Wallet 的 URL
+    external: true, // 在外部浏览器中打开
+  });
+};
+const popoverShow = ref(false);
+const popoverRef = ref();
+const popoverBtnRef = ref();
+const handlePopover = () => {
+  popoverShow.value = !popoverShow.value;
+};
+useClickAway([popoverRef, popoverBtnRef], () => {
+  if (popoverShow.value === true) {
+    popoverShow.value = false;
+  }
+});
+const handlePopoverItem = (type: string) => {
+  console.log("handlePopoverItem", type);
+  // popoverShow.value = false;
+  router.push(`/${type}`);
+};
+const joinNowFn = () => {
+  router.push("/pool");
+};
+const showWalletAddress = ref(false);
+const walletColor = ref({
+  background: undefined,
+  color: "#18181B",
+  iconFill: "#18181B",
+  text: "",
+});
+const clickWallet = () => {
+  showWalletAddress.value = !showWalletAddress.value;
+};
+const disconnectFn = async () => {
+  showWalletAddress.value = false;
+  await globalStore.walletProvider.disconnectWallet();
+  globalStore.clearConnect();
+  localStorage.removeItem("address");
+  await getDappWallet();
+  showToastBeforeRequest();
+  getKaiaBalance(globalStore.address);
+  getTokenBalance(globalStore.address);
+  getDepositAmount(globalStore.address, "USDT");
+  getDepositAmount(globalStore.address, "KAIA");
+  getPoolAmount("USDT");
+  getPoolAmount("KAIA");
+  closeToast();
+};
+</script>
 <style scoped lang="less">
 .balance-dialog {
   display: flex;
@@ -639,7 +668,8 @@ const disconnectFn = async () => {
       gap: 8px;
       justify-content: space-around;
     }
-    .top-right-wallet, .top-right-language {
+    .top-right-wallet,
+    .top-right-language {
       padding: 0px 12px;
       border-radius: 10px;
       border: 2px solid var(--ls-line-12, rgba(24, 24, 27, 0.12));
@@ -647,6 +677,10 @@ const disconnectFn = async () => {
       justify-content: center;
       align-items: center;
       height: 32px;
+      .current-language {
+        margin-top: 3px;
+        line-height: 1;
+      }
     }
     .current-wallet-status {
       margin-left: 4px;
@@ -889,9 +923,9 @@ const disconnectFn = async () => {
     margin: 16px 0;
     padding: 12px;
     border-radius: 12px;
-    background: #F4F4F5;
+    background: #f4f4f5;
     .content-title {
-      color: #83838F;
+      color: #83838f;
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
@@ -911,7 +945,8 @@ const disconnectFn = async () => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    .btn-sub, .btn-main {
+    .btn-sub,
+    .btn-main {
       width: calc(50% - 8px);
     }
   }

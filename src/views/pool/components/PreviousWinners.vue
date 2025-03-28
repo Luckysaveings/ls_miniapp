@@ -14,7 +14,7 @@
             class="img-icon"
           />
 
-          <span>Previous winners</span>
+          <span> {{ $t("pool.PreviousWinners") }}</span>
         </div>
         <van-icon
           name="cross"
@@ -31,14 +31,14 @@
             :class="{ active: selectedType === 'kaia' }"
             @click="changeType(1)"
           >
-            KAIA Pool
+            {{ $t("pool.KAIAPool") }}
           </div>
           <div
             class="type-btn"
             :class="{ active: selectedType === 'usd' }"
             @click="changeType(2)"
           >
-            USD Pool
+            {{ $t("pool.USDPool") }}
           </div>
         </div>
         <div
@@ -52,7 +52,7 @@
               :name="`icon-winner-${tierNum + 1}`"
               class="img-icon"
             />
-            <span>Tier {{ tierNum + 1 }} Rewards:</span>
+            <span>{{ $t("pool.Tier") }} {{ tierNum + 1 }} {{ $t("common.Rewards") }}:</span>
           </div>
           <div class="list">
             <div

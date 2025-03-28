@@ -26,7 +26,7 @@
       />
       <van-cell
         class="cell-custom-history"
-        :title="$t('deposit.Amount')"
+        :title="$t('common.Amount')"
       >
         <template #value>
           <span class="">
@@ -44,7 +44,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup name="DepositHistory">
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import dayjs from "dayjs";

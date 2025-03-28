@@ -1,3 +1,470 @@
+<template>
+  <div class="page-wrap">
+    <div class="header">
+      <div class="header-left">
+        <img
+          :src="globalStore.userInfo.avatar || avatar"
+          class="product-img"
+          @click="router.push('/profile')"
+        />
+        <div class="text-content">
+          {{ globalStore.userInfo.nickname }}
+        </div>
+      </div>
+      <div class="header-right">
+        <!-- <svg-icon
+          className="img-header-right"
+          name="icon-msg-tip"
+          @click="showReminderMsg = true"
+        /> -->
+        <svg-icon
+          className="img-header-right"
+          name="icon-upload"
+          @click="generateInviteLink"
+        />
+        <div class="top-right-language">
+          <svg-icon
+            name="icon-language"
+            size="16px"
+          />
+          <div class="language-switcher">
+            <van-dropdown-menu>
+              <van-dropdown-item
+                v-model="currentLang"
+                :options="languageOptions"
+                @change="handleLanguageChange"
+              />
+            </van-dropdown-menu>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Daily Pool 标题部分 -->
+    <div class="token-select content-box">
+      <div
+        class="token-btn"
+        :class="{ daily: selectedPool === '1' }"
+        @click="switchTab('1')"
+      >
+        {{ $t("pool.KAIAPool") }}
+      </div>
+      <div
+        class="token-btn"
+        :class="{ USDPool: selectedPool === '2' }"
+        @click="switchTab('2')"
+      >
+        {{ $t("pool.USDPool") }}
+      </div>
+    </div>
+
+    <!-- Daily Pool -->
+    <div class="module-item">
+      <div class="module-title">
+        <span>{{ $t("pool.DailyPool") }}</span>
+        <svg-icon
+          className="img-icon"
+          name="icon-info"
+          @click="showGameplay('1')"
+        />
+      </div>
+      <div class="module-content content-box bg-white">
+        <div
+          class="countdown-box"
+          :class="selectedPool === '2' ? 'bg-green' : 'bg-yellow'"
+        >
+          <svg-icon
+            className="img-countdown-box-bg left-bg"
+            name="icon-clocker"
+          />
+          <svg-icon
+            className="img-countdown-box-bg right-bg"
+            name="icon-gift-r"
+          />
+          <van-count-down
+            :time="selectedPool === '2' ? prizePoolInfo.nextUsdtDrawOpenIn : prizePoolInfo.nextKaiaDrawOpenIn"
+            format="HH:mm:ss"
+          >
+            <template #default="timeData">
+              <div class="time-display">
+                <span class="time-block">{{ formatTime(timeData.hours) }}</span>
+                <span class="time-separator">:</span>
+                <span class="time-block">{{ formatTime(timeData.minutes) }}</span>
+                <span class="time-separator">:</span>
+                <span class="time-block">{{ formatTime(timeData.seconds) }}</span>
+              </div>
+            </template>
+          </van-count-down>
+        </div>
+        <Progress
+          :percentage="prizePoolInfo.progress"
+          :bg-color="selectedPool === '2' ? '#06C756' : '#FEE719'"
+        />
+        <div class="text-grey">{{ $t("pool.CurrentPrizePool") }}</div>
+        <div
+          class="text-num"
+          :class="selectedPool === '2' ? '' : 'text-num-yellow'"
+        >
+          <svg-icon
+            v-show="selectedPool === '1'"
+            className="icon-kaia"
+            name="icon-kaia"
+          />
+          <span v-show="selectedPool === '2'">$</span>
+          <span>{{ selectedPool === "2" ? prizePoolInfo.totalUsdtPrizePool : prizePoolInfo.totalKaiaPrizePool }}</span>
+        </div>
+        <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
+        <div class="ticket-box">
+          <svg-icon
+            v-show="selectedPool === '1'"
+            class="img-tickets"
+            name="img-tickets-kaia"
+          />
+          <svg-icon
+            v-show="selectedPool === '2'"
+            class="img-tickets"
+            name="img-tickets"
+          />
+          <div class="ticket-num">
+            <span class="ticket-num-unit">x</span>
+            <span> {{ selectedPool === "1" ? prizePoolInfo.kaiaTicket : prizePoolInfo.usdtTicket }}</span>
+          </div>
+        </div>
+        <van-divider class="divider" />
+        <div
+          class="previous-winners"
+          @click="showPreviousWinner"
+        >
+          <div class="previous-winners-left">
+            <svg-icon
+              className="img-jiangbei"
+              name="icon-jiangbei"
+            />
+            <span>{{ $t("pool.PreviousWinners") }}</span>
+          </div>
+          <van-icon name="arrow" />
+        </div>
+        <div
+          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket > 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket > 0)"
+          class="btn-wrap margin-top-16"
+        >
+          <button
+            class="btn-main btn-withdraw"
+            @click="showWithdrawDialog"
+          >
+            {{ $t("common.Withdraw") }}
+          </button>
+          <button
+            class="btn-main"
+            @click="showDepositDialog"
+          >
+            {{ $t("common.Deposit") }}
+          </button>
+        </div>
+        <button
+          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket == 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket == 0)"
+          class="btn-main margin-top-16"
+          @click="showDepositDialog"
+        >
+          {{ $t("home.JoinNow") }}
+        </button>
+      </div>
+    </div>
+
+    <div class="module-item">
+      <div class="module-title">
+        <span>{{ $t("pool.JackpotTitle") }}</span>
+        <svg-icon
+          className="img-icon"
+          name="icon-info"
+          @click="showGameplay('2')"
+        />
+      </div>
+
+      <div class="content-box bg-2 USDPool-content">
+        <svg-icon
+          className="module-inner-bg left-bg"
+          name="icon-dollar-y"
+        />
+        <svg-icon
+          className="module-inner-bg right-bg"
+          name="icon-gift-r"
+        />
+        <div class="content-item-title-wrap">
+          <div class="text-grey content-item-title">
+            <svg-icon
+              className="img-icon"
+              name="icon-dollar"
+            />
+            {{ $t("pool.CurrentPrizePool") }}
+          </div>
+        </div>
+        <div
+          class="text-num"
+          :class="selectedPool === '2' ? '' : 'text-num-yellow'"
+        >
+          <svg-icon
+            v-show="selectedPool === '1'"
+            className="icon-kaia"
+            name="icon-kaia"
+          />
+          <span v-show="selectedPool === '2'">$</span>
+          <span>{{ selectedPool === "2" ? prizePoolInfo.usdtJackpot : prizePoolInfo.kaiaJackpot }}</span>
+          <span class="text-num-sub">/ $10,000</span>
+        </div>
+        <Progress
+          :percentage="55"
+          :bg-color="selectedPool === '2' ? '#06C756' : '#FEE719'"
+        />
+        <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
+        <div class="ticket-box">
+          <svg-icon
+            v-show="selectedPool === '1'"
+            class="img-tickets"
+            name="img-tickets-kaia"
+          />
+
+          <svg-icon
+            v-show="selectedPool === '2'"
+            class="img-tickets"
+            name="img-tickets"
+          />
+          <div class="ticket-num">
+            <span class="ticket-num-unit">x</span>
+            <span>{{ selectedPool === "1" ? prizePoolInfo.kaiaTicket : prizePoolInfo.usdtTicket }}</span>
+          </div>
+        </div>
+        <van-divider class="divider" />
+        <div
+          class="previous-winners"
+          @click="showPreviousWinner"
+        >
+          <div class="previous-winners-left">
+            <svg-icon
+              className="img-jiangbei"
+              name="icon-jiangbei"
+            />
+            <span>{{ $t("pool.PreviousWinners") }}</span>
+          </div>
+          <van-icon name="arrow" />
+        </div>
+
+        <div
+          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket > 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket > 0)"
+          class="btn-wrap margin-top-16"
+        >
+          <button
+            class="btn-main btn-withdraw"
+            @click="showWithdrawDialog"
+          >
+            {{ $t("common.Withdraw") }}
+          </button>
+          <button
+            class="btn-main"
+            @click="showDepositDialog"
+          >
+            {{ $t("common.Deposit") }}
+          </button>
+        </div>
+        <button
+          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket == 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket == 0)"
+          class="btn-main margin-top-16"
+          @click="showDepositDialog"
+        >
+          {{ $t("home.JoinNow") }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- 弹窗 Daily Pool和10K Jackpot Gameplay -->
+  <GamePlayDialog ref="gamePlayDialogRef" />
+  <PreviousDialog ref="previousDialogRef" />
+  <!-- 弹窗 Deposit -->
+  <van-overlay
+    :show="showDeposit"
+    class-name="custom-dialog"
+  >
+    <div class="content-box">
+      <div class="dialog-title">
+        <div class="dialog-title-left">
+          <!-- <svg-icon
+            class="img-icon"
+            name="icon-usdt"
+            size="20px"
+          /> -->
+          <!-- <svg-icon
+            v-else
+            className="img-icon"
+            name="icon-kaia"
+          /> -->
+          <img
+            v-if="selectedPool === '1'"
+            className="img-icon"
+            style="border-radius: 50%"
+            src="@/assets/images/stkaia.png"
+          />
+          <svg-icon
+            v-else
+            className="img-icon"
+            name="icon-usdt"
+          />
+          <span>{{ selectedPool === "1" ? $t("pool.KAIADeposit") : $t("pool.USDDeposit") }}</span>
+        </div>
+        <van-icon
+          name="cross"
+          size="20"
+          color="#A1A1AA"
+          @click="
+            showDeposit = false;
+            amount = 0;
+          "
+        />
+      </div>
+
+      <div class="dialog-content">
+        <div class="content-item">
+          <div class="title-wrap">
+            <div class="label">{{ $t("common.Amount") }}</div>
+            <div class="available">
+              <span>{{ $t("common.Available") }}</span>
+              <span class="item-value">{{ selectedPool === "1" ? globalStore.balanceInfo.KAIA.balance : globalStore.balanceInfo.USDT.balance }}</span>
+            </div>
+          </div>
+          <van-field
+            v-model="amount"
+            placeholder="0.00"
+            class="custom-field"
+            type="number"
+            inputmode="numeric"
+          >
+            <template #right-icon>
+              <span
+                class="max-btn"
+                @click="setMaxAmount"
+                >{{ $t("common.Max") }}</span
+              >
+            </template>
+          </van-field>
+
+          <div
+            v-show="warningTextShow"
+            class="warning-text"
+          >
+            <span>{{ $t("pool.TheAmountExceedsTheAvailableBalance") }}</span>
+          </div>
+        </div>
+        <!-- <div class="content-item fee-info">
+          <span>{{ $t("common.GasFee") }}</span>
+          <span class="item-value">{{ withdrawInfo.gasFee }} KAIA</span>
+        </div> -->
+        <div class="content-item item-desc">
+          {{ $t("pool.DailyPoolTip") }}
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button
+          class="btn-main"
+          @click="confirmDeposit"
+        >
+          {{ $t("common.Deposit") }}
+        </button>
+      </div>
+    </div>
+  </van-overlay>
+  <!-- 弹窗 Withdraw -->
+  <van-overlay
+    :show="showWithdraw"
+    class-name="custom-dialog"
+  >
+    <div class="content-box">
+      <div class="dialog-title">
+        <div class="dialog-title-left">
+          <svg-icon
+            v-if="withdrawInfo.type === 'usd'"
+            className="img-icon"
+            name="icon-usdt"
+          />
+          <!-- <svg-icon
+            v-else
+            className="img-icon"
+            name="icon-kaia"
+          /> -->
+          <img
+            v-else
+            className="img-icon"
+            style="border-radius: 50%"
+            src="@/assets/images/stkaia.png"
+          />
+
+          <span>{{ withdrawInfo.type }} {{ $t("common.Withdraw") }}</span>
+        </div>
+        <van-icon
+          name="cross"
+          size="20"
+          color="#A1A1AA"
+          @click="showWithdraw = false"
+        />
+      </div>
+
+      <div class="dialog-content">
+        <div class="content-item dialog-content-item">
+          <div class="item-top">{{ $t("pool.YourCurrentSavings") }}</div>
+          <div class="item-bottom">
+            <span>{{ selectedPool === "1" ? globalStore.balanceInfo.KAIA.savings : globalStore.balanceInfo.USDT.savings }} Tickets</span>
+          </div>
+        </div>
+        <div class="content-item fee-info">
+          <span>{{ $t("common.GasFee") }}</span>
+          <span class="item-value">{{ withdrawInfo.gasFee }} KAIA</span>
+        </div>
+        <div class="content-item item-desc">
+          {{ withdrawInfo.desc }}
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button
+          class="btn-main"
+          @click="confirmWithdraw"
+        >
+          {{ $t("common.Withdraw") }}
+        </button>
+      </div>
+    </div>
+  </van-overlay>
+
+  <!-- 弹窗 Reminder Message -->
+  <van-overlay
+    :show="showReminderMsg"
+    class-name="custom-dialog"
+  >
+    <div class="content-box">
+      <div class="dialog-title">
+        <div class="dialog-title-left">
+          <span>{{ $t("pool.ReminderMessage") }}</span>
+        </div>
+        <van-icon
+          name="cross"
+          size="20"
+          color="#A1A1AA"
+          @click="showReminderMsg = false"
+        />
+      </div>
+
+      <div class="dialog-content no-margin-b">
+        <div class="content-item content-item-reminder">
+          <div class="item-top">👋 {{ $t("pool.PupUpsUpdate") }}</div>
+          <div class="item-bottom">{{ $t("pool.PupUpsUpdateTip") }}</div>
+          <div class="btn-main">{{ $t("pool.Go") }}</div>
+        </div>
+        <div class="content-item content-item-reminder no-margin-b">
+          <div class="item-top">💻 {{ $t("pool.LuckySavingsGoesToV1Point1") }}</div>
+          <div class="item-bottom">
+            {{ $t("pool.urlTip") }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </van-overlay>
+</template>
 <script setup lang="ts" name="Pool">
 import liff from "@line/liff";
 import { useRouter } from "vue-router";
@@ -23,6 +490,24 @@ import {
   getPoolAmount,
   showToastBeforeRequest,
 } from "@/utils/index";
+import { useCustomI18n, switchLanguage } from "@/lang/i18n-utils";
+import { useI18n } from "vue-i18n";
+
+const { i18nTFn } = useCustomI18n();
+const { locale } = useI18n();
+const currentLang = ref(locale.value);
+const languageOptions = [
+  { text: "EN", value: "en_US" },
+  { text: "ZH", value: "zh_CN" },
+  { text: "JP", value: "ja_JP" },
+  { text: "TH", value: "th_TH" },
+  { text: "KR", value: "ko_KR" },
+];
+// 处理语言切换
+const handleLanguageChange = (value) => {
+  switchLanguage(value);
+  currentLang.value = value;
+};
 
 onMounted(() => {
   showToastBeforeRequest();
@@ -172,16 +657,18 @@ const warningTextShow = computed(() => {
 });
 const showWithdraw = ref(false);
 const withdrawInfo = ref({
-  type: "USD",
+  type: "KAIA",
   savings: 100,
   gasFee: 1.2,
-  desc: `You can check all returns later in the wallet balance under the Home tab.`,
+  desc: i18nTFn("pool.withdrawInfo"),
 });
 const showWithdrawDialog = async () => {
+  showToastBeforeRequest();
   await getDappWallet();
   const gas = await gasForWithdrawWithDepositContract(globalStore.address, "10", "2");
   withdrawInfo.value.gasFee = gas;
   showWithdraw.value = true;
+  closeToast();
 };
 const showDepositDialog = async () => {
   await getDappWallet();
@@ -200,7 +687,7 @@ const confirmDeposit = async () => {
   }
   if (!amount.value) {
     showToast({
-      message: "Please enter the amount",
+      message: i18nTFn("pool.amountTip"),
       duration: 3000,
     });
     return;
@@ -247,440 +734,6 @@ const generateInviteLink = () => {
 const showReminderMsg = ref(false);
 </script>
 
-<template>
-  <div class="page-wrap">
-    <div class="header">
-      <div class="header-left">
-        <img
-          :src="globalStore.userInfo.avatar || avatar"
-          class="product-img"
-          @click="router.push('/profile')"
-        />
-        <div class="text-content">
-          {{ globalStore.userInfo.nickname }}
-        </div>
-      </div>
-      <div class="header-right">
-        <!-- <svg-icon
-          className="img-header-right"
-          name="icon-msg-tip"
-          @click="showReminderMsg = true"
-        /> -->
-        <svg-icon
-          className="img-header-right"
-          name="icon-upload"
-          @click="generateInviteLink"
-        />
-      </div>
-    </div>
-    <!-- Daily Pool 标题部分 -->
-    <div class="token-select content-box">
-      <div
-        class="token-btn"
-        :class="{ daily: selectedPool === '1' }"
-        @click="switchTab('1')"
-      >
-        {{ $t("pool.KAIAPool") }}
-      </div>
-      <div
-        class="token-btn"
-        :class="{ USDPool: selectedPool === '2' }"
-        @click="switchTab('2')"
-      >
-        {{ $t("pool.USDPool") }}
-      </div>
-    </div>
-
-    <!-- Daily Pool -->
-    <div class="module-item">
-      <div class="module-title">
-        <span>{{ $t("pool.DailyPool") }}</span>
-        <svg-icon
-          className="img-icon"
-          name="icon-info"
-          @click="showGameplay('1')"
-        />
-      </div>
-      <div class="module-content content-box bg-white">
-        <div
-          class="countdown-box"
-          :class="selectedPool === '2' ? 'bg-green' : 'bg-yellow'"
-        >
-          <svg-icon
-            className="img-countdown-box-bg left-bg"
-            name="icon-clocker"
-          />
-          <svg-icon
-            className="img-countdown-box-bg right-bg"
-            name="icon-gift-r"
-          />
-          <van-count-down
-            :time="selectedPool === '2' ? prizePoolInfo.nextUsdtDrawOpenIn : prizePoolInfo.nextKaiaDrawOpenIn"
-            format="HH:mm:ss"
-          >
-            <template #default="timeData">
-              <div class="time-display">
-                <span class="time-block">{{ formatTime(timeData.hours) }}</span>
-                <span class="time-separator">:</span>
-                <span class="time-block">{{ formatTime(timeData.minutes) }}</span>
-                <span class="time-separator">:</span>
-                <span class="time-block">{{ formatTime(timeData.seconds) }}</span>
-              </div>
-            </template>
-          </van-count-down>
-        </div>
-        <Progress
-          :percentage="prizePoolInfo.progress"
-          :bg-color="selectedPool === '2' ? '#06C756' : '#FEE719'"
-        />
-        <div class="text-grey">{{ $t("pool.CurrentPrizePool") }}</div>
-        <div
-          class="text-num"
-          :class="selectedPool === '2' ? '' : 'text-num-yellow'"
-        >
-          <svg-icon
-            v-show="selectedPool === '1'"
-            className="icon-kaia"
-            name="icon-kaia"
-          />
-          <span v-show="selectedPool === '2'">$</span>
-          <span>{{ selectedPool === "2" ? prizePoolInfo.totalUsdtPrizePool : prizePoolInfo.totalKaiaPrizePool }}</span>
-        </div>
-        <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
-        <div class="ticket-box">
-          <svg-icon
-            v-show="selectedPool === '1'"
-            class="img-tickets"
-            name="img-tickets-kaia"
-          />
-          <svg-icon
-            v-show="selectedPool === '2'"
-            class="img-tickets"
-            name="img-tickets"
-          />
-          <div class="ticket-num">
-            <span class="ticket-num-unit">x</span>
-            <span> {{ selectedPool === "1" ? prizePoolInfo.kaiaTicket : prizePoolInfo.usdtTicket }}</span>
-          </div>
-        </div>
-        <van-divider class="divider" />
-        <div
-          class="previous-winners"
-          @click="showPreviousWinner"
-        >
-          <div class="previous-winners-left">
-            <svg-icon
-              className="img-jiangbei"
-              name="icon-jiangbei"
-            />
-            <span>{{ $t("pool.PreviousWinners") }}</span>
-          </div>
-          <van-icon name="arrow" />
-        </div>
-        <div
-          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket > 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket > 0)"
-          class="btn-wrap margin-top-16"
-        >
-          <button
-            class="btn-main btn-withdraw"
-            @click="showWithdrawDialog"
-          >
-            {{ $t("common.Withdraw") }}
-          </button>
-          <button
-            class="btn-main"
-            @click="showDepositDialog"
-          >
-            {{ $t("pool.Deposit") }}
-          </button>
-        </div>
-        <button
-          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket == 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket == 0)"
-          class="btn-main margin-top-16"
-          @click="showDepositDialog"
-        >
-          {{ $t("home.JoinNow") }}
-        </button>
-      </div>
-    </div>
-
-    <div class="module-item">
-      <div class="module-title">
-        <span>{{ $t("pool.JackpotTitle") }}</span>
-        <svg-icon
-          className="img-icon"
-          name="icon-info"
-          @click="showGameplay('2')"
-        />
-      </div>
-
-      <div class="content-box bg-2 USDPool-content">
-        <svg-icon
-          className="module-inner-bg left-bg"
-          name="icon-dollar-y"
-        />
-        <svg-icon
-          className="module-inner-bg right-bg"
-          name="icon-gift-r"
-        />
-        <div class="content-item-title-wrap">
-          <div class="text-grey content-item-title">
-            <svg-icon
-              className="img-icon"
-              name="icon-dollar"
-            />
-            {{ $t("pool.CurrentPrizePool") }}
-          </div>
-        </div>
-        <div
-          class="text-num"
-          :class="selectedPool === '2' ? '' : 'text-num-yellow'"
-        >
-          <svg-icon
-            v-show="selectedPool === '1'"
-            className="icon-kaia"
-            name="icon-kaia"
-          />
-          <span v-show="selectedPool === '2'">$</span>
-          <span>{{ selectedPool === "2" ? prizePoolInfo.usdtJackpot : prizePoolInfo.kaiaJackpot }}</span>
-          <span class="text-num-sub">/ $10,000</span>
-        </div>
-        <Progress
-          :percentage="55"
-          :bg-color="selectedPool === '2' ? '#06C756' : '#FEE719'"
-        />
-        <div class="text-grey">{{ $t("pool.YourTickets") }}</div>
-        <div class="ticket-box">
-          <svg-icon
-            v-show="selectedPool === '1'"
-            class="img-tickets"
-            name="img-tickets-kaia"
-          />
-
-          <svg-icon
-            v-show="selectedPool === '2'"
-            class="img-tickets"
-            name="img-tickets"
-          />
-          <div class="ticket-num">
-            <span class="ticket-num-unit">x</span>
-            <span>{{ selectedPool === "1" ? prizePoolInfo.kaiaTicket : prizePoolInfo.usdtTicket }}</span>
-          </div>
-        </div>
-        <van-divider class="divider" />
-        <div
-          class="previous-winners"
-          @click="showPreviousWinner"
-        >
-          <div class="previous-winners-left">
-            <svg-icon
-              className="img-jiangbei"
-              name="icon-jiangbei"
-            />
-            <span>{{ $t("pool.PreviousWinners") }}</span>
-          </div>
-          <van-icon name="arrow" />
-        </div>
-
-        <div
-          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket > 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket > 0)"
-          class="btn-wrap margin-top-16"
-        >
-          <button
-            class="btn-main btn-withdraw"
-            @click="showWithdrawDialog"
-          >
-            {{ $t("common.Withdraw") }}
-          </button>
-          <button
-            class="btn-main"
-            @click="showDepositDialog"
-          >
-            {{ $t("pool.Deposit") }}
-          </button>
-        </div>
-        <button
-          v-show="(selectedPool === '1' && prizePoolInfo.kaiaTicket == 0) || (selectedPool === '2' && prizePoolInfo.usdtTicket == 0)"
-          class="btn-main margin-top-16"
-          @click="showDepositDialog"
-        >
-          {{ $t("home.JoinNow") }}
-        </button>
-      </div>
-    </div>
-  </div>
-  <!-- 弹窗 Daily Pool和10K Jackpot Gameplay -->
-  <GamePlayDialog ref="gamePlayDialogRef" />
-  <PreviousDialog ref="previousDialogRef" />
-  <!-- 弹窗 Deposit -->
-  <van-overlay
-    :show="showDeposit"
-    class-name="custom-dialog"
-  >
-    <div class="content-box">
-      <div class="dialog-title">
-        <div class="dialog-title-left">
-          <svg-icon
-            class="img-icon"
-            name="icon-ustd"
-            size="20px"
-          />
-
-          <span>{{ selectedPool === "1" ? $t("pool.KAIADeposit") : $t("pool.USDDeposit") }}</span>
-        </div>
-        <van-icon
-          name="cross"
-          size="20"
-          color="#A1A1AA"
-          @click="
-            showDeposit = false;
-            amount = 0;
-          "
-        />
-      </div>
-
-      <div class="dialog-content">
-        <div class="content-item">
-          <div class="title-wrap">
-            <div class="label">{{ $t("pool.Amount") }}</div>
-            <div class="available">
-              <span>{{ $t("pool.Available") }}</span>
-              <span class="item-value">{{ selectedPool === "1" ? globalStore.balanceInfo.KAIA.balance : globalStore.balanceInfo.USDT.balance }}</span>
-            </div>
-          </div>
-          <van-field
-            v-model="amount"
-            placeholder="0.00"
-            class="custom-field"
-            type="number"
-            inputmode="numeric"
-          >
-            <template #right-icon>
-              <span
-                class="max-btn"
-                @click="setMaxAmount"
-                >{{ $t("pool.Max") }}</span
-              >
-            </template>
-          </van-field>
-
-          <div
-            v-show="warningTextShow"
-            class="warning-text"
-          >
-            <span>{{ $t("pool.TheAmountExceedsTheAvailableBalance") }}</span>
-          </div>
-        </div>
-        <!-- <div class="content-item fee-info">
-          <span>{{ $t("pool.GasFee") }}</span>
-          <span class="item-value">{{ withdrawInfo.gasFee }} KAIA</span>
-        </div> -->
-        <div class="content-item item-desc">
-          {{ $t("pool.DailyPoolTip") }}
-        </div>
-      </div>
-      <div class="dialog-footer">
-        <button
-          class="btn-main"
-          @click="confirmDeposit"
-        >
-          {{ $t("pool.Deposit") }}
-        </button>
-      </div>
-    </div>
-  </van-overlay>
-  <!-- 弹窗 Withdraw -->
-  <van-overlay
-    :show="showWithdraw"
-    class-name="custom-dialog"
-  >
-    <div class="content-box">
-      <div class="dialog-title">
-        <div class="dialog-title-left">
-          <svg-icon
-            v-if="withdrawInfo.type === 'usd'"
-            className="img-icon"
-            name="icon-usdt"
-          />
-          <svg-icon
-            v-else
-            className="img-icon"
-            name="icon-kaia"
-          />
-
-          <span>{{ withdrawInfo.type }} {{ $t("pool.Withdraw") }}</span>
-        </div>
-        <van-icon
-          name="cross"
-          size="20"
-          color="#A1A1AA"
-          @click="showWithdraw = false"
-        />
-      </div>
-
-      <div class="dialog-content">
-        <div class="content-item dialog-content-item">
-          <div class="item-top">{{ $t("pool.YourCurrentSavings") }}</div>
-          <div class="item-bottom">
-            <span
-              >{{ selectedPool === "1" ? globalStore.balanceInfo.KAIA.savings : globalStore.balanceInfo.USDT.savings }} {{ withdrawInfo.type }}</span
-            >
-          </div>
-        </div>
-        <div class="content-item fee-info">
-          <span>{{ $t("pool.GasFee") }}</span>
-          <span class="item-value">{{ withdrawInfo.gasFee }} KAIA</span>
-        </div>
-        <div class="content-item item-desc">
-          {{ withdrawInfo.desc }}
-        </div>
-      </div>
-      <div class="dialog-footer">
-        <button
-          class="btn-main"
-          @click="confirmWithdraw"
-        >
-          {{ $t("common.Withdraw") }}
-        </button>
-      </div>
-    </div>
-  </van-overlay>
-
-  <!-- 弹窗 Reminder Message -->
-  <van-overlay
-    :show="showReminderMsg"
-    class-name="custom-dialog"
-  >
-    <div class="content-box">
-      <div class="dialog-title">
-        <div class="dialog-title-left">
-          <span>{{ $t("pool.ReminderMessage") }}</span>
-        </div>
-        <van-icon
-          name="cross"
-          size="20"
-          color="#A1A1AA"
-          @click="showReminderMsg = false"
-        />
-      </div>
-
-      <div class="dialog-content no-margin-b">
-        <div class="content-item content-item-reminder">
-          <div class="item-top">👋 {{ $t("pool.PupUpsUpdate") }}</div>
-          <div class="item-bottom">{{ $t("pool.PupUpsUpdateTip") }}</div>
-          <div class="btn-main">{{ $t("pool.Go") }}</div>
-        </div>
-        <div class="content-item content-item-reminder no-margin-b">
-          <div class="item-top">💻 {{ $t("pool.LuckySavingsGoesToV1Point1") }}</div>
-          <div class="item-bottom">
-            {{ $t("pool.urlTip") }}
-          </div>
-        </div>
-      </div>
-    </div>
-  </van-overlay>
-</template>
-
 <style scoped lang="scss">
 .page-wrap {
   padding: 0 16px 12px 16px;
@@ -692,7 +745,19 @@ const showReminderMsg = ref(false);
     border-radius: 50%;
   }
 }
-
+.top-right-language {
+  padding: 0px 12px;
+  border-radius: 10px;
+  border: 2px solid var(--ls-line-12, rgba(24, 24, 27, 0.12));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 32px;
+  .current-language {
+    margin-top: 3px;
+    line-height: 1;
+  }
+}
 .content-box.token-select {
   display: flex;
   justify-content: space-between;

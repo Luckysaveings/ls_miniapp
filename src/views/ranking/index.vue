@@ -79,14 +79,14 @@ onMounted(() => {
           :class="{ active: selectedType === 'points' }"
           @click="changeType('points')"
         >
-          {{ $t("ranking.Points") }}
+          {{ $t("common.Points") }}
         </div>
         <div
           class="type-btn"
           :class="{ active: selectedType === 'badges' }"
           @click="changeType('badges')"
         >
-          {{ $t("ranking.Badges") }}
+          {{ $t("common.Badges") }}
         </div>
       </div>
 
@@ -100,7 +100,7 @@ onMounted(() => {
               </div>
             </div>
             <div class="achievement-item">
-              <div class="item-top">{{ selectedType === "points" ? $t("ranking.Points") : $t("ranking.Badges") }}</div>
+              <div class="item-top">{{ selectedType === "points" ? $t("common.Points") : $t("common.Badges") }}</div>
               <div class="item-bottom">
                 <span>{{ selfRanking.selfNum }}</span>
                 <svg-icon
@@ -121,7 +121,7 @@ onMounted(() => {
           <div class="table-title">
             <div class="title-no">{{ $t("ranking.Place") }}</div>
             <div class="title-username">{{ $t("ranking.Name") }}</div>
-            <div class="title-points">{{ $t("ranking.Points") }}</div>
+            <div class="title-points">{{ $t("common.Points") }}</div>
           </div>
           <div
             v-for="item in tableData"
@@ -133,7 +133,7 @@ onMounted(() => {
                 v-if="item.no <= 3"
                 :name="`icon-winner-${item.no}`"
                 className="img-icon"
-              ></svg-icon>
+              />
               <span
                 v-else
                 class="no-text"

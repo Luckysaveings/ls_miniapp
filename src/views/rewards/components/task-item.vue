@@ -77,7 +77,7 @@
         class="task-status-text"
         @click="taskClick(item)"
       >
-        Claim
+        {{ $t("common.Claim") }}
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" name="Iicon">
 import { Icon as IconifyIconComp } from "@iconify/vue";
 import type { IconifyIcon } from "@iconify/vue";
 

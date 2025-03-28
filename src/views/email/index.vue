@@ -30,7 +30,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup name="Email">
 import { useRouter } from "vue-router";
 const router = useRouter();
 

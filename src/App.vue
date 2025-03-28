@@ -5,7 +5,15 @@
 import liff from "@line/liff";
 import { getTaskList, login, bindWallet, getKaiaPrice } from "@/api/index";
 import { useGlobalStore } from "@/store/globalStore";
-import { createKaiaWallet, getDappWallet, getTokenBalance, getKaiaBalance, getDepositAmount, getPoolAmount, showToastBeforeRequest } from "@/utils/index";
+import {
+  createKaiaWallet,
+  getDappWallet,
+  getTokenBalance,
+  getKaiaBalance,
+  getDepositAmount,
+  getPoolAmount,
+  showToastBeforeRequest,
+} from "@/utils/index";
 import { showToast, showFailToast, showLoadingToast, closeToast } from "vant";
 
 // 初始化 Store
@@ -23,7 +31,7 @@ onMounted(() => {
   } else {
     // createKaiaWallet(); // 创建一个kaia测试链的钱包，提示词，钱包地址和私钥均存储在localStorage缓存中
     const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MjIwNjYwMSwibmJmIjoxNzQxNjAxODAxfQ.PnwIAHLtZEW7EgElYnzf6MZGtxgrlaoOi4vsxcGoJSg";
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVVUlEIjoiY2ZlODBiZWMtYjliOC00MTRkLTgyYTMtNWVhOTk5OGI4MDc5IiwiSUQiOjYsIlVzZXJuYW1lIjoiVWFjNTMxZTQxNDhkZjZlMmU1YmFhNzUxNTZiM2U4YzhmIiwiTmlja05hbWUiOiJvZ2dyciIsIkF1dGhvcml0eUlkIjoxMDAsIkJ1ZmZlclRpbWUiOjg2NDAwLCJpc3MiOiJxbVBsdXMiLCJhdWQiOlsiR1ZBIl0sImV4cCI6MTc0MzczNTgwOCwibmJmIjoxNzQzMTMxMDA4fQ.C-vnn-Ct0PstaIWSEV3yevM59f42Xn5q2l6E16sVcA8";
     globalStore.setToken(token);
     globalStore.setUserInfo({
       username: "oggrr",
@@ -98,26 +106,28 @@ const getChainData = () => {
     getDepositAmount(globalStore.address, "KAIA"),
     getPoolAmount("USDT"),
     getPoolAmount("KAIA"),
-    getTaskList()
-  ]).then(results => {
-    // 最后一个结果是getTaskList的返回值
-    const res = results[6];
-    const list = (res.data && res.data.list) || [];
-    const unCompletedList = list.filter((item) => item.status !== 3);
-    const pointList = unCompletedList.filter((item) => item.rewardType === 0);
-    const badgeList = unCompletedList.filter((item) => item.rewardType === 1);
-    const totalPoints = pointList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
-    const totalBadges = badgeList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
-    globalStore.setAvailableRewards({
-      points: totalPoints,
-      badges: totalBadges,
+    getTaskList(),
+  ])
+    .then((results) => {
+      // 最后一个结果是getTaskList的返回值
+      const res = results[6];
+      const list = (res.data && res.data.list) || [];
+      const unCompletedList = list.filter((item) => item.status !== 3);
+      const pointList = unCompletedList.filter((item) => item.rewardType === 0);
+      const badgeList = unCompletedList.filter((item) => item.rewardType === 1);
+      const totalPoints = pointList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
+      const totalBadges = badgeList.reduce((acc, cur) => acc + cur.rewardAmount, 0);
+      globalStore.setAvailableRewards({
+        points: totalPoints,
+        badges: totalBadges,
+      });
+      closeToast();
+    })
+    .catch((error) => {
+      console.error("获取链上数据失败:", error);
+      closeToast();
+      showFailToast("获取数据失败，请稍后重试");
     });
-    closeToast();
-  }).catch(error => {
-    console.error("获取链上数据失败:", error);
-    closeToast();
-    showFailToast("获取数据失败，请稍后重试");
-  });
 };
 </script>
 <style></style>

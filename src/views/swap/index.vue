@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrap">
     <van-nav-bar
-      :title="$t('swap.Swap')"
+      :title="$t('common.Swap')"
       left-arrow
       class="nav-bar-wrap"
       :border="false"
@@ -11,14 +11,14 @@
     <div class="page-content">
       <div class="content-box">
         <div class="box-top">
-          <div class="box-left">{{ $t("swap.From") }}</div>
+          <div class="box-left">{{ $t("common.From") }}</div>
           <div class="box-right">
-            <span>{{ $t("swap.Balance") }}</span>
+            <span>{{ $t("common.Balance") }}</span>
             <span class="num">{{ maxData.usdt }}</span>
             <span
               class="max"
               @click="handleMax('usdt')"
-              >{{ $t("swap.Max") }}</span
+              >{{ $t("common.Max") }}</span
             >
           </div>
         </div>
@@ -26,9 +26,9 @@
           <div class="box-left">
             <svg-icon
               className="box-img"
-              name="icon-ustd"
+              name="icon-usdt"
             />
-            <span>USDT</span>
+            <span> {{ $t("common.USDT") }}</span>
           </div>
           <div class="box-right">
             <van-field
@@ -48,12 +48,12 @@
         <div class="box-top">
           <div class="box-left">{{ $t("swap.ToEstimate") }}</div>
           <div class="box-right">
-            <span>{{ $t("swap.Balance") }}</span>
+            <span>{{ $t("common.Balance") }}</span>
             <span class="num">{{ maxData.kaia }}</span>
             <span
               class="max"
               @click="handleMax('kaia')"
-              >{{ $t("swap.Max") }}</span
+              >{{ $t("common.Max") }}</span
             >
           </div>
         </div>
@@ -63,7 +63,7 @@
               className="box-img"
               name="icon-kaia"
             />
-            <span>KAIA</span>
+            <span>{{ $t("common.KAIA") }}</span>
           </div>
           <div class="box-right">
             <van-field
@@ -89,13 +89,13 @@
         :class="{ disabled: !isValidNext }"
         @click="handleSwap"
       >
-        {{ $t("swap.Swap") }}
+        {{ $t("common.Swap") }}
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup name="Swap">
 import { showToast } from "vant";
 import { useRouter } from "vue-router";
 import { reactive } from "vue";

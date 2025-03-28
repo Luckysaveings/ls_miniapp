@@ -404,3 +404,25 @@ a:hover {
   backdrop-filter: blur(1px);
   background-color: rgba(0, 0, 0, 0.5) !important;
 }
+.language-switcher {
+  .van-dropdown-menu__bar {
+    height: initial;
+    background-color: rgba(0,0,0,0);
+    padding-top: 3px;
+    box-shadow: none;
+    .van-dropdown-menu__title--active {
+      color: rgb(50, 50, 51);
+    }
+  }
+  .van-popup--top {
+    // width: initial;
+    top: 9px;
+    background: linear-gradient(180deg, #fff9e1 0%, #fff 100%);
+    .van-dropdown-item__option{
+      background: rgba(0, 0, 0, 0);
+    }
+  }
+  .van-overlay {
+    top: 10px;
+  }
+}

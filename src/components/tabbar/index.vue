@@ -17,7 +17,9 @@
   </van-tabbar>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" name="Tabbar">
+import { useCustomI18n } from "@/lang/i18n-utils";
+const { i18nTFn } = useCustomI18n();
 const active = ref(0);
 const tabbarData = reactive([
   {

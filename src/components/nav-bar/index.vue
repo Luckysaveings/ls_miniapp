@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" name="NavBar">
 const onClickRight = (event: TouchEvent | MouseEvent) => {};
 </script>
 

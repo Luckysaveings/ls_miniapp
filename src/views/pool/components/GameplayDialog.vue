@@ -15,19 +15,21 @@
         v-html="gameplayContent.content"
       />
       <div
-        class="gameplay-waring"
-        v-html="gameplayContent.waring"
+        class="gameplay-warning"
+        v-html="gameplayContent.warning"
       />
       <div
         class="btn-main"
         @click="showGameplay = false"
       >
-        Got It
+        {{ $t("common.GotIt") }}
       </div>
     </div>
   </van-overlay>
 </template>
 <script setup name="GameplayDialog">
+import { useCustomI18n } from "@/lang/i18n-utils";
+const { i18nTFn } = useCustomI18n();
 const showGameplay = ref(false);
 const gameplayContent = ref({});
 const switchGameplayContent = (type, category) => {
@@ -36,26 +38,15 @@ const switchGameplayContent = (type, category) => {
   let content = {};
   if (category === "1") {
     content = {
-      title: "Daily Pool Gameplay",
-      content: `
-    <p>1. The USD and KAIA prize pools will be drawn every day at 20:00 (UTC+0).</p>
-    <p>2. You will never lose your principal and can withdraw at any time. </p>
-    <p>3. Your deposit is used to earn yield from XYZ protocol, which creates the prize pool and your tickets.</p>
-    <p>4. Your yields will be rolled into the Daily Pool and the $10k Jackpot at a 50%:50% ratio.</p>
-    <p>5. Based on smart contracts, the more you deposit, the more tickets you receive, and the higher your chances of winning.</p>
-    <p>6. Your savings will automatically roll over into the next pool unless you withdraw.</p>`,
-      waring: `Due to KAIA restrictions, withdrawing from KAIA pool might require a 7 days unlock due to Kaia Chain staking requirements.`,
+      title: i18nTFn("GameplayDialog.title1"),
+      content: i18nTFn("GameplayDialog.content1"),
+      warning: i18nTFn("GameplayDialog.warning1"),
     };
   } else {
     content = {
-      title: "10K Jackpot Gameplay",
-      content: `
-      <p>1.Once each Jackpot reaches $10k, it will be drawn! After the draw, it will move on to the next round of accumulation!</p>
-      <p>2. You will never lose your principal and can withdraw at any time. </p>
-      <p>3. Your yields will be rolled into the Daily Pool and the $10k Jackpot at a 50%:50% ratio.</p>
-      <p>4. Based on smart contracts, the more you deposit, the more tickets you receive, and the higher your chances of winning.</p>
-      <p>5. Your savings will automatically roll over into the next pool/jackpot unless you withdraw.</p>`,
-      waring: `Due to KAIA restrictions, withdrawing from KAIA pool might require a 7 days unlock due to Kaia Chain staking requirements.`,
+      title: i18nTFn("GameplayDialog.title2"),
+      content: i18nTFn("GameplayDialog.content2"),
+      warning: i18nTFn("GameplayDialog.warning2"),
     };
   }
   const res = {
@@ -97,7 +88,7 @@ defineExpose({ showGameplayContent });
     line-height: 24px;
     margin-bottom: 16px;
   }
-  .gameplay-waring {
+  .gameplay-warning {
     padding: 10px 12px;
     border-radius: 12px;
     border: 1px solid var(--LS-Secondary-Red-red, #f14d00);
